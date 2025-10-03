@@ -3,6 +3,7 @@ package com.dj.insulink.login.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,19 +26,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dj.insulink.R
+import com.dj.insulink.login.ui.viewmodel.LoginViewModel
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+
+    val emailState by remember { derivedStateOf { loginViewModel.email } }
+    val passwordState by remember { derivedStateOf { loginViewModel.password } }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -125,8 +139,8 @@ fun LoginScreen() {
 
                 )
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = emailState,
+                    onValueChange = loginViewModel::onEmailChange,
                     placeholder = { Text("Enter your email", color = Color.Black) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -138,6 +152,8 @@ fun LoginScreen() {
                             modifier = Modifier.size(24.dp)
                         )
                     },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true
                 )
 
                 Text(
@@ -147,8 +163,8 @@ fun LoginScreen() {
                     modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 0.dp, bottom = 4.dp)
                 )
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = passwordState,
+                    onValueChange = loginViewModel::onPasswordChange,
                     placeholder = { Text("Enter your password", color = Color.Black) },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
@@ -159,6 +175,9 @@ fun LoginScreen() {
 
                         )
                     },
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true
                 )
 
                 Text(
@@ -179,7 +198,8 @@ fun LoginScreen() {
                                 listOf(Color(0xFF7F56D9), Color(0xFF9E77ED))
                             ),
                             shape = RoundedCornerShape(8.dp)
-                        ),
+                        )
+                        .clickable{loginViewModel.login()},
                     contentAlignment = Alignment.Center
                 ) {
                     Text("Sign In", color = Color.White)
@@ -209,7 +229,7 @@ fun LoginScreen() {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button (
-                    onClick = { /* TODO: Implement Google Sign-In logic */ },
+                    onClick = { loginViewModel.signInWithGoogle() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
