@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -52,6 +53,9 @@ fun LoginScreen(
     val emailState by remember { derivedStateOf { loginViewModel.email } }
     val passwordState by remember { derivedStateOf { loginViewModel.password } }
 
+    LaunchedEffect(Unit) {
+        loginViewModel.checkIfUserIsLoggedIn()
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
