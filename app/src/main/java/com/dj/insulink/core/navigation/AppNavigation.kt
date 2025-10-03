@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.dj.insulink.login.ui.screens.ForgotPasswordScreen
 import com.dj.insulink.login.ui.screens.LoginScreen
 import com.dj.insulink.registration.ui.screens.RegistrationScreen
 
@@ -20,7 +21,14 @@ fun AppNavigation() {
             RegistrationScreen()
         }
         composable(Screen.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                onForgotPasswordClicked = {
+                    navController.navigate("forgotPassword")
+                }
+            )
+        }
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen()
         }
     }
 }
