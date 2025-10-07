@@ -1,6 +1,5 @@
 package com.dj.insulink.login.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,39 +23,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dj.insulink.R
-import com.dj.insulink.login.ui.viewmodel.LoginViewModel
+import com.dj.insulink.login.ui.viewmodel.PasswordResetState
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ForgotPasswordScreen(
-    loginViewModel: LoginViewModel = hiltViewModel()
+    params: ForgotPasswordScreenParams
 ) {
-    val context = LocalContext.current
-    val accentColor = Color(0xFF7F56D9)
-    val emailState = loginViewModel.email
-    val resetState by loginViewModel.passwordResetState.collectAsStateWithLifecycle()
-    LaunchedEffect(resetState) {
-        resetState.successMessage?.let { message ->
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            loginViewModel.resetPasswordMessages()
-        }
-        resetState.errorMessage?.let { message ->
-            Toast.makeText(context, "Error: $message", Toast.LENGTH_LONG).show()
-            loginViewModel.resetPasswordMessages()
-        }
-    }
+    val passwordResetButtonGradientColorStart = colorResource(params.passwordResetButtonGradientColorStart)
+    val passwordResetButtonGradientColorEnd = colorResource(params.passwordResetButtonGradientColorEnd)
+    val emailState = params.emailState.collectAsState().value
+    val resetState = params.resetState.collectAsState().value
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -85,14 +74,14 @@ fun ForgotPasswordScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = context.getString(R.string.login_insulink),
+                        text = stringResource(R.string.login_insulink),
                         style = MaterialTheme.typography.headlineLarge,
                         color = Color.White,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
                     Text(
-                        text = context.getString(R.string.login_description),
+                        text = stringResource(R.string.login_description),
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White,
                         textAlign = TextAlign.Center,
@@ -129,14 +118,14 @@ fun ForgotPasswordScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = context.getString(R.string.forgot_password_title),
+                    text = stringResource(R.string.forgot_password_title),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 24.dp, top = 24.dp),
                     color = Color.Black
                 )
 
                 Text(
-                    text = context.getString(R.string.forgot_password_email_description),
+                    text = stringResource(R.string.forgot_password_email_description),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 24.dp),
@@ -144,15 +133,15 @@ fun ForgotPasswordScreen(
                 )
 
                 Text(
-                    text = context.getString(R.string.login_email_text),
+                    text = stringResource(R.string.login_email_text),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Black,
                     modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 0.dp, bottom = 4.dp)
                 )
                 OutlinedTextField(
                     value = emailState,
-                    onValueChange = loginViewModel::onEmailChange,
-                    placeholder = { Text(context.getString(R.string.login_enter_email_text), color = Color.Black) },
+                    onValueChange = params.onEmailChange,
+                    placeholder = { Text(stringResource(R.string.login_enter_email_text), color = Color.Black) },
                     modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
                     leadingIcon = {
                         Image(
@@ -171,19 +160,19 @@ fun ForgotPasswordScreen(
                         .height(50.dp)
                         .background(
                             brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                                listOf(accentColor, Color(0xFF9E77ED))
+                                listOf(passwordResetButtonGradientColorStart, passwordResetButtonGradientColorEnd)
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .clickable(enabled = !resetState.isLoading) {
-                            loginViewModel.sendPasswordReset()
+                            params.onSendPasswordReset()
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     if (resetState.isLoading) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                     } else {
-                        Text(context.getString(R.string.forgot_password_send_reset_link), color = Color.White)
+                        Text(stringResource(R.string.forgot_password_send_reset_link), color = Color.White)
                     }
                 }
 
@@ -192,3 +181,12 @@ fun ForgotPasswordScreen(
         }
     }
 }
+
+data class ForgotPasswordScreenParams(
+    val emailState: StateFlow<String>,
+    val onEmailChange: (String) -> Unit,
+    val onSendPasswordReset: () -> Unit,
+    val resetState: StateFlow<PasswordResetState>,
+    val passwordResetButtonGradientColorStart: Int = R.color.purple_500,
+    val passwordResetButtonGradientColorEnd: Int = R.color.purple_200
+)

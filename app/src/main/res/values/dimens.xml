@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="float_dimension_33" format="float">0.33</dimen>
+    <dimen name="float_dimension_67" format="float">0.67</dimen>
+    <dimen name="float_dimension_80" format="float">0.80</dimen>
+    <dimen name="dp_dimension_8">8dp</dimen>
+    <dimen name="dp_dimension_24">24dp</dimen>
+    <dimen name="dp_dimension_50">50dp</dimen>
+    <dimen name="dp_dimension_100">100dp</dimen>
+
+</resources>

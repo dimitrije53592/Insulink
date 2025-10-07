@@ -6,6 +6,7 @@
     <string name="login_description">Your health companion</string>
     <string name="login_email_text">Email Address</string>
     <string name="login_enter_email_text">Enter your email address</string>
+    <string name="login_enter_password_text">Enter your password</string>
     <string name="login_password_text">Password</string>
     <string name="login_sign_in">Sign In</string>
     <string name="login_sign_up">Sign Up</string>
