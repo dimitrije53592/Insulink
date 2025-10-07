@@ -1,4 +1,4 @@
-package com.dj.insulink.login.ui.screens
+package com.dj.insulink.auth.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -34,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
-import com.dj.insulink.login.ui.viewmodel.PasswordResetState
+import com.dj.insulink.auth.ui.viewmodel.PasswordResetState
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -163,7 +164,7 @@ fun ForgotPasswordScreen(
                         .fillMaxWidth()
                         .height(50.dp)
                         .background(
-                            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                            brush = Brush.horizontalGradient(
                                 listOf(
                                     passwordResetButtonGradientColorStart,
                                     passwordResetButtonGradientColorEnd

@@ -1,4 +1,4 @@
-package com.dj.insulink.login.ui.screens
+package com.dj.insulink.auth.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -184,7 +184,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         Log.d("Sign in dugme", "kliknuto dugme")
-                        params.onLogin
+                        params.onLogin()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

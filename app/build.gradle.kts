@@ -62,13 +62,19 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)  // Cloud Firestore
 
+    // Navigation
     implementation(libs.navigation.compose)
 
+    // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)

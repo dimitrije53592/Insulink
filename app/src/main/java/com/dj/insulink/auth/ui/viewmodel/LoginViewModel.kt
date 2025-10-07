@@ -1,4 +1,4 @@
-package com.dj.insulink.login.ui.viewmodel
+package com.dj.insulink.auth.ui.viewmodel
 
 import android.content.Context
 import android.util.Log

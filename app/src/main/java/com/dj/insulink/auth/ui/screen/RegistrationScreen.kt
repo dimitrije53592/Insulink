@@ -1,4 +1,4 @@
-package com.dj.insulink.registration.ui.screens
+package com.dj.insulink.auth.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -20,7 +20,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -29,12 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
 
@@ -145,6 +147,7 @@ fun RegistrationScreen(
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.dimens.commonPadding24),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
                 singleLine = true
             )
             Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
@@ -170,6 +173,7 @@ fun RegistrationScreen(
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.dimens.commonPadding24),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
                 singleLine = true
             )
             Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
@@ -205,10 +209,17 @@ fun RegistrationScreen(
                 ),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = MaterialTheme.dimens.commonElevation0)
             ) {
-                Text(
-                    text = stringResource(R.string.registration_screen_submit_button_label),
-                    color = Color.White
-                )
+                if (params.isLoading.value) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(MaterialTheme.dimens.commonProgressIndicatorSize25),
+                        color = Color.White
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.registration_screen_submit_button_label),
+                        color = Color.White
+                    )
+                }
             }
             Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
             Row(
@@ -236,18 +247,18 @@ fun RegistrationScreen(
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.dimens.commonPadding24)
             ) {
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color.Black
+                    thickness = DividerDefaults.Thickness, color = Color.Black
                 )
                 Text(
                     text = stringResource(R.string.registration_screen_or_continue_with_label),
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding8)
                 )
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = Color.Black
+                    thickness = DividerDefaults.Thickness, color = Color.Black
                 )
             }
             Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
@@ -258,7 +269,7 @@ fun RegistrationScreen(
                 modifier = Modifier
                     .height(MaterialTheme.dimens.commonButtonHeight50)
                     .border(
-                        1.dp,
+                        MaterialTheme.dimens.commonButtonBorder1,
                         Color.LightGray,
                         RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius8)
                     )
@@ -302,6 +313,7 @@ data class RegistrationScreenParams(
     val setConfirmPassword: (String) -> Unit,
     val termsOfServiceAccepted: State<Boolean>,
     val setTermsOfServiceAccepted: (Boolean) -> Unit,
+    val isLoading: State<Boolean>,
     val onSubmit: () -> Unit,
     val navigateToLogIn: () -> Unit
 )
