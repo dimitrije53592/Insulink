@@ -41,8 +41,10 @@ import kotlinx.coroutines.flow.StateFlow
 fun ForgotPasswordScreen(
     params: ForgotPasswordScreenParams
 ) {
-    val passwordResetButtonGradientColorStart = colorResource(params.passwordResetButtonGradientColorStart)
-    val passwordResetButtonGradientColorEnd = colorResource(params.passwordResetButtonGradientColorEnd)
+    val passwordResetButtonGradientColorStart =
+        colorResource(params.passwordResetButtonGradientColorStart)
+    val passwordResetButtonGradientColorEnd =
+        colorResource(params.passwordResetButtonGradientColorEnd)
     val emailState = params.emailState.collectAsState().value
     val resetState = params.resetState.collectAsState().value
 
@@ -58,7 +60,8 @@ fun ForgotPasswordScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.33f)
-                    .background(Color.Blue).padding(24.dp),
+                    .background(Color.Blue)
+                    .padding(24.dp),
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -132,17 +135,18 @@ fun ForgotPasswordScreen(
                     color = Color.Gray
                 )
 
-                Text(
-                    text = stringResource(R.string.login_email_text),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.Black,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.Start).padding(start = 0.dp, bottom = 4.dp)
-                )
                 OutlinedTextField(
                     value = emailState,
                     onValueChange = params.onEmailChange,
-                    placeholder = { Text(stringResource(R.string.login_enter_email_text), color = Color.Black) },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                    label = {
+                        Text(
+                            stringResource(R.string.login_enter_email_text),
+                            color = Color.Black
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_email),
@@ -160,7 +164,10 @@ fun ForgotPasswordScreen(
                         .height(50.dp)
                         .background(
                             brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                                listOf(passwordResetButtonGradientColorStart, passwordResetButtonGradientColorEnd)
+                                listOf(
+                                    passwordResetButtonGradientColorStart,
+                                    passwordResetButtonGradientColorEnd
+                                )
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
@@ -170,9 +177,15 @@ fun ForgotPasswordScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     if (resetState.isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     } else {
-                        Text(stringResource(R.string.forgot_password_send_reset_link), color = Color.White)
+                        Text(
+                            stringResource(R.string.forgot_password_send_reset_link),
+                            color = Color.White
+                        )
                     }
                 }
 

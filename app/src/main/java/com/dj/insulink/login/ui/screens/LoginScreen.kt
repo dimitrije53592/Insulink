@@ -28,8 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,20 +38,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.State
 import com.dj.insulink.R
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LoginScreen(
     params: LoginScreenParams
 ) {
-
-    val email = params.emailState.collectAsState().value
-    val password = params.passwordState.collectAsState().value
-
-    LaunchedEffect(Unit) {
-        params.onCheckIfUserIsLoggedIn
-    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -130,24 +121,20 @@ fun LoginScreen(
                 Text(
                     text = stringResource(R.string.login_welcome_back),
                     style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 24.dp, top = 24.dp),
                     color = Color.Black
                 )
 
-                Text(
-                    text = stringResource(R.string.login_email_text),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Start)
-                        .padding(start = 0.dp, bottom = 4.dp)
-
-                )
                 OutlinedTextField(
-                    value = email,
+                    value = params.emailState.value,
                     onValueChange = params.onEmailChange,
-                    placeholder = { Text("Enter your email", color = Color.Black) },
+                    label = {
+                        Text(
+                            stringResource(R.string.login_email_text),
+                            color = Color.Black
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
@@ -162,19 +149,15 @@ fun LoginScreen(
                     singleLine = true
                 )
 
-                Text(
-                    text = stringResource(R.string.login_password_text),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.Black,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Start)
-                        .padding(start = 0.dp, bottom = 4.dp)
-                )
                 OutlinedTextField(
-                    value = password,
+                    value = params.passwordState.value,
                     onValueChange = params.onPasswordChange,
-                    placeholder = { Text(stringResource(R.string.login_enter_password_text), color = Color.Black) },
+                    label = {
+                        Text(
+                            stringResource(R.string.login_enter_password_text),
+                            color = Color.Black
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
                         Image(
@@ -198,10 +181,11 @@ fun LoginScreen(
                         .padding(top = 8.dp, bottom = 24.dp),
                     color = Color.Blue,
                 )
-                Button (
+                Button(
                     onClick = {
                         Log.d("Sign in dugme", "kliknuto dugme")
-                        params.onLogin },
+                        params.onLogin
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
@@ -211,24 +195,9 @@ fun LoginScreen(
                         contentColor = Color.Black
                     ),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp) // Remove shadow
-                ){
-                    Text("Sign In", color = Color.White)
+                ) {
+                    Text(stringResource(R.string.login_sign_in), color = Color.White)
                 }
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(50.dp)
-//                        .background(
-//                            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-//                                listOf(Color(0xFF7F56D9), Color(0xFF9E77ED))
-//                            ),
-//                            shape = RoundedCornerShape(8.dp)
-//                        )
-//                        .clickable{params.onLogin},
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Text("Sign In", color = Color.White)
-//                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -250,10 +219,8 @@ fun LoginScreen(
                         color = Color.Black
                     )
                 }
-
                 Spacer(modifier = Modifier.height(24.dp))
-
-                Button (
+                Button(
                     onClick = { params.onSignInWithGoogle },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,7 +244,7 @@ fun LoginScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Google",
+                            text = stringResource(R.string.login_screen_google_label),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -301,18 +268,21 @@ fun LoginScreen(
                 text = stringResource(R.string.login_sign_up),
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 color = Color.Blue,
+                modifier = Modifier.clickable {
+                    params.navigateToRegistration()
+                }
             )
         }
     }
 }
 
 data class LoginScreenParams(
-    val emailState: StateFlow<String>,
-    val passwordState: StateFlow<String>,
+    val emailState: State<String>,
+    val passwordState: State<String>,
     val onEmailChange: (String) -> Unit,
     val onPasswordChange: (String) -> Unit,
     val onLogin: () -> Unit,
     val onSignInWithGoogle: () -> Unit,
     val onForgotPasswordClicked: () -> Unit,
-    val onCheckIfUserIsLoggedIn: () -> Unit
+    val navigateToRegistration: () -> Unit
 )
