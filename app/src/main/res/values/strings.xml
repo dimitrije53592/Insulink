@@ -34,4 +34,14 @@
     <string name="registration_screen_or_continue_with_label">Or continue with</string>
     <string name="registration_screen_google_label">Google</string>
 
+    <!-- Side drawer -->
+    <string name="side_drawer_sign_out_button_label">Sign Out</string>
+    <string name="side_drawer_reminders_title">Reminders</string>
+    <string name="side_drawer_reminders_subtitle">Manage your tasks</string>
+    <string name="side_drawer_friends_title">Friends</string>
+    <string name="side_drawer_friends_subtitle">Connect with others</string>
+    <string name="side_drawer_reports_title">Reports</string>
+    <string name="side_drawer_reports_subtitle">View analytics</string>
+
+
 </resources>

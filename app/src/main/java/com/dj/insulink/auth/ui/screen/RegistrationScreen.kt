@@ -233,7 +233,7 @@ fun RegistrationScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(color = Color.Blue),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.clickable {
-                    params.navigateToLogIn()
+                    params.navigateToLogin()
                 }
             )
         }
@@ -311,5 +311,5 @@ data class RegistrationScreenParams(
     val setTermsOfServiceAccepted: (Boolean) -> Unit,
     val isLoading: State<Boolean>,
     val onSubmit: () -> Unit,
-    val navigateToLogIn: () -> Unit
+    val navigateToLogin: () -> Unit
 )

@@ -72,11 +72,11 @@ class AuthRepository @Inject constructor(
         )
     }
 
-    suspend fun signOut() {
+    fun signOut() {
         firebaseAuth.signOut()
     }
 
-    suspend fun isUserLoggedIn(): Boolean {
+    fun isUserLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
 
