@@ -185,6 +185,7 @@ fun LoginScreen(
                     onClick = {
                         Log.d("Sign in dugme", "kliknuto dugme")
                         params.onLogin()
+                        params.navigateToHome()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -284,5 +285,6 @@ data class LoginScreenParams(
     val onLogin: () -> Unit,
     val onSignInWithGoogle: () -> Unit,
     val onForgotPasswordClicked: () -> Unit,
-    val navigateToRegistration: () -> Unit
+    val navigateToRegistration: () -> Unit,
+    val navigateToHome: () -> Unit
 )

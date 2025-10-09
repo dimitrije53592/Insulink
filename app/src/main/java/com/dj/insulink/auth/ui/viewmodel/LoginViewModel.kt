@@ -98,10 +98,8 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun checkIfUserIsLoggedIn() {
-        if (auth.currentUser != null) {
-            Log.d(TAG, "checkIfUserIsLoggedIn: User is Logged In")
-        }
+    fun isUserLoggedIn(): Boolean {
+        return auth.currentUser != null
     }
 
     fun signInWithGoogle() {
