@@ -1,4 +1,4 @@
-package com.dj.insulink.login.ui.viewmodel
+package com.dj.insulink.auth.ui.viewmodel
 
 import android.content.Context
 import android.util.Log
@@ -37,13 +37,14 @@ class LoginViewModel @Inject constructor(
     fun onPasswordChange(newPassword: String) {
         _password.value = newPassword
     }
+
     private val _passwordResetState = MutableStateFlow(PasswordResetState())
     val passwordResetState: StateFlow<PasswordResetState> = _passwordResetState.asStateFlow()
 
     fun login() {
-        Log.d(TAG,"Attempting login with: $email and $password")
-        if(_email.value.isBlank() || _password.value.isBlank()) {
-            Log.d(TAG,"Email or password is empty")
+        Log.d(TAG, "Attempting login with: $email and $password")
+        if (_email.value.isBlank() || _password.value.isBlank()) {
+            Log.d(TAG, "Email or password is empty")
             return
         }
         viewModelScope.launch {
@@ -56,6 +57,7 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
     fun sendPasswordReset() {
         Log.d(TAG, "sendPasswordReset: uslo u fju za kliknuto dugme")
         if (_email.value.isBlank()) {
@@ -64,13 +66,23 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        _passwordResetState.update { it.copy(isLoading = true, errorMessage = null, successMessage = null) }
+        _passwordResetState.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = null,
+                successMessage = null
+            )
+        }
 
         viewModelScope.launch {
             auth.sendPasswordResetEmail(_email.value)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(context, "Password reset link sent to $email.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "Password reset link sent to $email.",
+                            Toast.LENGTH_LONG
+                        ).show()
                         _passwordResetState.update {
                             it.copy(isLoading = false, successMessage = "Password reset link sent.")
                         }
@@ -85,14 +97,17 @@ class LoginViewModel @Inject constructor(
         }
 
     }
+
     fun checkIfUserIsLoggedIn() {
         if (auth.currentUser != null) {
             Log.d(TAG, "checkIfUserIsLoggedIn: User is Logged In")
         }
     }
+
     fun signInWithGoogle() {
-        Log.d(TAG,"Attempting login with: Google")
+        Log.d(TAG, "Attempting login with: Google")
     }
+
     private val TAG = LoginViewModel::class.java.simpleName
 }
 
