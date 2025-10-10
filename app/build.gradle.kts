@@ -81,4 +81,6 @@ dependencies {
     implementation(libs.hilt.work)
     ksp(libs.hilt.ext.compiler)
 
+    // Icons
+    implementation(libs.androidx.compose.material.icons.extended)
 }
