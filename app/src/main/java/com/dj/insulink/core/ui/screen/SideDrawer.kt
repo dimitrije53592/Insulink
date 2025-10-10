@@ -1,16 +1,20 @@
 package com.dj.insulink.core.ui.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -58,9 +62,10 @@ fun SideDrawer(
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
                     .clickable {
 
                     }
@@ -83,7 +88,7 @@ fun SideDrawer(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+                Spacer(Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = ""
@@ -92,9 +97,10 @@ fun SideDrawer(
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
                     .clickable {
 
                     }
@@ -117,7 +123,7 @@ fun SideDrawer(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+                Spacer(Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = ""
@@ -126,9 +132,10 @@ fun SideDrawer(
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
                     .clickable {
 
                     }
@@ -151,7 +158,7 @@ fun SideDrawer(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+                Spacer(Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = ""
@@ -161,14 +168,26 @@ fun SideDrawer(
             Button(
                 onClick = {
                     params.onSignOutClick()
-                }
+                },
+                shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEDEDED)
+                ),
+                border = BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color(0xFFB2B2B2)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Logout,
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    tint = Color(0xFFB2B2B2),
                     contentDescription = ""
                 )
                 Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
-                Text(text = stringResource(R.string.side_drawer_sign_out_button_label))
+                Text(
+                    text = stringResource(R.string.side_drawer_sign_out_button_label),
+                    color = Color(0xFF8A5CF5)
+                )
             }
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
         }
