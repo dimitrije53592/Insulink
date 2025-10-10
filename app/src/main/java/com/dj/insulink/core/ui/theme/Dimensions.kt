@@ -32,6 +32,7 @@ data class Dimensions(
     val commonProgressIndicatorSize25: Dp = 25.dp,
 
     // buttons - radius
+    val commonButtonRadius12: Dp = 12.dp,
     val commonButtonRadius8: Dp = 8.dp,
 
     // buttons - border

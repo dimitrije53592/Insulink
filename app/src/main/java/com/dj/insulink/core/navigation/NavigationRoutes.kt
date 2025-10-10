@@ -17,10 +17,25 @@ sealed class Screen(
     object Glucose : Screen("glucose", icon = Icons.Filled.WaterDrop, title = "Glucose")
     object Meals : Screen("meals", icon = Icons.Filled.Restaurant, title = "Meals")
     object Fitness : Screen("fitness", icon = Icons.Filled.DirectionsRun, title = "Fitness")
-}
 
-val bottomBarDestinations: List<Screen> = listOf(
-    Screen.Meals,
-    Screen.Glucose,
-    Screen.Fitness
-)
+    companion object {
+        val allDestinations: List<Screen> = listOf(
+            Registration,
+            Login,
+            ForgotPassword,
+            Glucose,
+            Meals,
+            Fitness
+        )
+
+        val bottomBarDestinations: List<Screen> = listOf(
+            Meals,
+            Glucose,
+            Fitness
+        )
+
+        fun findDestinationByRoute(route: String?): Screen? {
+            return allDestinations.find { it.route == route }
+        }
+    }
+}

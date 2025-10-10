@@ -2,8 +2,11 @@ package com.dj.insulink.core.navigation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -16,12 +19,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dj.insulink.R
 import com.dj.insulink.auth.ui.screen.ForgotPasswordScreen
 import com.dj.insulink.auth.ui.screen.ForgotPasswordScreenParams
 import com.dj.insulink.auth.ui.screen.LoginScreen
@@ -39,6 +46,7 @@ import com.dj.insulink.home.ui.screen.GlucoseScreen
 import com.dj.insulink.home.ui.screen.MealsScreen
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
@@ -47,6 +55,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestinationRoute = currentBackStackEntry?.destination?.route
+    val currentDestination = Screen.findDestinationByRoute(currentDestinationRoute)
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -57,7 +66,7 @@ fun AppNavigation() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentDestinationRoute in bottomBarDestinations.map { it.route },
+        gesturesEnabled = currentDestinationRoute in Screen.bottomBarDestinations.map { it.route },
         drawerContent = {
             val currentUser = sharedViewModel.currentUser.collectAsState()
 
@@ -76,10 +85,39 @@ fun AppNavigation() {
         }
     ) {
         Scaffold(
+            topBar = {
+                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            currentDestination?.title?.let {
+                                Text(
+                                    text = it,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_menu),
+                                    tint = Color(0xFFB2B2B2),
+                                    contentDescription = ""
+                                )
+                            }
+                        }
+                    )
+                }
+            },
             bottomBar = {
-                if (currentDestinationRoute in bottomBarDestinations.map { it.route }) {
+                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
                     NavigationBar {
-                        bottomBarDestinations.forEach { destination ->
+                        Screen.bottomBarDestinations.forEach { destination ->
                             destination.icon?.let {
                                 NavigationBarItem(
                                     selected = currentDestinationRoute == destination.route,
