@@ -56,7 +56,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.33f)
-                    .background(Color.Blue)
+                    .background(Color(0xFF4A7BF6))
                     .padding(24.dp),
             ) {
                 Column(

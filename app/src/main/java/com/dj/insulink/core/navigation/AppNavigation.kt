@@ -41,9 +41,11 @@ import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.home.ui.screen.FitnessScreen
-import com.dj.insulink.home.ui.screen.GlucoseScreen
-import com.dj.insulink.home.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.GlucoseScreen
+import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
+import com.dj.insulink.feature.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -228,7 +230,18 @@ fun AppNavigation() {
                 }
 
                 composable(Screen.Glucose.route) {
-                    GlucoseScreen()
+                    val viewModel: GlucoseViewModel = hiltViewModel()
+
+                    val latestReading = viewModel.latestReading.collectAsState()
+                    val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsState()
+
+                    GlucoseScreen(
+                        params = GlucoseScreenParams(
+                           latestReading = latestReading,
+                            showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
+                            setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog
+                        )
+                    )
                 }
 
                 composable(Screen.Meals.route) {

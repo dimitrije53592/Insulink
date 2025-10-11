@@ -1,4 +1,4 @@
-package com.dj.insulink.home.ui.screen
+package com.dj.insulink.feature.ui.screen
 
 import androidx.compose.runtime.Composable
 

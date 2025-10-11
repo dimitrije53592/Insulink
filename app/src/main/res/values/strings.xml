@@ -43,5 +43,7 @@
     <string name="side_drawer_reports_title">Reports</string>
     <string name="side_drawer_reports_subtitle">View analytics</string>
 
+    <!-- Glucose screen -->
+    <string name="glucose_screen_latest_reading_label">Latest reading</string>
 
 </resources>
