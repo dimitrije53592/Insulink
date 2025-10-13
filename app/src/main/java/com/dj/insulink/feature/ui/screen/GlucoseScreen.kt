@@ -117,12 +117,14 @@ fun GlucoseScreen(
             )
         }
     }
-    if(params.showAddGlucoseReadingDialog.value) {
-        AddGlucoseReadingDialog (
+    if (params.showAddGlucoseReadingDialog.value) {
+        AddGlucoseReadingDialog(
             newGlucoseReadingTimestamp = params.newGlucoseReadingTimestamp,
             setNewGlucoseReadingTimestamp = params.setNewGlucoseReadingTimestamp,
             newGlucoseReadingValue = params.newGlucoseReadingValue,
             setNewGlucoseReadingValue = params.setNewGlucoseReadingValue,
+            newGlucoseReadingComment = params.newGlucoseReadingComment,
+            setNewGlucoseReadingComment = params.setNewGlucoseReadingComment,
             onDismissRequest = {
                 params.setShowAddGlucoseReadingDialog(false)
             },
@@ -138,6 +140,8 @@ data class GlucoseScreenParams(
     val setNewGlucoseReadingTimestamp: (Long) -> Unit,
     val newGlucoseReadingValue: State<String>,
     val setNewGlucoseReadingValue: (String) -> Unit,
+    val newGlucoseReadingComment: State<String>,
+    val setNewGlucoseReadingComment: (String) -> Unit,
     val showAddGlucoseReadingDialog: State<Boolean>,
     val setShowAddGlucoseReadingDialog: (Boolean) -> Unit,
     val submitNewGlucoseReading: () -> Unit

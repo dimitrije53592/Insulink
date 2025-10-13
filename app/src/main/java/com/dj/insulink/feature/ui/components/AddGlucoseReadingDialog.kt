@@ -54,6 +54,8 @@ fun AddGlucoseReadingDialog(
     setNewGlucoseReadingTimestamp: (Long) -> Unit,
     newGlucoseReadingValue: State<String>,
     setNewGlucoseReadingValue: (String) -> Unit,
+    newGlucoseReadingComment: State<String>,
+    setNewGlucoseReadingComment: (String) -> Unit,
     onDismissRequest: () -> Unit,
     onSaveClicked: () -> Unit
 ) {
@@ -232,6 +234,46 @@ fun AddGlucoseReadingDialog(
                     label = { Text(stringResource(R.string.new_reading_text_field_label)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        disabledTextColor = Color.Black,
+                        errorTextColor = Color.Black,
+
+                        focusedLabelColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        disabledLabelColor = Color.Black,
+                        errorLabelColor = Color.Red,
+
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        disabledBorderColor = Color.Black,
+                        errorBorderColor = Color.Red,
+
+                        cursorColor = Color.Black,
+                        errorCursorColor = Color.Red,
+
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+
+                        focusedPlaceholderColor = Color.Black,
+                        unfocusedPlaceholderColor = Color.Black,
+                        disabledPlaceholderColor = Color.Black,
+                        errorPlaceholderColor = Color.Black
+                    )
+                )
+                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                OutlinedTextField(
+                    value = newGlucoseReadingComment.value,
+                    onValueChange = { newValue ->
+                        setNewGlucoseReadingComment(newValue)
+                    },
+                    label = { Text(stringResource(R.string.new_reading_comment_label)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.Black,

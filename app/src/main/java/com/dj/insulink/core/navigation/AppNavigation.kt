@@ -233,6 +233,7 @@ fun AppNavigation() {
 
                     val newGlucoseReadingTimestamp = viewModel.newGlucoseReadingTimestamp.collectAsState()
                     val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
+                    val newGlucoseReadingComment = viewModel.newGlucoseReadingComment.collectAsState()
                     val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsState()
 
                     GlucoseScreen(
@@ -241,6 +242,8 @@ fun AppNavigation() {
                             setNewGlucoseReadingTimestamp = viewModel::setNewGlucoseReadingTimestamp,
                             newGlucoseReadingValue = newGlucoseReadingValue,
                             setNewGlucoseReadingValue = viewModel::setNewGlucoseReadingValue,
+                            newGlucoseReadingComment = newGlucoseReadingComment,
+                            setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
                             showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
                             setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
                             submitNewGlucoseReading = viewModel::submitNewGlucoseReading
