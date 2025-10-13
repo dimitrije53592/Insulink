@@ -27,9 +27,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.window.Dialog
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
 import com.dj.insulink.feature.ui.components.GlucoseDropdownMenu
 
 @Composable
@@ -66,7 +66,7 @@ fun GlucoseScreen(
                     )
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
                     Text(
-                        text = "${params.latestReading.value} mg/dL",
+                        text = "0 mg/dL",
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
@@ -118,18 +118,27 @@ fun GlucoseScreen(
         }
     }
     if(params.showAddGlucoseReadingDialog.value) {
-        Dialog(
+        AddGlucoseReadingDialog (
+            newGlucoseReadingTimestamp = params.newGlucoseReadingTimestamp,
+            setNewGlucoseReadingTimestamp = params.setNewGlucoseReadingTimestamp,
+            newGlucoseReadingValue = params.newGlucoseReadingValue,
+            setNewGlucoseReadingValue = params.setNewGlucoseReadingValue,
             onDismissRequest = {
-               params.setShowAddGlucoseReadingDialog(false)
+                params.setShowAddGlucoseReadingDialog(false)
+            },
+            onSaveClicked = {
+                params.submitNewGlucoseReading()
             }
-        ) {
-            Text("ADD")
-        }
+        )
     }
 }
 
 data class GlucoseScreenParams(
-    val latestReading: State<Int>,
+    val newGlucoseReadingTimestamp: State<Long>,
+    val setNewGlucoseReadingTimestamp: (Long) -> Unit,
+    val newGlucoseReadingValue: State<String>,
+    val setNewGlucoseReadingValue: (String) -> Unit,
     val showAddGlucoseReadingDialog: State<Boolean>,
-    val setShowAddGlucoseReadingDialog: (Boolean) -> Unit
+    val setShowAddGlucoseReadingDialog: (Boolean) -> Unit,
+    val submitNewGlucoseReading: () -> Unit
 )

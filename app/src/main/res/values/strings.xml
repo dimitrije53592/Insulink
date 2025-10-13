@@ -46,4 +46,14 @@
     <!-- Glucose screen -->
     <string name="glucose_screen_latest_reading_label">Latest reading</string>
 
+    <!-- New reading modal -->
+    <string name="new_reading_dialog_title">New glucose reading</string>
+    <string name="new_reading_text_field_label">Glucose (mg/dL)</string>
+    <string name="new_reading_valid_number_error">Enter a valid number</string>
+    <string name="new_reading_cancel">Cancel</string>
+    <string name="new_reading_save">Save</string>
+    <string name="new_reading_ok">OK</string>
+    <string name="new_reading_select_time_label">Select time</string>
+
+
 </resources>

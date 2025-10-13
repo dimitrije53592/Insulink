@@ -36,6 +36,7 @@ data class Dimensions(
     // buttons - radius
     val commonButtonRadius12: Dp = 12.dp,
     val commonButtonRadius8: Dp = 8.dp,
+    val commonButtonRadius4: Dp = 4.dp,
 
     // buttons - border
     val commonButtonBorder1: Dp = 1.dp,

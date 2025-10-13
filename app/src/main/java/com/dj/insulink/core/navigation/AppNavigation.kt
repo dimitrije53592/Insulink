@@ -228,26 +228,28 @@ fun AppNavigation() {
                         )
                     )
                 }
-
                 composable(Screen.Glucose.route) {
                     val viewModel: GlucoseViewModel = hiltViewModel()
 
-                    val latestReading = viewModel.latestReading.collectAsState()
+                    val newGlucoseReadingTimestamp = viewModel.newGlucoseReadingTimestamp.collectAsState()
+                    val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
                     val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsState()
 
                     GlucoseScreen(
                         params = GlucoseScreenParams(
-                           latestReading = latestReading,
+                            newGlucoseReadingTimestamp = newGlucoseReadingTimestamp,
+                            setNewGlucoseReadingTimestamp = viewModel::setNewGlucoseReadingTimestamp,
+                            newGlucoseReadingValue = newGlucoseReadingValue,
+                            setNewGlucoseReadingValue = viewModel::setNewGlucoseReadingValue,
                             showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
-                            setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog
+                            setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
+                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading
                         )
                     )
                 }
-
                 composable(Screen.Meals.route) {
                     MealsScreen()
                 }
-
                 composable(Screen.Fitness.route) {
                     FitnessScreen()
                 }
