@@ -231,6 +231,8 @@ fun AppNavigation() {
                 composable(Screen.Glucose.route) {
                     val viewModel: GlucoseViewModel = hiltViewModel()
 
+                    val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
+                    val latestGlucoseReading = viewModel.latestGlucoseReading.collectAsState()
                     val newGlucoseReadingTimestamp = viewModel.newGlucoseReadingTimestamp.collectAsState()
                     val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
                     val newGlucoseReadingComment = viewModel.newGlucoseReadingComment.collectAsState()
@@ -238,6 +240,8 @@ fun AppNavigation() {
 
                     GlucoseScreen(
                         params = GlucoseScreenParams(
+                            allGlucoseReadings = allGlucoseReadings,
+                            latestGlucoseReading = latestGlucoseReading,
                             newGlucoseReadingTimestamp = newGlucoseReadingTimestamp,
                             setNewGlucoseReadingTimestamp = viewModel::setNewGlucoseReadingTimestamp,
                             newGlucoseReadingValue = newGlucoseReadingValue,

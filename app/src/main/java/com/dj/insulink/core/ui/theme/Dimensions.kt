@@ -13,6 +13,7 @@ data class Dimensions(
     val commonPadding16: Dp = 16.dp,
     val commonPadding12: Dp = 12.dp,
     val commonPadding8: Dp = 8.dp,
+    val commonPadding4: Dp = 4.dp,
 
     // spacing
     val commonSpacing80: Dp = 80.dp,

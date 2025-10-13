@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GlucoseReadingDao {
 
-    @Query("SELECT * FROM glucose_readings")
+    @Query("SELECT * FROM glucose_readings ORDER BY timestamp DESC")
     fun getAllGlucoseReadings(): Flow<List<GlucoseReadingEntity>>
 
     @Insert

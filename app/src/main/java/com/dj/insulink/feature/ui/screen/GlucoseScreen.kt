@@ -3,16 +3,16 @@ package com.dj.insulink.feature.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -29,8 +29,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
 import com.dj.insulink.feature.ui.components.GlucoseDropdownMenu
+import com.dj.insulink.feature.ui.components.GlucoseLevelIndicator
+import com.dj.insulink.feature.ui.components.GlucoseReadingItem
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun GlucoseScreen(
@@ -66,30 +72,27 @@ fun GlucoseScreen(
                     )
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
                     Text(
-                        text = "0 mg/dL",
+                        text = if (params.latestGlucoseReading.value != null) {
+                            "${params.latestGlucoseReading.value!!.value} mg/dL"
+                        } else {
+                            "- mg/dL"
+                        },
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
                     Text(
-                        text = "TIME PLACEHOLDER",
+                        text = if (params.latestGlucoseReading.value != null) {
+                            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                                .format(Date(params.latestGlucoseReading.value!!.timestamp))
+                        } else {
+                            ""
+                        },
                         color = Color.White
                     )
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
-                    Row {
-                        Icon(
-                            imageVector = Icons.Filled.Circle,
-                            tint = Color.Yellow,
-                            contentDescription = ""
-                        )
-                        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
-                        Text(
-                            text = "LEVEL PLACEHOLDER",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    GlucoseLevelIndicator(glucoseLevel = params.latestGlucoseReading.value?.value)
                 }
             }
             GlucoseDropdownMenu(
@@ -100,6 +103,12 @@ fun GlucoseScreen(
                 },
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
             )
+            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+            LazyColumn {
+                items(params.allGlucoseReadings.value) {
+                    GlucoseReadingItem(it)
+                }
+            }
         }
         FloatingActionButton(
             onClick = {
@@ -136,6 +145,8 @@ fun GlucoseScreen(
 }
 
 data class GlucoseScreenParams(
+    val allGlucoseReadings: State<List<GlucoseReading>>,
+    val latestGlucoseReading: State<GlucoseReading?>,
     val newGlucoseReadingTimestamp: State<Long>,
     val setNewGlucoseReadingTimestamp: (Long) -> Unit,
     val newGlucoseReadingValue: State<String>,
