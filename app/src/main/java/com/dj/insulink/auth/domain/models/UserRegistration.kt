@@ -6,3 +6,7 @@ data class UserRegistration(
     val email: String,
     val password: String
 )
+data class UserLogin(
+    val email: String,
+    val password: String
+)

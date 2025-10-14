@@ -1,6 +1,9 @@
 package com.dj.insulink.core.navigation
 
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
@@ -17,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +37,9 @@ import com.dj.insulink.auth.ui.screen.ForgotPasswordScreen
 import com.dj.insulink.auth.ui.screen.ForgotPasswordScreenParams
 import com.dj.insulink.auth.ui.screen.LoginScreen
 import com.dj.insulink.auth.ui.screen.LoginScreenParams
-import com.dj.insulink.auth.ui.viewmodel.LoginViewModel
 import com.dj.insulink.auth.ui.screen.RegistrationScreen
 import com.dj.insulink.auth.ui.screen.RegistrationScreenParams
+import com.dj.insulink.auth.ui.viewmodel.LoginViewModel
 import com.dj.insulink.auth.ui.viewmodel.RegistrationViewModel
 import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
@@ -44,6 +48,10 @@ import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.home.ui.screen.FitnessScreen
 import com.dj.insulink.home.ui.screen.GlucoseScreen
 import com.dj.insulink.home.ui.screen.MealsScreen
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +82,7 @@ fun AppNavigation() {
                 params = SideDrawerParams(
                     currentUser = currentUser,
                     onSignOutClick = {
-                        sharedViewModel.signOut(drawerState)
+                        sharedViewModel.signOut(drawerState, context)
                         navController.navigateTo(Screen.Login.route)
                         coroutineScope.launch {
                             drawerState.close()
@@ -196,15 +204,52 @@ fun AppNavigation() {
 
                     val email = viewModel.email.collectAsState()
                     val password = viewModel.password.collectAsState()
+                    val errorMessage = viewModel.errorMessage.collectAsState()
+                    val showErrorMessage = viewModel.showErrorMessage.collectAsState()
+                    val loginSuccess = viewModel.loginSuccess.collectAsState()
+                    val gso = remember {
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(context.getString(R.string.default_web_client_id)) // Get token from strings.xml
+                            .requestEmail()
+                            .build()
+                    }
+                    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
 
+                    val googleSignInLauncher =
+                        rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartActivityForResult()
+                    ) { result ->
+                        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                        try {
+                            val account = task.getResult(ApiException::class.java)!!
+                            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+                            viewModel.signInWithGoogle(credential)
+                        } catch (e: ApiException) {
+                            Log.w("AppNavigation", "Google sign in failed", e)
+                            Toast.makeText(context, "Google Sign-In failed.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    LaunchedEffect(showErrorMessage.value) {
+                        if (showErrorMessage.value) {
+                            Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
+                            viewModel.setShowErrorMessage(false)
+                        }
+                    }
+                    LaunchedEffect(loginSuccess.value) {
+                        if (loginSuccess.value) {
+                            navController.navigateTo(Screen.Glucose.route)
+                        }
+                    }
                     LoginScreen(
                         params = LoginScreenParams(
                             emailState = email,
                             passwordState = password,
-                            onEmailChange = viewModel::onEmailChange,
-                            onPasswordChange = viewModel::onPasswordChange,
-                            onLogin = viewModel::login,
-                            onSignInWithGoogle = viewModel::signInWithGoogle,
+                            setEmail = viewModel::setEmail,
+                            setPassword = viewModel::setPassword,
+                            onLogin = viewModel::loginUser,
+                            onSignInWithGoogle = {
+                                Log.d("TAG", "AppNavigation: google sign in ")
+                                googleSignInLauncher.launch(googleSignInClient.signInIntent) },
                             onForgotPasswordClicked = { navController.navigateTo(Screen.ForgotPassword.route) },
                             navigateToRegistration = {
                                 navController.navigateTo(Screen.Registration.route)
@@ -217,14 +262,31 @@ fun AppNavigation() {
                 }
                 composable(Screen.ForgotPassword.route) {
                     val viewModel: LoginViewModel = hiltViewModel()
+                    val email = viewModel.email
+                    val onEmailChange = viewModel::setEmail
+                    val onSendPasswordReset = viewModel::sendPasswordReset
+                    val resetState = viewModel.passwordResetState.collectAsState()
+                    LaunchedEffect(resetState.value.successMessage) {
+                        if (resetState.value.successMessage != null) {
+                            Toast.makeText(context, resetState.value.successMessage, Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    LaunchedEffect(resetState.value.errorMessage) {
+                        resetState.value.errorMessage?.let { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        }
+                    }
+
                     ForgotPasswordScreen(
                         params = ForgotPasswordScreenParams(
-                            emailState = viewModel.email,
-                            onEmailChange = viewModel::onEmailChange,
-                            onSendPasswordReset = viewModel::sendPasswordReset,
-                            resetState = viewModel.passwordResetState
+                            emailState = email,
+                            onEmailChange = onEmailChange,
+                            onSendPasswordReset = onSendPasswordReset,
+                            resetState = viewModel.passwordResetState,
                         )
                     )
+
                 }
 
                 composable(Screen.Glucose.route) {
