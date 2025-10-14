@@ -8,9 +8,12 @@ import androidx.compose.ui.unit.dp
 data class Dimensions(
     // padding
     val commonPadding48: Dp = 48.dp,
+    val commonPadding40: Dp = 40.dp,
     val commonPadding24: Dp = 24.dp,
+    val commonPadding16: Dp = 16.dp,
     val commonPadding12: Dp = 12.dp,
     val commonPadding8: Dp = 8.dp,
+    val commonPadding4: Dp = 4.dp,
 
     // spacing
     val commonSpacing80: Dp = 80.dp,
@@ -34,6 +37,7 @@ data class Dimensions(
     // buttons - radius
     val commonButtonRadius12: Dp = 12.dp,
     val commonButtonRadius8: Dp = 8.dp,
+    val commonButtonRadius4: Dp = 4.dp,
 
     // buttons - border
     val commonButtonBorder1: Dp = 1.dp,
