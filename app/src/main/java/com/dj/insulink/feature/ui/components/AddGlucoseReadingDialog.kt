@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -78,7 +79,14 @@ fun AddGlucoseReadingDialog(
 
     if (showDatePicker) {
         val datePickerState =
-            rememberDatePickerState(initialSelectedDateMillis = newGlucoseReadingTimestamp.value)
+            rememberDatePickerState(
+                initialSelectedDateMillis = newGlucoseReadingTimestamp.value,
+                selectableDates = object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        return utcTimeMillis <= System.currentTimeMillis()
+                    }
+                }
+            )
 
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -105,7 +113,7 @@ fun AddGlucoseReadingDialog(
                 }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(state = datePickerState, )
         }
     }
 

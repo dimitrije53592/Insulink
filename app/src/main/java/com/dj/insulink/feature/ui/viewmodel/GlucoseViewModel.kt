@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -32,13 +33,20 @@ class GlucoseViewModel @Inject constructor(
     private val _showAddGlucoseReadingDialog = MutableStateFlow(false)
     val showAddGlucoseReadingDialog = _showAddGlucoseReadingDialog.asStateFlow()
 
-    val allGlucoseReadings: StateFlow<List<GlucoseReading>> = glucoseReadingRepository
-        .getAllGlucoseReadings()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _selectedTimespan = MutableStateFlow(GlucoseReadingTimespan.ALL_READINGS)
+    val selectedTimespan = _selectedTimespan.asStateFlow()
+
+
+    val allGlucoseReadings: StateFlow<List<GlucoseReading>> = combine(
+        glucoseReadingRepository.getAllGlucoseReadings(),
+        _selectedTimespan
+    ) { readings, timespan ->
+        filterGlucoseReadingsByTimespan(readings, timespan)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     val latestGlucoseReading: StateFlow<GlucoseReading?> = allGlucoseReadings
         .map { it.firstOrNull() }
@@ -71,11 +79,29 @@ class GlucoseViewModel @Inject constructor(
     }
 
     fun setNewGlucoseReadingComment(comment: String) {
-        _newGlucoseReadingComment.value = comment
+        if(comment.length <= COMMENT_MAXIMUM_LENGTH) {
+            _newGlucoseReadingComment.value = comment
+        }
     }
 
     fun setShowAddGlucoseReadingDialog(isVisible: Boolean) {
         _showAddGlucoseReadingDialog.value = isVisible
+    }
+
+    fun setSelectedTimespan(newTimespan: GlucoseReadingTimespan) {
+        _selectedTimespan.value = newTimespan
+    }
+
+    private fun filterGlucoseReadingsByTimespan(
+        allGlucoseReadings: List<GlucoseReading>,
+        timespan: GlucoseReadingTimespan
+    ): List<GlucoseReading> {
+        if (timespan == GlucoseReadingTimespan.ALL_READINGS) {
+            return allGlucoseReadings
+        }
+
+        val cutoffTime = System.currentTimeMillis() - timespan.milliseconds
+        return allGlucoseReadings.filter { it.timestamp >= cutoffTime }
     }
 
     private fun resetNewReadingDialogFields() {
@@ -84,3 +110,19 @@ class GlucoseViewModel @Inject constructor(
         _newGlucoseReadingComment.value = ""
     }
 }
+
+enum class GlucoseReadingTimespan(val displayName: String, val milliseconds: Long) {
+    ALL_READINGS("All readings", Long.MAX_VALUE),
+    LAST_DAY("Last 24 hours", 24 * 60 * 60 * 1000L),
+    LAST_3_DAYS("Last 3 days", 72 * 60 * 60 * 1000L),
+    LAST_WEEK("Last week", 7 * 24 * 60 * 60 * 1000L),
+    LAST_MONTH("Last month", 30 * 24 * 60 * 60 * 1000L);
+
+    companion object {
+        fun fromDisplayName(displayName: String): GlucoseReadingTimespan? {
+            return entries.find { it.displayName == displayName }
+        }
+    }
+}
+
+private const val COMMENT_MAXIMUM_LENGTH = 20

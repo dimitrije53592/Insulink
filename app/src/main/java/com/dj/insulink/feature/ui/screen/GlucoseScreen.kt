@@ -34,6 +34,7 @@ import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
 import com.dj.insulink.feature.ui.components.GlucoseDropdownMenu
 import com.dj.insulink.feature.ui.components.GlucoseLevelIndicator
 import com.dj.insulink.feature.ui.components.GlucoseReadingItem
+import com.dj.insulink.feature.ui.viewmodel.GlucoseReadingTimespan
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -96,10 +97,12 @@ fun GlucoseScreen(
                 }
             }
             GlucoseDropdownMenu(
-                items = listOf("24h", "48h", "72h"),
-                selectedItem = "24h",
+                items = GlucoseReadingTimespan.entries.map { it.displayName },
+                selectedItem = params.selectedTimespan.value.displayName,
                 onItemSelected = {
-
+                    val newTimespan = GlucoseReadingTimespan.fromDisplayName(it)
+                        ?: GlucoseReadingTimespan.ALL_READINGS
+                    params.setSelectedTimespan(newTimespan)
                 },
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
             )
@@ -147,6 +150,8 @@ fun GlucoseScreen(
 data class GlucoseScreenParams(
     val allGlucoseReadings: State<List<GlucoseReading>>,
     val latestGlucoseReading: State<GlucoseReading?>,
+    val selectedTimespan: State<GlucoseReadingTimespan>,
+    val setSelectedTimespan: (GlucoseReadingTimespan) -> Unit,
     val newGlucoseReadingTimestamp: State<Long>,
     val setNewGlucoseReadingTimestamp: (Long) -> Unit,
     val newGlucoseReadingValue: State<String>,
