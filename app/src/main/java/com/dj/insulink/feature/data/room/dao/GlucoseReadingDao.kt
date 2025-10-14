@@ -1,6 +1,7 @@
 package com.dj.insulink.feature.data.room.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.dj.insulink.feature.data.room.entity.GlucoseReadingEntity
@@ -14,4 +15,7 @@ interface GlucoseReadingDao {
 
     @Insert
     suspend fun insert(glucoseReadingEntity: GlucoseReadingEntity)
+
+    @Delete
+    suspend fun delete(glucoseReadingEntity: GlucoseReadingEntity)
 }

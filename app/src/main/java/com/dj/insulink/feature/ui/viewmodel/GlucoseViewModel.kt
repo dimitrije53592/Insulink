@@ -70,6 +70,12 @@ class GlucoseViewModel @Inject constructor(
         }
     }
 
+    fun deleteGlucoseReading(glucoseReading: GlucoseReading) {
+        viewModelScope.launch(Dispatchers.IO) {
+            glucoseReadingRepository.delete(glucoseReading)
+        }
+    }
+
     fun setNewGlucoseReadingTimestamp(newTimestamp: Long) {
         _newGlucoseReadingTimestamp.value = newTimestamp
     }
@@ -79,7 +85,7 @@ class GlucoseViewModel @Inject constructor(
     }
 
     fun setNewGlucoseReadingComment(comment: String) {
-        if(comment.length <= COMMENT_MAXIMUM_LENGTH) {
+        if (comment.length <= COMMENT_MAXIMUM_LENGTH) {
             _newGlucoseReadingComment.value = comment
         }
     }

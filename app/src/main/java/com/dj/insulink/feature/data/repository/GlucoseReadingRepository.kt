@@ -22,4 +22,8 @@ class GlucoseReadingRepository @Inject constructor(
         glucoseReadingDao.insert(glucoseReading.toEntity())
     }
 
+    suspend fun delete(glucoseReading: GlucoseReading) {
+        glucoseReadingDao.delete(glucoseReading.toEntity())
+    }
+
 }

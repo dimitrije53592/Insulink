@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,9 +75,12 @@ fun GlucoseScreen(
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
                     Text(
                         text = if (params.latestGlucoseReading.value != null) {
-                            "${params.latestGlucoseReading.value!!.value} mg/dL"
+                            stringResource(
+                                R.string.glucose_screen_value_display_label,
+                                params.latestGlucoseReading.value!!.value
+                            )
                         } else {
-                            "- mg/dL"
+                            stringResource(R.string.glucose_screen_empty_display_label)
                         },
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
@@ -108,13 +112,20 @@ fun GlucoseScreen(
             )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
             LazyColumn {
-                items(params.allGlucoseReadings.value) {
-                    GlucoseReadingItem(it)
+                items(items = params.allGlucoseReadings.value, key = { it.id }) {
+                    GlucoseReadingItem(
+                        glucoseReading = it,
+                        onSwipeFromStartToEnd = {
+                            params.deleteGlucoseReading(it)
+                        }
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonPadding8))
                 }
             }
         }
         FloatingActionButton(
             onClick = {
+                params.setNewGlucoseReadingTimestamp(System.currentTimeMillis())
                 params.setShowAddGlucoseReadingDialog(true)
             },
             modifier = Modifier
@@ -160,5 +171,6 @@ data class GlucoseScreenParams(
     val setNewGlucoseReadingComment: (String) -> Unit,
     val showAddGlucoseReadingDialog: State<Boolean>,
     val setShowAddGlucoseReadingDialog: (Boolean) -> Unit,
-    val submitNewGlucoseReading: () -> Unit
+    val submitNewGlucoseReading: () -> Unit,
+    val deleteGlucoseReading: (GlucoseReading) -> Unit
 )

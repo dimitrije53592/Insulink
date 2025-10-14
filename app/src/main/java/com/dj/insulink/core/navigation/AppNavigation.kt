@@ -253,7 +253,8 @@ fun AppNavigation() {
                             setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
                             showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
                             setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
-                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading
+                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading,
+                            deleteGlucoseReading = viewModel::deleteGlucoseReading
                         )
                     )
                 }
