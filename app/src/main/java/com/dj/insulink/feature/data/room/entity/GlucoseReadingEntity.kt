@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class GlucoseReadingEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
+    val userId: String,
     val timestamp: Long,
     val value: Int,
     val comment: String

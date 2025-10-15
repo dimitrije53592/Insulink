@@ -12,8 +12,8 @@ class GlucoseReadingRepository @Inject constructor(
     private val glucoseReadingDao: GlucoseReadingDao
 ) {
 
-    fun getAllGlucoseReadings(): Flow<List<GlucoseReading>> {
-       return glucoseReadingDao.getAllGlucoseReadings().map {
+    fun getAllGlucoseReadingsForUser(userId: String): Flow<List<GlucoseReading>> {
+       return glucoseReadingDao.getAllGlucoseReadingsForUser(userId).map {
             it.toDomain()
         }
     }
