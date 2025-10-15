@@ -45,13 +45,11 @@ import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.home.ui.screen.FitnessScreen
-import com.dj.insulink.home.ui.screen.GlucoseScreen
-import com.dj.insulink.home.ui.screen.MealsScreen
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
+import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.GlucoseScreen
+import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
+import com.dj.insulink.feature.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -288,19 +286,69 @@ fun AppNavigation() {
                     )
 
                 }
-
                 composable(Screen.Glucose.route) {
-                    GlucoseScreen()
-                }
+                    val viewModel: GlucoseViewModel = hiltViewModel()
 
+                    val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
+                    val latestGlucoseReading = viewModel.latestGlucoseReading.collectAsState()
+                    val newGlucoseReadingTimestamp = viewModel.newGlucoseReadingTimestamp.collectAsState()
+                    val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
+                    val newGlucoseReadingComment = viewModel.newGlucoseReadingComment.collectAsState()
+                    val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsState()
+                    val selectedTimespan = viewModel.selectedTimespan.collectAsState()
+
+                    GlucoseScreen(
+                        params = GlucoseScreenParams(
+                            allGlucoseReadings = allGlucoseReadings,
+                            latestGlucoseReading = latestGlucoseReading,
+                            selectedTimespan = selectedTimespan,
+                            setSelectedTimespan = viewModel::setSelectedTimespan,
+                            newGlucoseReadingTimestamp = newGlucoseReadingTimestamp,
+                            setNewGlucoseReadingTimestamp = viewModel::setNewGlucoseReadingTimestamp,
+                            newGlucoseReadingValue = newGlucoseReadingValue,
+                            setNewGlucoseReadingValue = viewModel::setNewGlucoseReadingValue,
+                            newGlucoseReadingComment = newGlucoseReadingComment,
+                            setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
+                            showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
+                            setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
+                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading,
+                            deleteGlucoseReading = viewModel::deleteGlucoseReading
+                        )
+                    )
+                }
                 composable(Screen.Meals.route) {
                     MealsScreen()
                 }
-
                 composable(Screen.Fitness.route) {
                     FitnessScreen()
                 }
             }
+        }
+        composable(Screen.Login.route) {
+            val viewModel: LoginViewModel = hiltViewModel()
+            LoginScreen(
+                params = LoginScreenParams(
+                    emailState = viewModel.email,
+                    passwordState = viewModel.password,
+                    onEmailChange = viewModel::onEmailChange,
+                    onPasswordChange = viewModel::onPasswordChange,
+                    onLogin = viewModel::login,
+                    onSignInWithGoogle = viewModel::signInWithGoogle,
+                    onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) },
+                    onCheckIfUserIsLoggedIn = viewModel::checkIfUserIsLoggedIn
+                )
+            )
+        }
+        composable(Screen.ForgotPassword.route) {
+            val viewModel: LoginViewModel = hiltViewModel()
+            ForgotPasswordScreen(
+                params = ForgotPasswordScreenParams(
+                    emailState = viewModel.email,
+                    onEmailChange = viewModel::onEmailChange,
+                    onSendPasswordReset = viewModel::login,
+                    resetState = viewModel.passwordResetState
+                )
+            )
         }
     }
 }

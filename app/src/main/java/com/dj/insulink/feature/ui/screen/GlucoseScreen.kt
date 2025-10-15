@@ -1,0 +1,176 @@
+package com.dj.insulink.feature.ui.screen
+
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import com.dj.insulink.R
+import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.feature.domain.models.GlucoseReading
+import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
+import com.dj.insulink.feature.ui.components.GlucoseDropdownMenu
+import com.dj.insulink.feature.ui.components.GlucoseLevelIndicator
+import com.dj.insulink.feature.ui.components.GlucoseReadingItem
+import com.dj.insulink.feature.ui.viewmodel.GlucoseReadingTimespan
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@Composable
+fun GlucoseScreen(
+    params: GlucoseScreenParams
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MaterialTheme.dimens.commonPadding12)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF4A7BF6),
+                                Color(0xFF8A5CF5)
+                            )
+                        ),
+                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = MaterialTheme.dimens.commonPadding16)
+                        .padding(start = MaterialTheme.dimens.commonPadding24)
+                ) {
+                    Text(
+                        text = stringResource(R.string.glucose_screen_latest_reading_label),
+                        color = Color.White
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Text(
+                        text = if (params.latestGlucoseReading.value != null) {
+                            stringResource(
+                                R.string.glucose_screen_value_display_label,
+                                params.latestGlucoseReading.value!!.value
+                            )
+                        } else {
+                            stringResource(R.string.glucose_screen_empty_display_label)
+                        },
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Text(
+                        text = if (params.latestGlucoseReading.value != null) {
+                            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                                .format(Date(params.latestGlucoseReading.value!!.timestamp))
+                        } else {
+                            ""
+                        },
+                        color = Color.White
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    GlucoseLevelIndicator(glucoseLevel = params.latestGlucoseReading.value?.value)
+                }
+            }
+            GlucoseDropdownMenu(
+                items = GlucoseReadingTimespan.entries.map { it.displayName },
+                selectedItem = params.selectedTimespan.value.displayName,
+                onItemSelected = {
+                    val newTimespan = GlucoseReadingTimespan.fromDisplayName(it)
+                        ?: GlucoseReadingTimespan.ALL_READINGS
+                    params.setSelectedTimespan(newTimespan)
+                },
+                modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
+            )
+            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+            LazyColumn {
+                items(items = params.allGlucoseReadings.value, key = { it.id }) {
+                    GlucoseReadingItem(
+                        glucoseReading = it,
+                        onSwipeFromStartToEnd = {
+                            params.deleteGlucoseReading(it)
+                        }
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonPadding8))
+                }
+            }
+        }
+        FloatingActionButton(
+            onClick = {
+                params.setNewGlucoseReadingTimestamp(System.currentTimeMillis())
+                params.setShowAddGlucoseReadingDialog(true)
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(MaterialTheme.dimens.commonPadding16),
+            containerColor = Color(0xFF4A7BF6)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                tint = Color.White,
+                contentDescription = ""
+            )
+        }
+    }
+    if (params.showAddGlucoseReadingDialog.value) {
+        AddGlucoseReadingDialog(
+            newGlucoseReadingTimestamp = params.newGlucoseReadingTimestamp,
+            setNewGlucoseReadingTimestamp = params.setNewGlucoseReadingTimestamp,
+            newGlucoseReadingValue = params.newGlucoseReadingValue,
+            setNewGlucoseReadingValue = params.setNewGlucoseReadingValue,
+            newGlucoseReadingComment = params.newGlucoseReadingComment,
+            setNewGlucoseReadingComment = params.setNewGlucoseReadingComment,
+            onDismissRequest = {
+                params.setShowAddGlucoseReadingDialog(false)
+            },
+            onSaveClicked = {
+                params.submitNewGlucoseReading()
+            }
+        )
+    }
+}
+
+data class GlucoseScreenParams(
+    val allGlucoseReadings: State<List<GlucoseReading>>,
+    val latestGlucoseReading: State<GlucoseReading?>,
+    val selectedTimespan: State<GlucoseReadingTimespan>,
+    val setSelectedTimespan: (GlucoseReadingTimespan) -> Unit,
+    val newGlucoseReadingTimestamp: State<Long>,
+    val setNewGlucoseReadingTimestamp: (Long) -> Unit,
+    val newGlucoseReadingValue: State<String>,
+    val setNewGlucoseReadingValue: (String) -> Unit,
+    val newGlucoseReadingComment: State<String>,
+    val setNewGlucoseReadingComment: (String) -> Unit,
+    val showAddGlucoseReadingDialog: State<Boolean>,
+    val setShowAddGlucoseReadingDialog: (Boolean) -> Unit,
+    val submitNewGlucoseReading: () -> Unit,
+    val deleteGlucoseReading: (GlucoseReading) -> Unit
+)
