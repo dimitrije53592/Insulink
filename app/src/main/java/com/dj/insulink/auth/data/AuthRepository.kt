@@ -7,6 +7,8 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -14,7 +16,6 @@ class AuthRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) {
-
     suspend fun registerUser(userRegistration: UserRegistration): User {
         val authResult = firebaseAuth.createUserWithEmailAndPassword(
             userRegistration.email,
@@ -53,6 +54,10 @@ class AuthRepository @Inject constructor(
             email = userRegistration.email,
             isEmailVerified = user.isEmailVerified
         )
+    }
+
+    fun getCurrentUserFlow(): Flow<String?> = flow {
+        emit(getCurrentUser()?.uid)
     }
 
     suspend fun getCurrentUser(): User? {

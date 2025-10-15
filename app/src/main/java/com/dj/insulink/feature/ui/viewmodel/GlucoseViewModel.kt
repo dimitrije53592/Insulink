@@ -2,15 +2,20 @@ package com.dj.insulink.feature.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -18,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GlucoseViewModel @Inject constructor(
-    private val glucoseReadingRepository: GlucoseReadingRepository
+    private val glucoseReadingRepository: GlucoseReadingRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _newGlucoseReadingTimestamp = MutableStateFlow(System.currentTimeMillis())
@@ -37,11 +43,19 @@ class GlucoseViewModel @Inject constructor(
     val selectedTimespan = _selectedTimespan.asStateFlow()
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val allGlucoseReadings: StateFlow<List<GlucoseReading>> = combine(
-        glucoseReadingRepository.getAllGlucoseReadings(),
+        authRepository.getCurrentUserFlow(),
         _selectedTimespan
-    ) { readings, timespan ->
-        filterGlucoseReadingsByTimespan(readings, timespan)
+    ) { userId, timespan ->
+        userId to timespan
+    }.flatMapLatest { (userId, timespan) ->
+        if (userId != null) {
+            glucoseReadingRepository.getAllGlucoseReadingsForUser(userId)
+                .map { readings -> filterGlucoseReadingsByTimespan(readings, timespan) }
+        } else {
+            flowOf(emptyList())
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -61,6 +75,7 @@ class GlucoseViewModel @Inject constructor(
             glucoseReadingRepository.insert(
                 GlucoseReading(
                     id = 0,
+                    userId = authRepository.getCurrentUser()?.uid!!,
                     timestamp = newGlucoseReadingTimestamp.value,
                     value = newGlucoseReadingValue.value.toInt(),
                     comment = newGlucoseReadingComment.value

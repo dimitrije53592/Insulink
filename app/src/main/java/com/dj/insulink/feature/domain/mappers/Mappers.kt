@@ -1,6 +1,5 @@
 package com.dj.insulink.feature.data.room.mapper
 
-import androidx.compose.runtime.clearCompositionErrors
 import com.dj.insulink.feature.data.room.entity.GlucoseReadingEntity
 import com.dj.insulink.feature.domain.models.GlucoseReading
 
@@ -8,6 +7,7 @@ import com.dj.insulink.feature.domain.models.GlucoseReading
 fun GlucoseReadingEntity.toDomain(): GlucoseReading {
     return GlucoseReading(
         id = id,
+        userId = userId,
         timestamp = timestamp,
         value = value,
         comment = comment
@@ -18,6 +18,7 @@ fun GlucoseReadingEntity.toDomain(): GlucoseReading {
 fun GlucoseReading.toEntity(): GlucoseReadingEntity {
     return GlucoseReadingEntity(
         id = id,
+        userId = userId,
         timestamp = timestamp,
         value = value,
         comment = comment
