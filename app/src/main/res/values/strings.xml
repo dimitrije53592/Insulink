@@ -64,5 +64,9 @@
     <string name="cancel">Cancel</string>
     <string name="time_picker_title">Select Time</string>
 
+    <!-- Friends screen -->
+    <string name="friends_screen_add_new_friend_button_label">Add new friend</string>
+    <string name="friends_screen_friends_list_label">Friends (%1$d)</string>
+
 
 </resources>

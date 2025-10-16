@@ -53,6 +53,7 @@ import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.feature.ui.screen.FitnessScreen
 import com.dj.insulink.feature.ui.screen.FriendsScreen
+import com.dj.insulink.feature.ui.screen.FriendsScreenParams
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
 import com.dj.insulink.feature.ui.screen.MealsScreen
@@ -353,7 +354,11 @@ fun AppNavigation() {
                     RemindersScreen()
                 }
                 composable(Screen.Friends.route) {
-                    FriendsScreen()
+                    FriendsScreen(
+                        params = FriendsScreenParams(
+                            friendsList = listOf("Dimitrije", "Jovan", "Luka", "Ilija")
+                        )
+                    )
                 }
                 composable(Screen.Reports.route) {
                     ReportsScreen()
