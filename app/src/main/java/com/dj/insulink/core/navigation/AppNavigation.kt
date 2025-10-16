@@ -109,7 +109,7 @@ fun AppNavigation() {
                         coroutineScope.launch { drawerState.close() }
                     },
                     navigateToReports = {
-                        navController.navigateTo(Screen.Reports.route)
+                        navController.navigateTo(Screen.Report.route)
                         coroutineScope.launch { drawerState.close() }
                     },
                     onSignOutClick = {
@@ -360,7 +360,7 @@ fun AppNavigation() {
                         )
                     )
                 }
-                composable(Screen.Reports.route) {
+                composable(Screen.Report.route) {
                     ReportsScreen()
                 }
             }

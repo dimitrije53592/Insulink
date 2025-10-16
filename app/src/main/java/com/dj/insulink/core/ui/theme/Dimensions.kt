@@ -1,6 +1,5 @@
 package com.dj.insulink.core.ui.theme
 
-import android.widget.Button
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -29,6 +28,7 @@ data class Dimensions(
     // icon sizes
     val registrationMainIconSize: Dp = 100.dp,
     val sideDrawerIconSize: Dp = 48.dp,
+    val buttonIconSize: Dp = 34.dp,
     val textFieldIconSize: Dp = 24.dp,
 
     // buttons - dimensions
