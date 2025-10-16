@@ -89,4 +89,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Vico
+    implementation(libs.bundles.vico.compose.m3.bundle)
+
 }
