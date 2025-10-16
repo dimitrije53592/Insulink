@@ -1,6 +1,8 @@
 package com.dj.insulink.feature.ui.screen
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +34,7 @@ import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
+import com.dj.insulink.feature.ui.components.DynamicLineChart
 import com.dj.insulink.feature.ui.components.GlucoseDropdownMenu
 import com.dj.insulink.feature.ui.components.GlucoseLevelIndicator
 import com.dj.insulink.feature.ui.components.GlucoseReadingItem
@@ -40,6 +43,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GlucoseScreen(
     params: GlucoseScreenParams
@@ -108,6 +112,12 @@ fun GlucoseScreen(
                         ?: GlucoseReadingTimespan.ALL_READINGS
                     params.setSelectedTimespan(newTimespan)
                 },
+                modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
+            )
+            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+            DynamicLineChart(
+                xValues = params.allGlucoseReadings.value.map { it.timestamp }.reversed(),
+                yValues = params.allGlucoseReadings.value.map { it.value }.reversed(),
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
             )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
