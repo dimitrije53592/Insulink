@@ -1,7 +1,9 @@
 package com.dj.insulink.core.navigation
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -50,13 +52,17 @@ import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.FriendsScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
 import com.dj.insulink.feature.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.screen.RemindersScreen
+import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
@@ -86,19 +92,29 @@ fun AppNavigation() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentDestinationRoute in Screen.bottomBarDestinations.map { it.route },
+        gesturesEnabled = currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route },
         drawerContent = {
             val currentUser = sharedViewModel.currentUser.collectAsState()
 
             SideDrawer(
                 params = SideDrawerParams(
                     currentUser = currentUser,
+                    navigateToReminders = {
+                        navController.navigateTo(Screen.Reminders.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
+                    navigateToFriends = {
+                        navController.navigateTo(Screen.Friends.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
+                    navigateToReports = {
+                        navController.navigateTo(Screen.Reports.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
                     onSignOutClick = {
                         sharedViewModel.signOut(drawerState, context)
                         navController.navigateTo(Screen.Login.route)
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
+                        coroutineScope.launch { drawerState.close() }
                     }
                 )
             )
@@ -106,7 +122,7 @@ fun AppNavigation() {
     ) {
         Scaffold(
             topBar = {
-                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
+                if (currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route }) {
                     CenterAlignedTopAppBar(
                         title = {
                             currentDestination?.title?.let {
@@ -135,7 +151,7 @@ fun AppNavigation() {
                 }
             },
             bottomBar = {
-                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
+                if (currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route }) {
                     NavigationBar {
                         Screen.bottomBarDestinations.forEach { destination ->
                             destination.icon?.let {
@@ -332,6 +348,15 @@ fun AppNavigation() {
                 }
                 composable(Screen.Fitness.route) {
                     FitnessScreen()
+                }
+                composable(Screen.Reminders.route) {
+                    RemindersScreen()
+                }
+                composable(Screen.Friends.route) {
+                    FriendsScreen()
+                }
+                composable(Screen.Reports.route) {
+                    ReportsScreen()
                 }
             }
         }
