@@ -59,5 +59,9 @@
     <string name="new_reading_ok">OK</string>
     <string name="new_reading_select_time_label">Select time</string>
 
+    <!-- Friends screen -->
+    <string name="friends_screen_add_new_friend_button_label">Add new friend</string>
+    <string name="friends_screen_friends_list_label">Friends (%1$d)</string>
+
 
 </resources>
