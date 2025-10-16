@@ -40,7 +40,7 @@
     <string name="side_drawer_reminders_subtitle">Manage your tasks</string>
     <string name="side_drawer_friends_title">Friends</string>
     <string name="side_drawer_friends_subtitle">Connect with others</string>
-    <string name="side_drawer_reports_title">Reports</string>
+    <string name="side_drawer_reports_title">Report</string>
     <string name="side_drawer_reports_subtitle">View analytics</string>
 
     <!-- Glucose screen -->
@@ -63,5 +63,12 @@
     <string name="friends_screen_add_new_friend_button_label">Add new friend</string>
     <string name="friends_screen_friends_list_label">Friends (%1$d)</string>
 
+    <!-- Report screen -->
+    <string name="report_screen_title">Glucose report</string>
+    <string name="report_screen_subtitle">Generate a PDF report of your glucose readings for any date range</string>
+    <string name="report_screen_start_date_label">Start date</string>
+    <string name="report_screen_end_date_label">End date</string>
+    <string name="report_screen_preview_report_button_label">Preview report</string>
+    <string name="report_screen_generate_button_label">Generate &amp; download PDF</string>
 
 </resources>

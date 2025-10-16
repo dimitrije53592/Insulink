@@ -1,6 +1,5 @@
 package com.dj.insulink.core.ui.theme
 
-import android.widget.Button
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -17,6 +16,7 @@ data class Dimensions(
 
     // spacing
     val commonSpacing80: Dp = 80.dp,
+    val commonSpacing64: Dp = 64.dp,
     val commonSpacing32: Dp = 32.dp,
     val commonSpacing24: Dp = 24.dp,
     val commonSpacing20: Dp = 20.dp,
@@ -28,6 +28,7 @@ data class Dimensions(
     // icon sizes
     val registrationMainIconSize: Dp = 100.dp,
     val sideDrawerIconSize: Dp = 48.dp,
+    val buttonIconSize: Dp = 34.dp,
     val textFieldIconSize: Dp = 24.dp,
 
     // buttons - dimensions

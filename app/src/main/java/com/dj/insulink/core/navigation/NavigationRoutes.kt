@@ -19,7 +19,7 @@ sealed class Screen(
     object Fitness : Screen("fitness", icon = Icons.AutoMirrored.Filled.DirectionsRun, title = "Fitness")
     object Reminders : Screen("reminders", title = "Reminders")
     object Friends : Screen("friends", title = "Friends")
-    object Reports : Screen("reports", title = "Reports")
+    object Report : Screen("report", title = "Generate report")
 
     companion object {
         val allDestinations: List<Screen> = listOf(
@@ -31,7 +31,7 @@ sealed class Screen(
             Fitness,
             Reminders,
             Friends,
-            Reports
+            Report
         )
 
         val bottomBarDestinations: List<Screen> = listOf(
@@ -43,7 +43,7 @@ sealed class Screen(
         val topBarAndSideDrawerDestinations: List<Screen> = bottomBarDestinations + listOf(
             Reminders,
             Friends,
-            Reports
+            Report
         )
 
         fun findDestinationByRoute(route: String?): Screen? {
