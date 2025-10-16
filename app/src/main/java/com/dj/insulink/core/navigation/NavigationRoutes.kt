@@ -17,6 +17,9 @@ sealed class Screen(
     object Glucose : Screen("glucose", icon = Icons.Filled.WaterDrop, title = "Glucose")
     object Meals : Screen("meals", icon = Icons.Filled.Restaurant, title = "Meals")
     object Fitness : Screen("fitness", icon = Icons.AutoMirrored.Filled.DirectionsRun, title = "Fitness")
+    object Reminders : Screen("reminders", title = "Reminders")
+    object Friends : Screen("friends", title = "Friends")
+    object Reports : Screen("reports", title = "Reports")
 
     companion object {
         val allDestinations: List<Screen> = listOf(
@@ -25,13 +28,22 @@ sealed class Screen(
             ForgotPassword,
             Glucose,
             Meals,
-            Fitness
+            Fitness,
+            Reminders,
+            Friends,
+            Reports
         )
 
         val bottomBarDestinations: List<Screen> = listOf(
             Meals,
             Glucose,
             Fitness
+        )
+
+        val topBarAndSideDrawerDestinations: List<Screen> = bottomBarDestinations + listOf(
+            Reminders,
+            Friends,
+            Reports
         )
 
         fun findDestinationByRoute(route: String?): Screen? {
