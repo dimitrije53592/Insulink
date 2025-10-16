@@ -6,6 +6,7 @@ import com.dj.insulink.R
 import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.auth.domain.models.UserLogin
 import com.dj.insulink.auth.domain.models.UserRegistration
+import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
@@ -55,7 +56,8 @@ class AuthRepository @Inject constructor(
             "lastName" to userRegistration.lastName,
             "email" to userRegistration.email,
             "createdAt" to Timestamp.now(),
-            "userId" to user.uid
+            "userId" to user.uid,
+            "readings" to emptyList<GlucoseReading>()
         )
 
         firestore.collection("users")

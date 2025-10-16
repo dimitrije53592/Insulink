@@ -73,7 +73,8 @@ class GlucoseViewModel @Inject constructor(
     fun submitNewGlucoseReading() {
         viewModelScope.launch(Dispatchers.IO) {
             glucoseReadingRepository.insert(
-                GlucoseReading(
+                userId = authRepository.getCurrentUser()?.uid!!,
+                reading = GlucoseReading(
                     id = 0,
                     userId = authRepository.getCurrentUser()?.uid!!,
                     timestamp = newGlucoseReadingTimestamp.value,
@@ -87,7 +88,10 @@ class GlucoseViewModel @Inject constructor(
 
     fun deleteGlucoseReading(glucoseReading: GlucoseReading) {
         viewModelScope.launch(Dispatchers.IO) {
-            glucoseReadingRepository.delete(glucoseReading)
+            glucoseReadingRepository.delete(
+                userId = authRepository.getCurrentUser()?.uid!!,
+                reading = glucoseReading
+            )
         }
     }
 
