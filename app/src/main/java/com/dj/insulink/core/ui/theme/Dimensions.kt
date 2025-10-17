@@ -27,6 +27,7 @@ data class Dimensions(
 
     // icon sizes
     val registrationMainIconSize: Dp = 100.dp,
+    val reminderIconSize: Dp = 80.dp,
     val sideDrawerIconSize: Dp = 48.dp,
     val buttonIconSize: Dp = 34.dp,
     val textFieldIconSize: Dp = 24.dp,

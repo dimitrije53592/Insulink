@@ -76,4 +76,8 @@
     <string name="report_screen_preview_report_button_label">Preview report</string>
     <string name="report_screen_generate_button_label">Generate &amp; download PDF</string>
 
+    <!-- Reminders screen -->
+    <string name="reminders_screen_today_label">Today</string>
+    <string name="reminders_screen_upcoming_label">Upcoming</string>
+
 </resources>
