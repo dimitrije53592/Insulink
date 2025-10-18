@@ -6,6 +6,8 @@ import com.dj.insulink.R
 import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.auth.domain.models.UserLogin
 import com.dj.insulink.auth.domain.models.UserRegistration
+import com.dj.insulink.core.utils.DeterministicCodeGenerator
+import com.dj.insulink.feature.domain.models.Friend
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -36,6 +38,8 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun registerUser(userRegistration: UserRegistration): User {
+        val friendCode = DeterministicCodeGenerator.generateCodeFromEmail(userRegistration.email)
+
         val authResult = firebaseAuth.createUserWithEmailAndPassword(
             userRegistration.email,
             userRegistration.password
@@ -57,7 +61,9 @@ class AuthRepository @Inject constructor(
             "email" to userRegistration.email,
             "createdAt" to Timestamp.now(),
             "userId" to user.uid,
-            "readings" to emptyList<GlucoseReading>()
+            "readings" to emptyList<GlucoseReading>(),
+            "friendCode" to friendCode,
+            "friends" to emptyList<Friend>()
         )
 
         firestore.collection("users")
@@ -72,6 +78,7 @@ class AuthRepository @Inject constructor(
             firstName = userRegistration.firstName,
             lastName = userRegistration.lastName,
             email = userRegistration.email,
+            friendCode = friendCode,
             isEmailVerified = user.isEmailVerified
         )
     }
@@ -144,6 +151,7 @@ class AuthRepository @Inject constructor(
             firstName = userDoc.getString("firstName") ?: "",
             lastName = userDoc.getString("lastName") ?: "",
             email = firebaseUser.email ?: "",
+            friendCode = userDoc.getString("friendCode") ?: "",
             isEmailVerified = firebaseUser.isEmailVerified
         )
     }
