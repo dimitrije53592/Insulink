@@ -319,6 +319,7 @@ fun AppNavigation() {
 
                 }
                 composable(Screen.Glucose.route) {
+                    val currentUser = sharedViewModel.currentUser.collectAsState()
                     val viewModel: GlucoseViewModel = hiltViewModel()
 
                     val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
@@ -332,6 +333,9 @@ fun AppNavigation() {
                         viewModel.showAddGlucoseReadingDialog.collectAsState()
                     val selectedTimespan = viewModel.selectedTimespan.collectAsState()
 
+                    LaunchedEffect(currentUser.value) {
+                        viewModel.fetchAllGlucoseReadingsForUserAndUpdateDatabase(currentUser.value?.uid)
+                    }
                     GlucoseScreen(
                         params = GlucoseScreenParams(
                             allGlucoseReadings = allGlucoseReadings,
@@ -346,8 +350,12 @@ fun AppNavigation() {
                             setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
                             showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
                             setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
-                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading,
-                            deleteGlucoseReading = viewModel::deleteGlucoseReading
+                            submitNewGlucoseReading = {
+                                viewModel.submitNewGlucoseReading(currentUser.value?.uid)
+                            },
+                            deleteGlucoseReading = {
+                                viewModel.deleteGlucoseReading(currentUser.value?.uid, it)
+                            }
                         )
                     )
                 }
@@ -413,7 +421,7 @@ fun AppNavigation() {
                     val enteredCode = viewModel.enteredCode.collectAsState()
 
                     currentUser.value?.let {
-                        LaunchedEffect(true) {
+                        LaunchedEffect(Unit) {
                             viewModel.fetchFriendDataAndUpdateDatabase(currentUser.value!!.uid)
                         }
 

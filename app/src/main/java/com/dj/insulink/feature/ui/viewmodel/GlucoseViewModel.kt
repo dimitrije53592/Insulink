@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
@@ -69,28 +70,40 @@ class GlucoseViewModel @Inject constructor(
             initialValue = null
         )
 
-    fun submitNewGlucoseReading() {
-        viewModelScope.launch(Dispatchers.IO) {
-            glucoseReadingRepository.insert(
-                userId = authRepository.getCurrentUser()?.uid!!,
-                reading = GlucoseReading(
-                    id = 0,
-                    userId = authRepository.getCurrentUser()?.uid!!,
-                    timestamp = newGlucoseReadingTimestamp.value,
-                    value = newGlucoseReadingValue.value.toInt(),
-                    comment = newGlucoseReadingComment.value
-                )
-            )
-            resetNewReadingDialogFields()
+    fun fetchAllGlucoseReadingsForUserAndUpdateDatabase(userId: String?) {
+        viewModelScope.launch {
+            userId?.let {
+                glucoseReadingRepository.fetchAllGlucoseReadingsForUserAndUpdateDatabase(userId)
+            }
         }
     }
 
-    fun deleteGlucoseReading(glucoseReading: GlucoseReading) {
+    fun submitNewGlucoseReading(userId: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            glucoseReadingRepository.delete(
-                userId = authRepository.getCurrentUser()?.uid!!,
-                reading = glucoseReading
-            )
+            userId?.let {
+                glucoseReadingRepository.insert(
+                    userId = userId,
+                    reading = GlucoseReading(
+                        id = 0,
+                        userId = userId,
+                        timestamp = newGlucoseReadingTimestamp.value,
+                        value = newGlucoseReadingValue.value.toInt(),
+                        comment = newGlucoseReadingComment.value
+                    )
+                )
+                resetNewReadingDialogFields()
+            }
+        }
+    }
+
+    fun deleteGlucoseReading(userId: String?, glucoseReading: GlucoseReading) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userId?.let {
+                glucoseReadingRepository.delete(
+                    userId = userId,
+                    reading = glucoseReading
+                )
+            }
         }
     }
 
