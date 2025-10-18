@@ -62,6 +62,9 @@
     <!-- Friends screen -->
     <string name="friends_screen_add_new_friend_button_label">Add new friend</string>
     <string name="friends_screen_friends_list_label">Friends (%1$d)</string>
+    <string name="friends_screen_friend_code_label">Your unique code to share</string>
+    <string name="friends_screen_enter_code_label">Enter you friends code here</string>
+    <string name="friends_screen_add_friend_label">Add friend</string>
 
     <!-- Report screen -->
     <string name="report_screen_title">Glucose report</string>

@@ -19,4 +19,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideGlucoseReadingDao(database: InsulinkDatabase) = database.glucoseReadingDao()
+
+    @Provides
+    @Singleton
+    fun provideFriendDao(database: InsulinkDatabase) = database.friendDao()
 }

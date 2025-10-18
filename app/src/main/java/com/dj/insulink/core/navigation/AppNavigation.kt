@@ -54,6 +54,7 @@ import com.dj.insulink.feature.ui.screen.MealsScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
+import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import kotlinx.coroutines.launch
 
@@ -334,11 +335,33 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Friends.route) {
-                    FriendsScreen(
-                        params = FriendsScreenParams(
-                            friendsList = listOf("Dimitrije", "Jovan", "Luka", "Ilija")
+                    val currentUser = sharedViewModel.currentUser.collectAsState()
+                    val viewModel: FriendViewModel = hiltViewModel()
+
+                    val allFriendsForUser =
+                        viewModel.allFriendsForUser(currentUser.value?.uid!!).collectAsState()
+                    val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
+                    val enteredCode = viewModel.enteredCode.collectAsState()
+
+                    currentUser.value?.let {
+                        LaunchedEffect(true) {
+                            viewModel.fetchFriendDataAndUpdateDatabase(currentUser.value!!.uid)
+                        }
+
+                        FriendsScreen(
+                            params = FriendsScreenParams(
+                                friendsList = allFriendsForUser,
+                                showAddNewFriendDialog = showAddNewFriendDialog,
+                                setShowAddNewFriendDialog = viewModel::setShowAddNewFriendDialog,
+                                usersFriendCode = currentUser.value!!.friendCode,
+                                enteredCode = enteredCode,
+                                setEnteredCode = viewModel::setEnteredCode,
+                                onAddFriendClick = {
+                                    viewModel.onAddFriendClick(userId = currentUser.value!!.uid)
+                                }
+                            )
                         )
-                    )
+                    }
                 }
                 composable(Screen.Report.route) {
                     ReportsScreen()
