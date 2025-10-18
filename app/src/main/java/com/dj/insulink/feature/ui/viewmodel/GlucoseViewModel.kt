@@ -1,13 +1,11 @@
 package com.dj.insulink.feature.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -79,7 +77,7 @@ class GlucoseViewModel @Inject constructor(
     }
 
     fun submitNewGlucoseReading(userId: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             userId?.let {
                 glucoseReadingRepository.insert(
                     userId = userId,
@@ -97,7 +95,7 @@ class GlucoseViewModel @Inject constructor(
     }
 
     fun deleteGlucoseReading(userId: String?, glucoseReading: GlucoseReading) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             userId?.let {
                 glucoseReadingRepository.delete(
                     userId = userId,

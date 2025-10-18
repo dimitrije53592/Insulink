@@ -18,12 +18,12 @@ import com.dj.insulink.feature.data.room.entity.MealIngredientEntity
 @Database(
     entities = [
         GlucoseReadingEntity::class,
-        FriendEntitiy:class,
+        FriendEntity::class,
         MealEntity::class,
         IngredientEntity::class,
         MealIngredientEntity::class
     ],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 abstract class InsulinkDatabase : RoomDatabase() {
