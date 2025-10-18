@@ -62,7 +62,7 @@ fun ForgotPasswordScreen(
                     .fillMaxWidth()
                     .weight(0.33f)
                     .background(Color.Blue)
-                    .padding(24.dp),
+                    .padding(24.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),

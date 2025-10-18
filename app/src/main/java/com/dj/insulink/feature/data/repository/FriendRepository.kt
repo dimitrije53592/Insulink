@@ -11,9 +11,11 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FriendRepository @Inject constructor(
@@ -38,41 +40,47 @@ class FriendRepository @Inject constructor(
     }
 
     suspend fun addFriend(friend: Friend) {
-        friendDao.insert(friend.toEntity())
+        withContext(Dispatchers.IO) {
+            friendDao.insert(friend.toEntity())
+        }
     }
 
     suspend fun pushFriendToFirestoreForUser(userId: String, friendId: String) {
-        firestore.collection(COLLECTION_NAME_USERS)
-            .document(userId)
-            .update(DOCUMENT_FIELD_FRIENDS, FieldValue.arrayUnion(friendId))
-            .await()
+        withContext(Dispatchers.IO) {
+            firestore.collection(COLLECTION_NAME_USERS)
+                .document(userId)
+                .update(DOCUMENT_FIELD_FRIENDS, FieldValue.arrayUnion(friendId))
+                .await()
+        }
     }
 
     suspend fun fetchFriendDataAndUpdateDatabase(userId: String) {
-        val friendsList = friendDao.getAllFriendsForUserOnce(userId)
-        val friendsData = fetchFriendData(userId)
+        withContext(Dispatchers.IO) {
+            val friendsList = friendDao.getAllFriendsForUserOnce(userId)
+            val friendsData = fetchFriendData(userId)
 
-        friendsData.forEach { friend ->
-            if (friendsList.map { it.friendId }.contains(friend.user.uid)) {
-                friend.latestReading?.let {
-                    friendDao.updateLatestReading(
-                        userId,
-                        friend.user.uid,
-                        it.value,
-                        it.timestamp
+            friendsData.forEach { friend ->
+                if (friendsList.map { it.friendId }.contains(friend.user.uid)) {
+                    friend.latestReading?.let {
+                        friendDao.updateLatestReading(
+                            userId,
+                            friend.user.uid,
+                            it.value,
+                            it.timestamp
+                        )
+                    }
+                } else {
+                    addFriend(
+                        Friend(
+                            id = 0,
+                            userId = userId,
+                            friendId = friend.user.uid,
+                            friendName = "${friend.user.firstName} ${friend.user.lastName}",
+                            friendLastGlucoseReadingValue = friend.latestReading?.value,
+                            friendsLastGlucoseReadingTime = friend.latestReading?.timestamp
+                        )
                     )
                 }
-            } else {
-                addFriend(
-                    Friend(
-                        id = 0,
-                        userId = userId,
-                        friendId = friend.user.uid,
-                        friendName = "${friend.user.firstName} ${friend.user.lastName}",
-                        friendLastGlucoseReadingValue = friend.latestReading?.value,
-                        friendsLastGlucoseReadingTime = friend.latestReading?.timestamp
-                    )
-                )
             }
         }
     }

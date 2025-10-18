@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.collections.emptyList
 import kotlin.collections.map
@@ -30,20 +31,39 @@ class GlucoseReadingRepository @Inject constructor(
     }
 
     suspend fun insert(userId: String, reading: GlucoseReading) {
-        glucoseReadingDao.insert(reading.toEntity())
-        pushReadingToFirestoreForUser(userId, reading)
+        withContext(Dispatchers.IO) {
+            try {
+                val readingWithUniqueId = if (reading.id == 0L) {
+                    reading.copy(id = System.currentTimeMillis())
+                } else {
+                    reading
+                }
+
+                glucoseReadingDao.insert(readingWithUniqueId.toEntity())
+                pushReadingToFirestoreForUser(userId, readingWithUniqueId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     suspend fun delete(userId: String, reading: GlucoseReading) {
-        glucoseReadingDao.delete(reading.toEntity())
-        deleteReadingFromFirestoreForUser(userId, reading)
+        withContext(Dispatchers.IO) {
+            try {
+                glucoseReadingDao.delete(reading.toEntity())
+                deleteReadingFromFirestoreForUser(userId, reading)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     suspend fun fetchAllGlucoseReadingsForUserAndUpdateDatabase(userId: String) {
-        val fetchedReadings = fetchGlucoseReadingsForUser(userId)
-        Log.d("Sofija", fetchedReadings.toString())
-        glucoseReadingDao.deleteAllForUser(userId)
-        glucoseReadingDao.insertAll(fetchedReadings.map { it.toEntity() })
+        withContext(Dispatchers.IO) {
+            val fetchedReadings = fetchGlucoseReadingsForUser(userId)
+            glucoseReadingDao.deleteAllForUser(userId)
+            glucoseReadingDao.insertAll(fetchedReadings.map { it.toEntity() })
+        }
     }
 
     private suspend fun pushReadingToFirestoreForUser(userId: String, reading: GlucoseReading) {
@@ -54,21 +74,27 @@ class GlucoseReadingRepository @Inject constructor(
     }
 
     private suspend fun deleteReadingFromFirestoreForUser(userId: String, reading: GlucoseReading) {
-        val userDocumentRef = firestore.collection(COLLECTION_NAME_USERS).document(userId)
+        try {
+            val userDocumentRef = firestore.collection(COLLECTION_NAME_USERS).document(userId)
 
-        val snapshot = userDocumentRef.get().await()
-        val readings = snapshot.get(DOCUMENT_FIELD_READINGS) as? List<Map<String, Any>> ?: emptyList()
+            val snapshot = userDocumentRef.get().await()
+            val readings =
+                snapshot.get(DOCUMENT_FIELD_READINGS) as? List<Map<String, Any>> ?: emptyList()
 
-        val updatedReadings = readings.filter { readingMap ->
-            val valueMatches = (readingMap["value"] as? Number)?.toInt() == reading.value
-            val timestampMatches = (readingMap["timestamp"] as? Number)?.toLong() == reading.timestamp
-            val commentMatches = (readingMap["comment"] as? String) == reading.comment
-            val userIdMatches = (readingMap["userId"] as? String) == reading.userId
+            val updatedReadings = readings.filter { readingMap ->
+                val idMatches = (readingMap["id"] as? Number)?.toLong() == reading.id
 
-            !(valueMatches && timestampMatches && commentMatches && userIdMatches)
+                !idMatches
+            }
+
+            if (readings.size != updatedReadings.size) {
+                userDocumentRef.update(DOCUMENT_FIELD_READINGS, updatedReadings).await()
+            } else {
+                Log.w("GlucoseRepository", "No reading found with ID ${reading.id} to delete")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
-        userDocumentRef.update(DOCUMENT_FIELD_READINGS, updatedReadings).await()
     }
 
     private suspend fun fetchGlucoseReadingsForUser(userId: String): List<GlucoseReading> {

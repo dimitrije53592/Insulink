@@ -237,62 +237,6 @@ fun RegistrationScreen(
                 }
             )
         }
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24)
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                thickness = DividerDefaults.Thickness, color = Color.Black
-            )
-            Text(
-                text = stringResource(R.string.registration_screen_or_continue_with_label),
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding8)
-            )
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                thickness = DividerDefaults.Thickness, color = Color.Black
-            )
-        }
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
-        Button(
-            onClick = {
-
-            },
-            modifier = Modifier
-                .height(MaterialTheme.dimens.commonButtonHeight50)
-                .border(
-                    MaterialTheme.dimens.commonButtonBorder1,
-                    Color.LightGray,
-                    RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius8)
-                )
-                .padding(horizontal = MaterialTheme.dimens.commonPadding48),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = MaterialTheme.dimens.commonElevation0)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_google_logo),
-                    contentDescription = "",
-                    modifier = Modifier.size(MaterialTheme.dimens.textFieldIconSize)
-                )
-                Spacer(modifier = Modifier.width(MaterialTheme.dimens.commonSpacing8))
-                Text(
-                    text = stringResource(R.string.login_screen_google_label),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
     }
 }
 
