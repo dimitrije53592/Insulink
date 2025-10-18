@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.data.repository
 
+import android.util.Log
 import com.dj.insulink.feature.data.room.dao.GlucoseReadingDao
 import com.dj.insulink.feature.data.room.mapper.toDomain
 import com.dj.insulink.feature.data.room.mapper.toEntity
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.collections.emptyList
+import kotlin.collections.map
 
 class GlucoseReadingRepository @Inject constructor(
     private val glucoseReadingDao: GlucoseReadingDao,
@@ -28,8 +30,8 @@ class GlucoseReadingRepository @Inject constructor(
     }
 
     suspend fun insert(userId: String, reading: GlucoseReading) {
-        val rowId = glucoseReadingDao.insert(reading.toEntity())
-        pushReadingToFirestoreForUser(userId, reading.copy(id = rowId))
+        glucoseReadingDao.insert(reading.toEntity())
+        pushReadingToFirestoreForUser(userId, reading)
     }
 
     suspend fun delete(userId: String, reading: GlucoseReading) {
@@ -37,66 +39,56 @@ class GlucoseReadingRepository @Inject constructor(
         deleteReadingFromFirestoreForUser(userId, reading)
     }
 
-    suspend fun replaceAll(userId: String, readings: List<GlucoseReading>) {
+    suspend fun fetchAllGlucoseReadingsForUserAndUpdateDatabase(userId: String) {
+        val fetchedReadings = fetchGlucoseReadingsForUser(userId)
+        Log.d("Sofija", fetchedReadings.toString())
         glucoseReadingDao.deleteAllForUser(userId)
-        glucoseReadingDao.insertAll(readings.map { it.toEntity() })
+        glucoseReadingDao.insertAll(fetchedReadings.map { it.toEntity() })
     }
 
-    suspend fun pushReadingToFirestoreForUser(userId: String, reading: GlucoseReading) {
+    private suspend fun pushReadingToFirestoreForUser(userId: String, reading: GlucoseReading) {
         firestore.collection(COLLECTION_NAME_USERS)
             .document(userId)
             .update(DOCUMENT_FIELD_READINGS, FieldValue.arrayUnion(reading))
             .await()
     }
 
-    suspend fun deleteReadingFromFirestoreForUser(userId: String, reading: GlucoseReading) {
+    private suspend fun deleteReadingFromFirestoreForUser(userId: String, reading: GlucoseReading) {
         val userDocumentRef = firestore.collection(COLLECTION_NAME_USERS).document(userId)
 
         val snapshot = userDocumentRef.get().await()
         val readings = snapshot.get(DOCUMENT_FIELD_READINGS) as? List<Map<String, Any>> ?: emptyList()
 
         val updatedReadings = readings.filter { readingMap ->
-            val idFromMap = readingMap["id"]
-            idFromMap.toString() != reading.id.toString()
+            val valueMatches = (readingMap["value"] as? Number)?.toInt() == reading.value
+            val timestampMatches = (readingMap["timestamp"] as? Number)?.toLong() == reading.timestamp
+            val commentMatches = (readingMap["comment"] as? String) == reading.comment
+            val userIdMatches = (readingMap["userId"] as? String) == reading.userId
+
+            !(valueMatches && timestampMatches && commentMatches && userIdMatches)
         }
 
         userDocumentRef.update(DOCUMENT_FIELD_READINGS, updatedReadings).await()
     }
 
-    suspend fun fetchGlucoseReadingsForUserOnLogin(userId: String): List<GlucoseReading> {
-        val snapshot = firestore.collection(COLLECTION_NAME_USERS)
+    private suspend fun fetchGlucoseReadingsForUser(userId: String): List<GlucoseReading> {
+        val document = firestore.collection(COLLECTION_NAME_USERS)
             .document(userId)
-            .collection(DOCUMENT_FIELD_READINGS)
             .get()
             .await()
 
-        return snapshot.toObjects(GlucoseReading::class.java)
-    }
+        val readingsData = document.get("readings") as? List<Map<String, Any>> ?: emptyList()
 
-    fun startRealtimeSync(userId: String) {
-        firestore.collection(COLLECTION_NAME_USERS)
-            .document(userId)
-            .collection(DOCUMENT_FIELD_READINGS)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null || snapshot == null) return@addSnapshotListener
+        return readingsData.map { readingMap ->
+            GlucoseReading(
+                id = (readingMap["id"] as? Number)?.toLong() ?: 0,
+                value = (readingMap["value"] as? Number)?.toInt() ?: 0,
+                timestamp = (readingMap["timestamp"] as? Number)?.toLong() ?: 0,
+                comment = readingMap["comment"] as? String ?: "",
+                userId = readingMap["userId"] as? String ?: "",
+            )
 
-                for (change in snapshot.documentChanges) {
-                    val reading = change.document.toObject(GlucoseReading::class.java)
-                    CoroutineScope(Dispatchers.IO).launch {
-                        when (change.type) {
-                            DocumentChange.Type.ADDED,
-                            DocumentChange.Type.MODIFIED -> {
-                                glucoseReadingDao.insert(reading.toEntity())
-                            }
-
-                            DocumentChange.Type.REMOVED -> {
-                                glucoseReadingDao.delete(reading.toEntity())
-                            }
-                        }
-                    }
-                }
-            }
-
+        }
     }
 }
 

@@ -55,7 +55,7 @@ fun SideDrawer(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${params.currentUser.value?.email}",
+                text = params.currentUser.value?.email ?: "",
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
