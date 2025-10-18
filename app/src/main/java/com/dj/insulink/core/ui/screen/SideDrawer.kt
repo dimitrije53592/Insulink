@@ -50,7 +50,7 @@ fun SideDrawer(
         ) {
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
             Text(
-                text = "${params.currentUser.value?.firstName} ${params.currentUser.value?.lastName}",
+                text = "${params.currentUser.value?.firstName ?: ""} ${params.currentUser.value?.lastName ?: ""}",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
