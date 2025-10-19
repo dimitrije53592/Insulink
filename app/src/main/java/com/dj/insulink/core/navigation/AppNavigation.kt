@@ -56,6 +56,7 @@ import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -297,9 +298,16 @@ fun AppNavigation() {
                     FitnessScreen()
                 }
                 composable(Screen.Reminders.route) {
+                    val viewModel: ReminderViewModel = hiltViewModel()
+
+                    val showAddReminderDialog = viewModel.showAddReminderDialog.collectAsState()
+                    val reminderTitle = viewModel.reminderTitle.collectAsState()
+                    val reminderType = viewModel.reminderType.collectAsState()
+                    val reminderTime = viewModel.reminderTime.collectAsState()
+
                     RemindersScreen(
                         params = RemindersScreenParams(
-                            todayReminders = listOf(
+                            reminders = listOf(
                                 Reminder(
                                     "Breakfast",
                                     ReminderType.MEAL_REMINDER,
@@ -319,26 +327,14 @@ fun AppNavigation() {
                                     "12 AM"
                                 )
                             ),
-                            upcomingReminders = listOf(
-                                Reminder(
-                                    "Breakfast",
-                                    ReminderType.MEAL_REMINDER,
-                                    true,
-                                    "7:30 AM"
-                                ),
-                                Reminder(
-                                    "Morning insulin",
-                                    ReminderType.INSULIN_REMINDER,
-                                    false,
-                                    "8:30 AM"
-                                ),
-                                Reminder(
-                                    "Blood sugar check",
-                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
-                                    false,
-                                    "12 AM"
-                                )
-                            )
+                            showAddReminderDialog = showAddReminderDialog,
+                            setShowAddReminderDialog = viewModel::setShowAddReminderDialog,
+                            reminderTitle = reminderTitle,
+                            setReminderTitle = viewModel::setReminderTitle,
+                            reminderType = reminderType,
+                            setReminderType = viewModel::setReminderType,
+                            reminderTime = reminderTime,
+                            setReminderTime = viewModel::setReminderTime
                         )
                     )
                 }

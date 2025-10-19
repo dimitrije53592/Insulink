@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -46,6 +48,7 @@ fun GlucoseDropdownMenu(
         OutlinedButton(
             onClick = { expanded = true },
             shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            border = BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned {
