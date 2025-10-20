@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)  // Cloud Firestore
+    
+    // Google Play Services Auth
+    implementation(libs.google.play.services.auth)
 
     // Navigation
     implementation(libs.navigation.compose)
