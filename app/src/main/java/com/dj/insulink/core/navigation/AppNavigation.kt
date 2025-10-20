@@ -94,7 +94,7 @@ fun AppNavigation() {
                 params = SideDrawerParams(
                     currentUser = currentUser,
                     onSignOutClick = {
-                        sharedViewModel.signOut(drawerState)
+                        sharedViewModel.signOut(drawerState, context)
                         navController.navigateTo(Screen.Login.route)
                         coroutineScope.launch {
                             drawerState.close()
@@ -256,8 +256,8 @@ fun AppNavigation() {
                         params = LoginScreenParams(
                             emailState = email,
                             passwordState = password,
-                            onEmailChange = viewModel::setEmail,
-                            onPasswordChange = viewModel::setPassword,
+                            setEmail = viewModel::setEmail,
+                            setPassword = viewModel::setPassword,
                             onLogin = viewModel::loginUser,
                             onSignInWithGoogle = {
                                 Log.d("TAG", "AppNavigation: google sign in ")
@@ -275,6 +275,7 @@ fun AppNavigation() {
                 composable(Screen.ForgotPassword.route) {
                     val viewModel: LoginViewModel = hiltViewModel()
                     val resetState = viewModel.passwordResetState.collectAsState()
+                    
                     LaunchedEffect(resetState.value.successMessage) {
                         if (resetState.value.successMessage != null) {
                             Toast.makeText(context, resetState.value.successMessage, Toast.LENGTH_LONG).show()
@@ -289,9 +290,9 @@ fun AppNavigation() {
 
                     ForgotPasswordScreen(
                         params = ForgotPasswordScreenParams(
-                            emailState = email,
-                            onEmailChange = onEmailChange,
-                            onSendPasswordReset = onSendPasswordReset,
+                            emailState = viewModel.email,
+                            onEmailChange = viewModel::setEmail,
+                            onSendPasswordReset = viewModel::sendPasswordReset,
                             resetState = viewModel.passwordResetState,
                         )
                     )
