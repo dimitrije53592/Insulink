@@ -1,10 +1,11 @@
 package com.dj.insulink.feature.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
+import com.dj.insulink.core.notification.ReminderScheduler
 import com.dj.insulink.feature.data.repository.ReminderRepository
-import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.domain.models.Reminder
 import com.dj.insulink.feature.domain.models.ReminderType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +18,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class ReminderViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -78,8 +81,10 @@ class ReminderViewModel @Inject constructor(
             val reminderTimeOfDay = reminderTime % (24 * 60 * 60 * 1000)
             val currentTimeOfDay = currentTime % (24 * 60 * 60 * 1000)
 
-
-            reminderRepository.insert(
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = reminderTime
+            }
+            val reminderId = reminderRepository.insert(
                 userId = userId,
                 reminder = Reminder(
                     id = 0,
@@ -90,6 +95,14 @@ class ReminderViewModel @Inject constructor(
                     time = _reminderTime.value
                 )
             )
+
+            reminderScheduler.scheduleDaily(
+                reminderId = reminderId,
+                title = _reminderTitle.value,
+                message = _reminderType.value.displayName,
+                hour = calendar.get(Calendar.HOUR_OF_DAY),
+                minute = calendar.get(Calendar.MINUTE)
+            )
             resetAddReminderFields()
         }
     }
@@ -97,6 +110,7 @@ class ReminderViewModel @Inject constructor(
     fun deleteReminder(userId: String?, reminder: Reminder) {
         viewModelScope.launch {
             userId?.let {
+                reminderScheduler.cancelReminder(reminder.id)
                 reminderRepository.delete(
                     userId = userId,
                     reminder = reminder
