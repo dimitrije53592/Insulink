@@ -135,9 +135,7 @@ fun GlucoseScreen(
             }
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
             Column {
-                Log.d("Sofija", params.allGlucoseReadings.value.isNotEmpty().toString())
                 if (params.allGlucoseReadings.value.isNotEmpty()) {
-                    Log.d("Sofija", params.allGlucoseReadings.value.toString())
                     LazyColumn (
                         modifier = Modifier.height(ALLOWED_READINGS_COLUMN_HEIGHT)
                     ){

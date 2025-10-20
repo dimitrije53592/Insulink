@@ -1,6 +1,5 @@
 package com.dj.insulink.feature.data.repository
 
-import android.util.Log
 import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.feature.data.room.dao.FriendDao
 import com.dj.insulink.feature.domain.mappers.toDomain

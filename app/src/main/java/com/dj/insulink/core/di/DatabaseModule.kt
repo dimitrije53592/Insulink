@@ -30,6 +30,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideReminderDao(database: InsulinkDatabase) = database.reminderDao()
+
+    @Provides
+    @Singleton
     fun provideMealDao(database: InsulinkDatabase) = database.mealDao()
 
     @Provides

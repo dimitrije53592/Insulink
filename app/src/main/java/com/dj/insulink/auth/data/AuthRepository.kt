@@ -11,6 +11,7 @@ import com.dj.insulink.feature.domain.models.Friend
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.dj.insulink.feature.domain.models.Reminder
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
@@ -63,7 +64,8 @@ class AuthRepository @Inject constructor(
             "userId" to user.uid,
             "readings" to emptyList<GlucoseReading>(),
             "friendCode" to friendCode,
-            "friends" to emptyList<Friend>()
+            "friends" to emptyList<Friend>(),
+            "reminders" to emptyList<Reminder>()
         )
 
         firestore.collection("users")

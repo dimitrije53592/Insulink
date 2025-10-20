@@ -3,6 +3,7 @@ package com.dj.insulink.feature.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.data.repository.FriendRepository
 import com.dj.insulink.feature.domain.models.Friend
 import com.dj.insulink.feature.ui.screen.FriendsScreen
@@ -10,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,16 +21,23 @@ import kotlin.String
 
 @HiltViewModel
 class FriendViewModel @Inject constructor(
-    private val friendRepository: FriendRepository
+    private val friendRepository: FriendRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    fun allFriendsForUser(userId: String) =
-        friendRepository.getAllFriendsForUser(userId)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    val allFriendsForUser = authRepository.getCurrentUserFlow()
+        .flatMapLatest { userId ->
+            if (userId != null) {
+                friendRepository.getAllFriendsForUser(userId)
+            } else {
+                flowOf(emptyList())
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private val _showAddNewFriendDialog = MutableStateFlow(false)
     val showAddNewFriendDialog = _showAddNewFriendDialog.asStateFlow()
