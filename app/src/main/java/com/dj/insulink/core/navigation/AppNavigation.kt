@@ -1,6 +1,7 @@
 package com.dj.insulink.core.navigation
 
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
@@ -298,60 +299,58 @@ fun AppNavigation() {
                     FitnessScreen()
                 }
                 composable(Screen.Reminders.route) {
+                    val currentUser = sharedViewModel.currentUser.collectAsState()
                     val viewModel: ReminderViewModel = hiltViewModel()
 
+                    val allRemindersForUser = viewModel.allRemindersForUser.collectAsState()
                     val showAddReminderDialog = viewModel.showAddReminderDialog.collectAsState()
                     val reminderTitle = viewModel.reminderTitle.collectAsState()
                     val reminderType = viewModel.reminderType.collectAsState()
                     val reminderTime = viewModel.reminderTime.collectAsState()
 
-                    RemindersScreen(
-                        params = RemindersScreenParams(
-                            reminders = listOf(
-                                Reminder(
-                                    "Breakfast",
-                                    ReminderType.MEAL_REMINDER,
-                                    true,
-                                    "7:30 AM"
-                                ),
-                                Reminder(
-                                    "Morning insulin",
-                                    ReminderType.INSULIN_REMINDER,
-                                    false,
-                                    "8:30 AM"
-                                ),
-                                Reminder(
-                                    "Blood sugar check",
-                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
-                                    false,
-                                    "12 AM"
-                                )
-                            ),
-                            showAddReminderDialog = showAddReminderDialog,
-                            setShowAddReminderDialog = viewModel::setShowAddReminderDialog,
-                            reminderTitle = reminderTitle,
-                            setReminderTitle = viewModel::setReminderTitle,
-                            reminderType = reminderType,
-                            setReminderType = viewModel::setReminderType,
-                            reminderTime = reminderTime,
-                            setReminderTime = viewModel::setReminderTime
+                    LaunchedEffect(currentUser.value) {
+                        currentUser.value?.uid?.let {
+                            viewModel.fetchReminderDataAndUpdateDatabase(it)
+                        }
+                    }
+
+                    currentUser.value?.let {
+                        RemindersScreen(
+                            params = RemindersScreenParams(
+                                reminders = allRemindersForUser.value,
+                                showAddReminderDialog = showAddReminderDialog,
+                                setShowAddReminderDialog = viewModel::setShowAddReminderDialog,
+                                reminderTitle = reminderTitle,
+                                setReminderTitle = viewModel::setReminderTitle,
+                                reminderType = reminderType,
+                                setReminderType = viewModel::setReminderType,
+                                reminderTime = reminderTime,
+                                setReminderTime = viewModel::setReminderTime,
+                                onSwipeFromStartToEnd = {
+                                    viewModel.deleteReminder(currentUser.value?.uid, it)
+                                },
+                                onAddReminderClick = {
+                                    viewModel.addReminder(currentUser.value!!.uid)
+                                }
+                            )
                         )
-                    )
+                    }
                 }
                 composable(Screen.Friends.route) {
                     val currentUser = sharedViewModel.currentUser.collectAsState()
                     val viewModel: FriendViewModel = hiltViewModel()
 
-                    val allFriendsForUser =
-                        viewModel.allFriendsForUser(currentUser.value?.uid!!).collectAsState()
+                    val allFriendsForUser = viewModel.allFriendsForUser.collectAsState()
                     val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
                     val enteredCode = viewModel.enteredCode.collectAsState()
 
-                    currentUser.value?.let {
-                        LaunchedEffect(Unit) {
-                            viewModel.fetchFriendDataAndUpdateDatabase(currentUser.value!!.uid)
+                    LaunchedEffect(currentUser.value) {
+                        currentUser.value?.uid?.let {
+                            viewModel.fetchFriendDataAndUpdateDatabase(it)
                         }
+                    }
 
+                    currentUser.value?.let {
                         FriendsScreen(
                             params = FriendsScreenParams(
                                 friendsList = allFriendsForUser,

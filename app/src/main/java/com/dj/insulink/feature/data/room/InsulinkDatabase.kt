@@ -6,13 +6,24 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dj.insulink.feature.data.room.dao.FriendDao
 import com.dj.insulink.feature.data.room.dao.GlucoseReadingDao
+import com.dj.insulink.feature.data.room.dao.ReminderDao
 import com.dj.insulink.feature.data.room.entity.FriendEntity
 import com.dj.insulink.feature.data.room.entity.GlucoseReadingEntity
+import com.dj.insulink.feature.data.room.entity.ReminderEntity
 
-@Database(entities = [GlucoseReadingEntity::class, FriendEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        GlucoseReadingEntity::class,
+        FriendEntity::class,
+        ReminderEntity::class
+    ],
+    version = 1,
+    exportSchema = false
+)
 abstract class InsulinkDatabase : RoomDatabase() {
     abstract fun glucoseReadingDao(): GlucoseReadingDao
     abstract fun friendDao(): FriendDao
+    abstract fun reminderDao(): ReminderDao
 
     companion object {
         private var INSTANCE: InsulinkDatabase? = null

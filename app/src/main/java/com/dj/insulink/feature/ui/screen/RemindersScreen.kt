@@ -8,12 +8,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,9 +33,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -44,10 +51,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
@@ -60,39 +70,46 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RemindersScreen(
     params: RemindersScreenParams
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-            params.reminders.forEach {
-                ReminderListItem(
-                    reminder = it
-                )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                items(params.reminders, key = { item -> item.id }) {
+                    ReminderListItem(
+                        reminder = it,
+                        onSwipeFromStartToEnd = params.onSwipeFromStartToEnd
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                }
             }
-        }
-        FloatingActionButton(
-            onClick = {
-                params.setReminderTime(System.currentTimeMillis())
-                params.setShowAddReminderDialog(true)
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(MaterialTheme.dimens.commonPadding16),
-            containerColor = Color(0xFF4A7BF6)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                tint = Color.White,
-                contentDescription = ""
-            )
+
+            FloatingActionButton(
+                onClick = {
+                    params.setReminderTime(System.currentTimeMillis())
+                    params.setShowAddReminderDialog(true)
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(MaterialTheme.dimens.commonPadding16),
+                containerColor = Color(0xFF4A7BF6)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    tint = Color.White,
+                    contentDescription = ""
+                )
+            }
         }
     }
     if (params.showAddReminderDialog.value) {
@@ -103,57 +120,83 @@ fun RemindersScreen(
             reminderType = params.reminderType,
             setReminderType = params.setReminderType,
             reminderTime = params.reminderTime,
-            setReminderTime = params.setReminderTime
+            setReminderTime = params.setReminderTime,
+            onAddReminderClick = params.onAddReminderClick
         )
     }
 }
 
 @Composable
 private fun ReminderListItem(
-    reminder: Reminder
+    reminder: Reminder,
+    onSwipeFromStartToEnd: (Reminder) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+    var hasBeenSwiped by remember { mutableStateOf(false) }
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.StartToEnd && !hasBeenSwiped) {
+                hasBeenSwiped = true
+                onSwipeFromStartToEnd(reminder)
+                true
+            } else {
+                false
+            }
+        },
+        positionalThreshold = { it * 0.25f }
+    )
+
+    SwipeToDismissBox(
+        state = swipeToDismissBoxState,
+        enableDismissFromEndToStart = false,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.dimens.commonPadding12)
-            .clip(RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12))
-            .border(
-                BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color.LightGray),
-                RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
-            )
+            .padding(horizontal = MaterialTheme.dimens.commonPadding12),
+        backgroundContent = {}
     ) {
-        Icon(
-            painter = painterResource(reminder.reminderType.icon),
-            tint = Color.Unspecified,
-            contentDescription = "",
-            modifier = Modifier.padding(MaterialTheme.dimens.commonPadding8)
-        )
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-        Column {
-            Text(
-                text = reminder.title,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .clip(RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12))
+                .border(
+                    BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color.LightGray),
+                    RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                )
+        ) {
+            Icon(
+                painter = painterResource(reminder.reminderType.icon),
+                tint = Color.Unspecified,
+                contentDescription = "",
+                modifier = Modifier.padding(MaterialTheme.dimens.commonPadding8)
             )
-            Text(
-                text = reminder.time,
-                style = MaterialTheme.typography.labelMedium,
+            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+            Column {
+                Text(
+                    text = reminder.title,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = timeFormatter.format(Date(reminder.time)),
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Icon(
+                painter = if (reminder.isDoneForToday) {
+                    painterResource(R.drawable.ic_done)
+                } else {
+                    painterResource(R.drawable.ic_upcoming)
+                },
+                tint = Color.Unspecified,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(MaterialTheme.dimens.reminderIconSize)
+                    .padding(MaterialTheme.dimens.commonPadding16)
             )
         }
-        Spacer(Modifier.weight(1f))
-        Icon(
-            painter = if (reminder.isDoneForToday) {
-                painterResource(R.drawable.ic_done)
-            } else {
-                painterResource(R.drawable.ic_upcoming)
-            },
-            tint = Color.Unspecified,
-            contentDescription = "",
-            modifier = Modifier
-                .size(MaterialTheme.dimens.reminderIconSize)
-                .padding(MaterialTheme.dimens.commonPadding16)
-        )
     }
 }
 
@@ -167,7 +210,8 @@ private fun AddReminderDialog(
     reminderType: State<ReminderType>,
     setReminderType: (ReminderType) -> Unit,
     reminderTime: State<Long>,
-    setReminderTime: (Long) -> Unit
+    setReminderTime: (Long) -> Unit,
+    onAddReminderClick: () -> Unit
 ) {
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
     val timeString = remember(reminderTime.value) {
@@ -283,7 +327,8 @@ private fun AddReminderDialog(
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
                     Button(
                         onClick = {
-
+                            onAddReminderClick()
+                            setShowAddReminderDialog(false)
                         },
                         enabled = reminderTitle.value.isNotEmpty(),
                         modifier = Modifier.background(
@@ -375,5 +420,7 @@ data class RemindersScreenParams(
     val reminderType: State<ReminderType>,
     val setReminderType: (ReminderType) -> Unit,
     val reminderTime: State<Long>,
-    val setReminderTime: (Long) -> Unit
+    val setReminderTime: (Long) -> Unit,
+    val onSwipeFromStartToEnd: (Reminder) -> Unit,
+    val onAddReminderClick: () -> Unit
 )
