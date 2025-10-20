@@ -5,11 +5,29 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dj.insulink.feature.data.room.dao.GlucoseReadingDao
+import com.dj.insulink.feature.data.room.dao.IngredientDao
+import com.dj.insulink.feature.data.room.dao.MealDao
+import com.dj.insulink.feature.data.room.dao.MealIngredientDao
 import com.dj.insulink.feature.data.room.entity.GlucoseReadingEntity
+import com.dj.insulink.feature.data.room.entity.IngredientEntity
+import com.dj.insulink.feature.data.room.entity.MealEntity
+import com.dj.insulink.feature.data.room.entity.MealIngredientEntity
 
-@Database(entities = [GlucoseReadingEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        GlucoseReadingEntity::class,
+        MealEntity::class,
+        IngredientEntity::class,
+        MealIngredientEntity::class
+    ], 
+    version = 2, 
+    exportSchema = false
+)
 abstract class InsulinkDatabase : RoomDatabase() {
     abstract fun glucoseReadingDao(): GlucoseReadingDao
+    abstract fun mealDao(): MealDao
+    abstract fun ingredientDao(): IngredientDao
+    abstract fun mealIngredientDao(): MealIngredientDao
 
     companion object {
         private var INSTANCE: InsulinkDatabase? = null
