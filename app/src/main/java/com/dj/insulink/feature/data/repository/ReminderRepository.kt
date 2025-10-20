@@ -26,21 +26,23 @@ class ReminderRepository @Inject constructor(
         }
     }
 
-    suspend fun insert(userId: String, reminder: Reminder) {
+    suspend fun insert(userId: String, reminder: Reminder): Long {
+        val reminderWithUniqueId = if (reminder.id == 0L) {
+            reminder.copy(id = System.currentTimeMillis())
+        } else {
+            reminder
+        }
+
         withContext(Dispatchers.IO) {
             try {
-                val reminderWithUniqueId = if (reminder.id == 0L) {
-                    reminder.copy(id = System.currentTimeMillis())
-                } else {
-                    reminder
-                }
-
                 reminderDao.insert(reminderWithUniqueId.toEntity())
                 pushReminderToFirestoreForUser(userId, reminderWithUniqueId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+
+        return reminderWithUniqueId.id
     }
 
     suspend fun delete(userId: String, reminder: Reminder) {
