@@ -1,5 +1,6 @@
 package com.dj.insulink.core.ui.viewmodel
 
+import android.content.Context
 import androidx.compose.material3.DrawerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,7 +30,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun signOut(drawerState: DrawerState) {
-        authRepository.signOut()
+    fun signOut(drawerState: DrawerState, context: Context) {
+        authRepository.signOut(context)
     }
 }
