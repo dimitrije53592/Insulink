@@ -231,34 +231,14 @@ fun AppNavigation() {
                         rememberLauncherForActivityResult(
                         contract = ActivityResultContracts.StartActivityForResult()
                     ) { result ->
-                        Log.d("AppNavigation", "Google Sign-In result received: ${result.resultCode}")
                         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                         try {
-                            val account = task.getResult(ApiException::class.java)
-                            Log.d("AppNavigation", "Google account retrieved: ${account?.email}")
-                            
-                            if (account?.idToken == null) {
-                                Log.e("AppNavigation", "Google Sign-In failed: ID token is null")
-                                Toast.makeText(context, "Google Sign-In failed: No ID token received", Toast.LENGTH_LONG).show()
-                                return@rememberLauncherForActivityResult
-                            }
-                            
-                            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                            Log.d("AppNavigation", "Google credential created, calling signInWithGoogle")
+                            val account = task.getResult(ApiException::class.java)!!
+                            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
                             viewModel.signInWithGoogle(credential)
                         } catch (e: ApiException) {
-                            Log.e("AppNavigation", "Google sign in failed with ApiException", e)
-                            val errorMessage = when (e.statusCode) {
-                                7 -> "Network error. Please check your internet connection."
-                                8 -> "Internal error. Please try again."
-                                10 -> "Developer error. Please contact support."
-                                12501 -> "Sign-in was cancelled."
-                                else -> "Google Sign-In failed: ${e.message}"
-                            }
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                        } catch (e: Exception) {
-                            Log.e("AppNavigation", "Google sign in failed with general exception", e)
-                            Toast.makeText(context, "Google Sign-In failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            Log.w("AppNavigation", "Google sign in failed", e)
+                            Toast.makeText(context, "Google Sign-In failed.", Toast.LENGTH_SHORT).show()
                         }
                     }
                     LaunchedEffect(showErrorMessage.value) {
@@ -295,7 +275,6 @@ fun AppNavigation() {
                 composable(Screen.ForgotPassword.route) {
                     val viewModel: LoginViewModel = hiltViewModel()
                     val resetState = viewModel.passwordResetState.collectAsState()
-                    
                     LaunchedEffect(resetState.value.successMessage) {
                         if (resetState.value.successMessage != null) {
                             Toast.makeText(context, resetState.value.successMessage, Toast.LENGTH_LONG).show()
@@ -310,9 +289,9 @@ fun AppNavigation() {
 
                     ForgotPasswordScreen(
                         params = ForgotPasswordScreenParams(
-                            emailState = viewModel.email,
-                            onEmailChange = viewModel::setEmail,
-                            onSendPasswordReset = viewModel::sendPasswordReset,
+                            emailState = email,
+                            onEmailChange = onEmailChange,
+                            onSendPasswordReset = onSendPasswordReset,
                             resetState = viewModel.passwordResetState,
                         )
                     )

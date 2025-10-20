@@ -1,9 +1,15 @@
 package com.dj.insulink.auth.data
 
+import android.content.Context
 import android.util.Log
+import com.dj.insulink.R
 import com.dj.insulink.auth.domain.models.User
+import com.dj.insulink.auth.domain.models.UserLogin
 import com.dj.insulink.auth.domain.models.UserRegistration
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,6 +20,17 @@ class AuthRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) {
+    suspend fun loginUser(userLogin: UserLogin) {
+
+        val authResult = firebaseAuth.signInWithEmailAndPassword(
+            userLogin.email,
+            userLogin.password
+        ).await()
+
+        val user = authResult.user
+            ?: throw Exception("User login failed")
+        Log.d("authrepo", "loginUser: $user")
+    }
 
     suspend fun registerUser(userRegistration: UserRegistration): User {
         val authResult = firebaseAuth.createUserWithEmailAndPassword(
@@ -55,6 +72,57 @@ class AuthRepository @Inject constructor(
         )
     }
 
+    suspend fun sendPasswordResetEmail(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email).await()
+    }
+
+    suspend fun signInWithGoogle(credential: AuthCredential): User {
+        try {
+            val authResult = firebaseAuth.signInWithCredential(credential).await()
+            val firebaseUser = authResult.user ?: throw Exception("Google Sign-In failed: User is null.")
+
+            // Check if user already exists in Firestore
+            val userDocRef = firestore.collection("users").document(firebaseUser.uid)
+            val userDoc = userDocRef.get().await()
+
+            if (!userDoc.exists()) {
+                // User is new, save their details to Firestore
+                val displayName = firebaseUser.displayName ?: "N/A"
+                val nameParts = displayName.split(" ")
+                val firstName = nameParts.getOrNull(0) ?: ""
+                val lastName = nameParts.drop(1).joinToString(" ")
+
+                val newUser = hashMapOf(
+                    "firstName" to firstName,
+                    "lastName" to lastName,
+                    "email" to firebaseUser.email!!,
+                    "createdAt" to Timestamp.now(),
+                    "userId" to firebaseUser.uid
+                )
+                userDocRef.set(newUser).await()
+
+                return User(
+                    uid = firebaseUser.uid,
+                    firstName = firstName,
+                    lastName = lastName,
+                    email = firebaseUser.email!!,
+                    isEmailVerified = firebaseUser.isEmailVerified
+                )
+            } else {
+                // User already exists, just return their data
+                return User(
+                    uid = firebaseUser.uid,
+                    firstName = userDoc.getString("firstName") ?: "",
+                    lastName = userDoc.getString("lastName") ?: "",
+                    email = firebaseUser.email ?: "",
+                    isEmailVerified = firebaseUser.isEmailVerified
+                )
+            }
+        } catch (e: Exception) {
+            // Re-throw to be handled by ViewModel
+            throw e
+        }
+    }
     suspend fun getCurrentUser(): User? {
         val firebaseUser = firebaseAuth.currentUser ?: return null
 
@@ -72,8 +140,19 @@ class AuthRepository @Inject constructor(
         )
     }
 
-    fun signOut() {
+    fun signOut(context: Context) {
         firebaseAuth.signOut()
+        val googleSignInClient = GoogleSignIn.getClient(
+            context,
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        )
+
+        googleSignInClient.signOut().addOnCompleteListener {
+            Log.d("Auth", "Signed out successfully from Google and Firebase")
+        }
     }
 
     fun isUserLoggedIn(): Boolean {

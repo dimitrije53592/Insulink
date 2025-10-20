@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.State
 import com.dj.insulink.R
 
 @Composable
@@ -128,7 +128,7 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = params.emailState.value,
-                    onValueChange = params.onEmailChange,
+                    onValueChange = params.setEmail,
                     label = {
                         Text(
                             stringResource(R.string.login_email_text),
@@ -151,7 +151,7 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = params.passwordState.value,
-                    onValueChange = params.onPasswordChange,
+                    onValueChange = params.setPassword,
                     label = {
                         Text(
                             stringResource(R.string.login_enter_password_text),
@@ -185,7 +185,6 @@ fun LoginScreen(
                     onClick = {
                         Log.d("Sign in dugme", "kliknuto dugme")
                         params.onLogin()
-                        params.navigateToHome()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -280,8 +279,8 @@ fun LoginScreen(
 data class LoginScreenParams(
     val emailState: State<String>,
     val passwordState: State<String>,
-    val onEmailChange: (String) -> Unit,
-    val onPasswordChange: (String) -> Unit,
+    val setEmail: (String) -> Unit,
+    val setPassword: (String) -> Unit,
     val onLogin: () -> Unit,
     val onSignInWithGoogle: () -> Unit,
     val onForgotPasswordClicked: () -> Unit,

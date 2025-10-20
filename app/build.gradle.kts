@@ -77,6 +77,9 @@ dependencies {
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
+    // Google sign in
+    implementation(libs.google.play.services.auth)
+
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

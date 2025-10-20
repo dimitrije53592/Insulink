@@ -2,11 +2,17 @@ package com.dj.insulink.auth.ui.viewmodel
 
 import android.content.Context
 import android.util.Log
+import android.util.Patterns
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.viewModelScope
+import com.dj.insulink.auth.data.AuthRepository
+import com.dj.insulink.auth.domain.models.UserLogin
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,12 +22,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val auth: FirebaseAuth = Firebase.auth
@@ -53,9 +59,8 @@ class LoginViewModel @Inject constructor(
         _email.value = newEmail
     }
 
-    fun onPasswordChange(newPassword: String) {
-        _password.value = newPassword
-    }
+    private val _showErrorMessage = MutableStateFlow(false)
+    val showErrorMessage = _showErrorMessage.asStateFlow()
 
     fun setShowErrorMessage(show: Boolean) {
         _showErrorMessage.value = show
@@ -74,6 +79,9 @@ class LoginViewModel @Inject constructor(
         }
         
         viewModelScope.launch {
+            _isLoading.value = true
+            _showErrorMessage.value = false
+
             try {
                 val result = auth.signInWithEmailAndPassword(_email.value, _password.value).await()
                 val user = result.user
@@ -87,6 +95,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+
     fun sendPasswordReset() {
         Log.d(TAG, "sendPasswordReset: uslo u fju za kliknuto dugme")
         if (_email.value.isBlank()) {
@@ -95,41 +104,37 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        _passwordResetState.update {
-            it.copy(
-                isLoading = true,
-                errorMessage = null,
-                successMessage = null
-            )
-        }
-
         viewModelScope.launch {
-            auth.sendPasswordResetEmail(_email.value)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(
-                            context,
-                            "Password reset link sent to $email.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        _passwordResetState.update {
-                            it.copy(isLoading = false, successMessage = "Password reset link sent.")
-                        }
-                    } else {
-                        val msg = task.exception?.message ?: "An unknown error occurred."
-                        Toast.makeText(context, "Error: $msg", Toast.LENGTH_LONG).show()
-                        _passwordResetState.update {
-                            it.copy(isLoading = false, errorMessage = msg)
-                        }
-                    }
+            _passwordResetState.update {
+                it.copy(
+                    isLoading = true,
+                    errorMessage = null,
+                    successMessage = null
+                )
+            }
+            try {
+                authRepository.sendPasswordResetEmail(_email.value)
+                _passwordResetState.update {
+                    it.copy(isLoading = false, successMessage = "Password reset link sent to ${_email.value}.")
                 }
+            } catch (e: Exception) {
+                val msg = e.message ?: "An unknown error occurred."
+                _passwordResetState.update {
+                    it.copy(isLoading = false, errorMessage = msg)
+                }
+                Log.e(TAG, "sendPasswordReset failed", e)
+            }
         }
 
     }
 
-    fun isUserLoggedIn(): Boolean {
-        return auth.currentUser != null
-    }
+    fun signInWithGoogle(credential: com.google.firebase.auth.AuthCredential) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                authRepository.signInWithGoogle(credential)
+
+                _loginSuccess.value = true
 
     fun signInWithGoogle(credential: AuthCredential) {
         Log.d(TAG, "Attempting login with: Google")
@@ -146,6 +151,8 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+
 
     private val TAG = LoginViewModel::class.java.simpleName
 }
