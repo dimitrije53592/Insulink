@@ -94,7 +94,7 @@ fun AppNavigation() {
                 params = SideDrawerParams(
                     currentUser = currentUser,
                     onSignOutClick = {
-                        sharedViewModel.signOut(drawerState, context)
+                        sharedViewModel.signOut(drawerState)
                         navController.navigateTo(Screen.Login.route)
                         coroutineScope.launch {
                             drawerState.close()
@@ -256,8 +256,8 @@ fun AppNavigation() {
                         params = LoginScreenParams(
                             emailState = email,
                             passwordState = password,
-                            setEmail = viewModel::setEmail,
-                            setPassword = viewModel::setPassword,
+                            onEmailChange = viewModel::setEmail,
+                            onPasswordChange = viewModel::setPassword,
                             onLogin = viewModel::loginUser,
                             onSignInWithGoogle = {
                                 Log.d("TAG", "AppNavigation: google sign in ")
@@ -274,9 +274,6 @@ fun AppNavigation() {
                 }
                 composable(Screen.ForgotPassword.route) {
                     val viewModel: LoginViewModel = hiltViewModel()
-                    val email = viewModel.email
-                    val onEmailChange = viewModel::setEmail
-                    val onSendPasswordReset = viewModel::sendPasswordReset
                     val resetState = viewModel.passwordResetState.collectAsState()
                     LaunchedEffect(resetState.value.successMessage) {
                         if (resetState.value.successMessage != null) {

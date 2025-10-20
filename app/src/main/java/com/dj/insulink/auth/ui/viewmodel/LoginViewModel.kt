@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,20 +37,16 @@ class LoginViewModel @Inject constructor(
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password.asStateFlow()
 
+    // Login state management
+    private val _loginSuccess = MutableStateFlow(false)
+    val loginSuccess: StateFlow<Boolean> = _loginSuccess.asStateFlow()
+
     private val _errorMessage = MutableStateFlow("")
-    val errorMessage = _errorMessage.asStateFlow()
+    val errorMessage: StateFlow<String> = _errorMessage.asStateFlow()
 
     private val _showErrorMessage = MutableStateFlow(false)
-    val showErrorMessage = _showErrorMessage.asStateFlow()
+    val showErrorMessage: StateFlow<Boolean> = _showErrorMessage.asStateFlow()
 
-    private val _passwordResetState = MutableStateFlow(PasswordResetState())
-    val passwordResetState: StateFlow<PasswordResetState> = _passwordResetState.asStateFlow()
-
-    private val _loginSuccess = MutableStateFlow(false)
-    val loginSuccess = _loginSuccess.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
     fun setEmail(email: String) {
         _email.value = email
     }
@@ -58,67 +55,42 @@ class LoginViewModel @Inject constructor(
         _password.value = password
     }
 
-    fun setShowErrorMessage(isVisible: Boolean) {
-        _showErrorMessage.value = isVisible
+    fun onEmailChange(newEmail: String) {
+        _email.value = newEmail
     }
 
-    private fun isPasswordLongEnough(): Boolean {
-        return _password.value.length >= 8
+    private val _showErrorMessage = MutableStateFlow(false)
+    val showErrorMessage = _showErrorMessage.asStateFlow()
+
+    fun setShowErrorMessage(show: Boolean) {
+        _showErrorMessage.value = show
     }
 
-    private fun isEmailValid(): Boolean {
-        if (_email.value.isEmpty()) {
-            return false
-        }
+    private val _passwordResetState = MutableStateFlow(PasswordResetState())
+    val passwordResetState: StateFlow<PasswordResetState> = _passwordResetState.asStateFlow()
 
-        return Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
-    }
-    private fun isLoginFormValid(): Boolean {
-        if (!isEmailValid()) {
-            _errorMessage.value = "Email address you entered is not a valid email address."
-            return false
-        } else if (!isPasswordLongEnough()) {
-            _errorMessage.value = "Password you entered has to have at least 8 characters."
-            return false
-        } else {
-            return true
-        }
-    }
     fun loginUser() {
-        if(isLoginFormValid()){
-            login()
-        } else {
-            setShowErrorMessage(true)
+        Log.d(TAG, "Attempting login with: ${_email.value} and ${_password.value}")
+        if (_email.value.isBlank() || _password.value.isBlank()) {
+            Log.d(TAG, "Email or password is empty")
+            _errorMessage.value = "Please enter both email and password"
+            _showErrorMessage.value = true
+            return
         }
-    }
-
-    private fun login() {
+        
         viewModelScope.launch {
             _isLoading.value = true
             _showErrorMessage.value = false
 
             try {
-                Log.d(TAG, "Attempting login with email: ${_email.value}")
-                Log.d(TAG, "Attempting login with password: ${_password.value}")
-
-                val userLogin = UserLogin(
-                    email = _email.value,
-                    password = _password.value
-                )
-                authRepository.loginUser(userLogin)
-
-                Log.d(TAG, "Login successful, setting success flag.")
+                val result = auth.signInWithEmailAndPassword(_email.value, _password.value).await()
+                val user = result.user
+                Log.d(TAG, "Login Success: User ${user?.uid}")
                 _loginSuccess.value = true
-
             } catch (e: Exception) {
-                Log.e("LoginViewModel", "Login failed with exception.", e)
-                _errorMessage.value = "Login failed: ${e.message}"
+                Log.e(TAG, "Login Failed: ${e.message}")
+                _errorMessage.value = e.message ?: "Login failed. Please try again."
                 _showErrorMessage.value = true
-
-                _loginSuccess.value = false
-
-            } finally {
-                _isLoading.value = false
             }
         }
     }
@@ -164,13 +136,18 @@ class LoginViewModel @Inject constructor(
 
                 _loginSuccess.value = true
 
+    fun signInWithGoogle(credential: AuthCredential) {
+        Log.d(TAG, "Attempting login with: Google")
+        viewModelScope.launch {
+            try {
+                val result = auth.signInWithCredential(credential).await()
+                val user = result.user
+                Log.d(TAG, "Google Sign-In Success: User ${user?.uid}")
+                _loginSuccess.value = true
             } catch (e: Exception) {
-                Log.e(TAG, "Google Sign-In failed with exception.", e)
-                _errorMessage.value = "Google Sign-In failed: ${e.message}"
+                Log.e(TAG, "Google Sign-In Failed: ${e.message}")
+                _errorMessage.value = e.message ?: "Google Sign-In failed. Please try again."
                 _showErrorMessage.value = true
-                _loginSuccess.value = false
-            } finally {
-                _isLoading.value = false
             }
         }
     }

@@ -221,8 +221,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = {
-                        params.onSignInWithGoogle() },
+                    onClick = { params.onSignInWithGoogle() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
