@@ -41,6 +41,10 @@ import com.dj.insulink.auth.ui.screen.RegistrationScreen
 import com.dj.insulink.auth.ui.screen.RegistrationScreenParams
 import com.dj.insulink.auth.ui.viewmodel.LoginViewModel
 import com.dj.insulink.auth.ui.viewmodel.RegistrationViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
@@ -49,6 +53,7 @@ import com.dj.insulink.feature.ui.screen.FitnessScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
 import com.dj.insulink.feature.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import kotlinx.coroutines.launch
 
@@ -65,6 +70,15 @@ fun AppNavigation() {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+
+    // Google Sign-In client for sign out functionality
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+    }
+    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
 
     LaunchedEffect(Unit) {
         sharedViewModel.getCurrentUser()
@@ -323,32 +337,6 @@ fun AppNavigation() {
                     FitnessScreen()
                 }
             }
-        }
-        composable(Screen.Login.route) {
-            val viewModel: LoginViewModel = hiltViewModel()
-            LoginScreen(
-                params = LoginScreenParams(
-                    emailState = viewModel.email,
-                    passwordState = viewModel.password,
-                    onEmailChange = viewModel::onEmailChange,
-                    onPasswordChange = viewModel::onPasswordChange,
-                    onLogin = viewModel::login,
-                    onSignInWithGoogle = viewModel::signInWithGoogle,
-                    onForgotPasswordClicked = { navController.navigate(Screen.ForgotPassword.route) },
-                    onCheckIfUserIsLoggedIn = viewModel::checkIfUserIsLoggedIn
-                )
-            )
-        }
-        composable(Screen.ForgotPassword.route) {
-            val viewModel: LoginViewModel = hiltViewModel()
-            ForgotPasswordScreen(
-                params = ForgotPasswordScreenParams(
-                    emailState = viewModel.email,
-                    onEmailChange = viewModel::onEmailChange,
-                    onSendPasswordReset = viewModel::login,
-                    resetState = viewModel.passwordResetState
-                )
-            )
         }
     }
 }

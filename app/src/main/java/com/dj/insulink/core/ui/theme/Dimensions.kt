@@ -17,6 +17,7 @@ data class Dimensions(
 
     // spacing
     val commonSpacing80: Dp = 80.dp,
+    val commonSpacing64: Dp = 64.dp,
     val commonSpacing32: Dp = 32.dp,
     val commonSpacing24: Dp = 24.dp,
     val commonSpacing20: Dp = 20.dp,
@@ -43,7 +44,8 @@ data class Dimensions(
     val commonButtonBorder1: Dp = 1.dp,
 
     // other
-    val commonElevation0: Dp = 0.dp
+    val commonElevation0: Dp = 0.dp,
+    val commonElevation2: Dp = 2.dp
 )
 
 val LocalAppDimensions = compositionLocalOf { Dimensions() }
