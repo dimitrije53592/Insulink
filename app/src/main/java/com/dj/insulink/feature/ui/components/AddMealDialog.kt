@@ -17,6 +17,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealDialog(
     mealName: StateFlow<String>,
@@ -59,6 +65,12 @@ fun AddMealDialog(
     val searchResultsValue by searchResults
     val selectedIngredientsValue by selectedIngredients
     val isLoadingValue by isLoading
+    
+    // Date picker state
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = mealDateValue
+    )
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -114,7 +126,7 @@ fun AddMealDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { 
-                            // TODO: Open date picker dialog
+                            showDatePicker = true
                         },
                     readOnly = true,
                     trailingIcon = {
@@ -292,6 +304,34 @@ fun AddMealDialog(
                     }
                 }
             }
+        }
+    }
+    
+    // Date Picker Dialog
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { dateMillis ->
+                            onMealDateChange(dateMillis)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }
