@@ -115,6 +115,12 @@ class FitnessViewModel @Inject constructor(
         }
     }
 
+    fun fetchAllExercisesForUserAndUpdateDatabase(userId: String) {
+        viewModelScope.launch {
+            exerciseRepository.fetchAllExercisesForUserAndUpdateDatabase(userId)
+        }
+    }
+
     private fun calculateSportsFromExercises(exercises: List<Exercise>): List<Sport> {
         return exercises
             .filter { it.sportName.isNotBlank() }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
@@ -192,7 +194,7 @@ fun ReportsScreen(
                 textAlign = TextAlign.Center
             )
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing64))
+        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
         Text(
             text = stringResource(R.string.report_screen_start_date_label),
             modifier = Modifier.padding(start = MaterialTheme.dimens.commonPadding16)
@@ -242,11 +244,17 @@ fun ReportsScreen(
                 )
             }
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing64))
+        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
         Button(
             onClick = {
                 if (params.pdfGenerationState.value is PdfGenerationState.Success) {
-                    showPdfPreview = true
+                    sharePdfFile(
+                        context,
+                        (params.pdfGenerationState.value as PdfGenerationState.Success).file,
+                        shareFileLauncher
+                    )
+                } else {
+                    params.generatePdfReport()
                 }
             },
             shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
@@ -256,33 +264,46 @@ fun ReportsScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(
+                    horizontal = MaterialTheme.dimens.commonPadding12
+                )
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = MaterialTheme.dimens.commonPadding4)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_eye),
-                    tint = Color(0xFFB2B2B2),
-                    contentDescription = "",
-                    modifier = Modifier.size(MaterialTheme.dimens.buttonIconSize)
-                )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
-                Text(
-                    text = stringResource(R.string.report_screen_preview_report_button_label),
-                    color = Color(0xFFB2B2B2)
-                )
+                if (params.pdfGenerationState.value is PdfGenerationState.Generating) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        strokeWidth = 2.dp,
+                        color = Color(0xFFB2B2B2)
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_download),
+                        tint = Color(0xFFB2B2B2),
+                        contentDescription = "",
+                        modifier = Modifier.size(MaterialTheme.dimens.buttonIconSize)
+                    )
+                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Text(
+                        text = when (params.pdfGenerationState.value) {
+                            is PdfGenerationState.Generating -> "Generating..."
+                            else -> stringResource(R.string.report_screen_preview_report_button_label)
+                        },
+                        color = Color(0xFFB2B2B2)
+                    )
+                }
             }
         }
         Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing20))
         Button(
             onClick = {
                 if (params.pdfGenerationState.value is PdfGenerationState.Success) {
-                    sharePdfFile(context, (params.pdfGenerationState.value as PdfGenerationState.Success).file, shareFileLauncher)
-                } else {
-                    params.generatePdfReport()
+                    showPdfPreview = true
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -307,8 +328,8 @@ fun ReportsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_download),
-                    tint = Color.Unspecified,
+                    painter = painterResource(R.drawable.ic_eye),
+                    tint = Color.White,
                     contentDescription = ""
                 )
                 Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
