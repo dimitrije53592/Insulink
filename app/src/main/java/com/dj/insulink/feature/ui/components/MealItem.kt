@@ -11,7 +11,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,15 +29,37 @@ import java.util.Locale
 
 @Composable
 fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.StartToEnd) {
+                onSwipeFromStartToEnd()
+                true
+            } else {
+                false
+            }
+        },
+        positionalThreshold = { it * 0.25f }
+    )
+
+    SwipeToDismissBox(
+        state = swipeToDismissBoxState,
+        enableDismissFromEndToStart = false,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaterialTheme.dimens.commonPadding12),
+        backgroundContent = {}
+    ) {
+        MealItemContent(meal = meal)
+    }
+}
+
+@Composable
+private fun MealItemContent(meal: Meal) {
     // Determine if any key nutritional/tracking data is present to show the full details vs. placeholder
     val hasContent = meal.calories != null || meal.carbs != null || meal.protein != null
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            // This enables the swipe to delete action - commented out as the function is not defined here
-            // .swipeToDismiss(onDismissed = { onSwipeFromStartToEnd() })
-            .padding(horizontal = MaterialTheme.dimens.commonPadding12),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) // Theme Color
     ) {

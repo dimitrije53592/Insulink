@@ -94,8 +94,8 @@ fun MealsScreen(
                         viewModel.setSelectedDate(date)
                     },
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .padding(top = MaterialTheme.dimens.commonPadding16, start = MaterialTheme.dimens.commonPadding16)
+                        .fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.dimens.commonPadding16, vertical = MaterialTheme.dimens.commonPadding8)
                 )
             }
 
