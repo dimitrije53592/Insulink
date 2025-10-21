@@ -54,6 +54,7 @@ import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.feature.domain.models.Reminder
 import com.dj.insulink.feature.domain.models.ReminderType
 import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.FitnessScreenParams
 import com.dj.insulink.feature.ui.screen.FriendsScreen
 import com.dj.insulink.feature.ui.screen.FriendsScreenParams
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
@@ -64,7 +65,9 @@ import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
+import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -355,67 +358,89 @@ fun AppNavigation() {
                     MealsScreen()
                 }
                 composable(Screen.Fitness.route) {
-                    FitnessScreen()
-                }
-                composable(Screen.Reminders.route) {
-                    RemindersScreen(
-                        params = RemindersScreenParams(
-                            todayReminders = listOf(
-                                Reminder(
-                                    "Breakfast",
-                                    ReminderType.MEAL_REMINDER,
-                                    true,
-                                    "7:30 AM"
-                                ),
-                                Reminder(
-                                    "Morning insulin",
-                                    ReminderType.INSULIN_REMINDER,
-                                    false,
-                                    "8:30 AM"
-                                ),
-                                Reminder(
-                                    "Blood sugar check",
-                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
-                                    false,
-                                    "12 AM"
-                                )
-                            ),
-                            upcomingReminders = listOf(
-                                Reminder(
-                                    "Breakfast",
-                                    ReminderType.MEAL_REMINDER,
-                                    true,
-                                    "7:30 AM"
-                                ),
-                                Reminder(
-                                    "Morning insulin",
-                                    ReminderType.INSULIN_REMINDER,
-                                    false,
-                                    "8:30 AM"
-                                ),
-                                Reminder(
-                                    "Blood sugar check",
-                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
-                                    false,
-                                    "12 AM"
-                                )
-                            )
+                    val viewModel: FitnessViewModel = hiltViewModel()
+
+                    val calculatedSports = viewModel.calculatedSports.collectAsState()
+                    val showAddSportsActivityDialog = viewModel.showAddSportsActivityDialog.collectAsState()
+                    val activityName = viewModel.activityName.collectAsState()
+                    val durationHours = viewModel.durationHours.collectAsState()
+                    val durationMinutes = viewModel.durationMinutes.collectAsState()
+                    val glucoseBefore = viewModel.glucoseBefore.collectAsState()
+                    val glucoseAfter = viewModel.glucoseAfter.collectAsState()
+
+                    FitnessScreen(
+                        params = FitnessScreenParams(
+                            sports = calculatedSports,
+                            showAddSportsActivityDialog = showAddSportsActivityDialog,
+                            setShowSportsActivityDialog = viewModel::setShowSportsActivityDialog,
+                            sportName = activityName,
+                            setSportName = viewModel::setActivityName,
+                            durationHours = durationHours,
+                            setDurationHours = viewModel::setDurationHours,
+                            durationMinutes = durationMinutes,
+                            setDurationMinutes = viewModel::setDurationMinutes,
+                            glucoseBefore = glucoseBefore,
+                            setGlucoseBefore = viewModel::setGlucoseBefore,
+                            glucoseAfter = glucoseAfter,
+                            setGlucoseAfter = viewModel::setGlucoseAfter,
+                            onAddExerciseClick = {
+                                viewModel.onAddExerciseClick(currentUser.value?.uid)
+                            }
                         )
                     )
+                }
+                composable(Screen.Reminders.route) {
+                    val currentUser = sharedViewModel.currentUser.collectAsState()
+                    val viewModel: ReminderViewModel = hiltViewModel()
+
+                    val allRemindersForUser = viewModel.allRemindersForUser.collectAsState()
+                    val showAddReminderDialog = viewModel.showAddReminderDialog.collectAsState()
+                    val reminderTitle = viewModel.reminderTitle.collectAsState()
+                    val reminderType = viewModel.reminderType.collectAsState()
+                    val reminderTime = viewModel.reminderTime.collectAsState()
+
+                    LaunchedEffect(currentUser.value) {
+                        currentUser.value?.uid?.let {
+                            viewModel.fetchReminderDataAndUpdateDatabase(it)
+                        }
+                    }
+
+                    currentUser.value?.let {
+                        RemindersScreen(
+                            params = RemindersScreenParams(
+                                reminders = allRemindersForUser.value,
+                                showAddReminderDialog = showAddReminderDialog,
+                                setShowAddReminderDialog = viewModel::setShowAddReminderDialog,
+                                reminderTitle = reminderTitle,
+                                setReminderTitle = viewModel::setReminderTitle,
+                                reminderType = reminderType,
+                                setReminderType = viewModel::setReminderType,
+                                reminderTime = reminderTime,
+                                setReminderTime = viewModel::setReminderTime,
+                                onSwipeFromStartToEnd = {
+                                    viewModel.deleteReminder(currentUser.value?.uid, it)
+                                },
+                                onAddReminderClick = {
+                                    viewModel.addReminder(currentUser.value!!.uid)
+                                }
+                            )
+                        )
+                    }
                 }
                 composable(Screen.Friends.route) {
                     val viewModel: FriendViewModel = hiltViewModel()
 
-                    val allFriendsForUser =
-                        viewModel.allFriendsForUser(currentUser.value?.uid!!).collectAsState()
+                    val allFriendsForUser = viewModel.allFriendsForUser.collectAsState()
                     val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
                     val enteredCode = viewModel.enteredCode.collectAsState()
 
-                    currentUser.value?.let {
-                        LaunchedEffect(Unit) {
-                            viewModel.fetchFriendDataAndUpdateDatabase(currentUser.value!!.uid)
+                    LaunchedEffect(currentUser.value) {
+                        currentUser.value?.uid?.let {
+                            viewModel.fetchFriendDataAndUpdateDatabase(it)
                         }
+                    }
 
+                    currentUser.value?.let {
                         FriendsScreen(
                             params = FriendsScreenParams(
                                 friendsList = allFriendsForUser,

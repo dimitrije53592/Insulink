@@ -1,7 +1,6 @@
 package com.dj.insulink.feature.ui.screen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -135,9 +134,7 @@ fun GlucoseScreen(
             }
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
             Column {
-                Log.d("Sofija", params.allGlucoseReadings.value.isNotEmpty().toString())
                 if (params.allGlucoseReadings.value.isNotEmpty()) {
-                    Log.d("Sofija", params.allGlucoseReadings.value.toString())
                     LazyColumn (
                         modifier = Modifier.height(ALLOWED_READINGS_COLUMN_HEIGHT)
                     ){

@@ -135,7 +135,7 @@ fun AddGlucoseReadingDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Select Time",
+                        text = stringResource(R.string.new_reading_select_time_label),
                         style = MaterialTheme.typography.headlineSmall
                     )
                     Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))

@@ -83,5 +83,23 @@
     <!-- Reminders screen -->
     <string name="reminders_screen_today_label">Today</string>
     <string name="reminders_screen_upcoming_label">Upcoming</string>
+    <string name="reminders_screen_add_new_reminder_dialog_title">Add a new reminder</string>
+    <string name="reminders_screen_add_new_reminder_title_label">Set title</string>
+    <string name="reminders_screen_add_new_reminder_select_type_label">Select type</string>
+    <string name="reminders_screen_add_new_reminder_select_time_label">Select time</string>
+
+    <!-- Fitness screen -->
+    <string name="fitness_screen_sports_list_title">Your sports</string>
+    <string name="fitness_screen_average_drop_label">Avg Drop/Hour</string>
+    <string name="fitness_screen_last_drop_label">Last Drop/Hour</string>
+    <string name="fitness_screen_last_time_label">Last: %1$s</string>
+    <string name="fitness_screen_add_new_exercise_dialog_title">Add exercise</string>
+    <string name="fitness_screen_add_sport_name_label">Activity</string>
+    <string name="fitness_screen_add_duration_label">Duration</string>
+    <string name="fitness_screen_hours_label">Hours</string>
+    <string name="fitness_screen_minutes_label">Minutes</string>
+    <string name="fitness_screen_glucose_before_label">Glucose level before (mg/dL)</string>
+    <string name="fitness_screen_glucose_after_label">Glucose level after (mg/dL)</string>
+
 
 </resources>
