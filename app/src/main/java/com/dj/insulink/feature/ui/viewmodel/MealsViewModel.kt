@@ -49,8 +49,8 @@ class MealsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _currentUserId = MutableStateFlow("")
-    val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
+    private val _currentUserEmail = MutableStateFlow("")
+    val currentUserEmail: StateFlow<String> = _currentUserEmail.asStateFlow()
 
     // Custom ingredients management
     private val _userIngredients = MutableStateFlow<List<Ingredient>>(emptyList())
@@ -68,8 +68,8 @@ class MealsViewModel @Inject constructor(
     private val _mealsForSelectedDate = MutableStateFlow<List<Meal>>(emptyList())
     val mealsForSelectedDate: StateFlow<List<Meal>> = _mealsForSelectedDate.asStateFlow()
 
-    fun setCurrentUserId(userId: String) {
-        _currentUserId.value = userId
+    fun setCurrentUserEmail(userEmail: String) {
+        _currentUserEmail.value = userEmail
         initializeData()
         // Only load meals for selected date, not all meals
         loadMealsForSelectedDate()
@@ -90,10 +90,10 @@ class MealsViewModel @Inject constructor(
     }
 
     fun loadMeals() {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getAllMeals(userId).collect { meals ->
+                mealRepository.getAllMeals(userEmail).collect { meals ->
                     _allMeals.value = meals
                 }
             }
@@ -101,32 +101,32 @@ class MealsViewModel @Inject constructor(
     }
 
     fun loadDailyNutrition() {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
                 val today = System.currentTimeMillis()
-                val nutrition = mealRepository.getDailyNutrition(userId, today)
+                val nutrition = mealRepository.getDailyNutrition(userEmail, today)
                 _dailyNutrition.value = nutrition
             }
         }
     }
 
     fun loadDailyNutritionForDate(date: Long) {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                val nutrition = mealRepository.getDailyNutrition(userId, date)
+                val nutrition = mealRepository.getDailyNutrition(userEmail, date)
                 _dailyNutrition.value = nutrition
             }
         }
     }
 
     fun loadMealsForSelectedDate() {
-        val userId = _currentUserId.value
+        val userEmail = _currentUserEmail.value
         val selectedDate = _selectedDate.value
-        if (userId.isNotEmpty()) {
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getMealsByDate(userId, selectedDate).collect { meals ->
+                mealRepository.getMealsByDate(userEmail, selectedDate).collect { meals ->
                     _mealsForSelectedDate.value = meals
                 }
             }
@@ -134,9 +134,10 @@ class MealsViewModel @Inject constructor(
     }
 
     fun searchIngredients(query: String) {
-        if (query.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (query.isNotEmpty() && userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.searchIngredients(query).collect { ingredients ->
+                mealRepository.searchIngredients(query, userEmail).collect { ingredients ->
                     _searchResults.value = ingredients
                 }
             }
@@ -194,8 +195,8 @@ class MealsViewModel @Inject constructor(
     }
 
     fun submitNewMeal() {
-        val userId = _currentUserId.value
-        if (userId.isEmpty()) return
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isEmpty()) return
 
         val ingredients = _selectedIngredients.value
         if (ingredients.isEmpty()) return
@@ -218,7 +219,7 @@ class MealsViewModel @Inject constructor(
             sugar = totalSugar,
             salt = totalSalt,
             comment = _newMealComment.value.takeIf { it.isNotEmpty() },
-            userId = userId,
+            userId = userEmail,
             ingredients = ingredients
         )
 
@@ -253,10 +254,10 @@ class MealsViewModel @Inject constructor(
 
     // Custom ingredients management
     fun loadUserIngredients() {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getUserIngredients(userId).collect { ingredients ->
+                mealRepository.getUserIngredients(userEmail).collect { ingredients ->
                     _userIngredients.value = ingredients
                 }
             }
@@ -272,12 +273,12 @@ class MealsViewModel @Inject constructor(
     }
 
     fun createCustomIngredient(ingredient: Ingredient) {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
                 _isLoading.value = true
                 try {
-                    val customIngredient = ingredient.copy(userId = userId)
+                    val customIngredient = ingredient.copy(userId = userEmail)
                     mealRepository.insertIngredient(customIngredient)
                     loadUserIngredients() // Refresh the list
                     setShowCreateIngredientDialog(false)

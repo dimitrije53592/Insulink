@@ -81,10 +81,10 @@ fun MealsScreen(
     // Initialize with current user ID
     LaunchedEffect(currentUserId) {
         if (currentUserId != null) {
-            viewModel.setCurrentUserId(currentUserId)
+            viewModel.setCurrentUserEmail(currentUserId)
         } else {
             // Fallback to dummy user for testing
-            viewModel.setCurrentUserId("dummy_user_id")
+            viewModel.setCurrentUserEmail("dummy@example.com")
         }
     }
 
