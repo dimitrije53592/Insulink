@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.feature.ui.components.SideDrawerListItem
 
 @Composable
 fun SideDrawer(
@@ -49,121 +50,37 @@ fun SideDrawer(
         ) {
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
             Text(
-                text = "${params.currentUser.value?.firstName} ${params.currentUser.value?.lastName}",
+                text = "${params.currentUser?.firstName ?: ""} ${params.currentUser?.lastName ?: ""}",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${params.currentUser.value?.email}",
+                text = params.currentUser?.email ?: "",
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
             HorizontalDivider(modifier = Modifier.fillMaxWidth(SIDE_DRAWER_WIDTH_RATIO))
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
-                    .clickable {
-
-                    }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_reminders),
-                    tint = Color.Unspecified,
-                    contentDescription = "",
-                    modifier = Modifier.size(MaterialTheme.dimens.sideDrawerIconSize)
-                )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-                Column {
-                    Text(
-                        text = stringResource(R.string.side_drawer_reminders_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.side_drawer_reminders_subtitle),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = ""
-                )
-            }
+            SideDrawerListItem(
+                title = stringResource(R.string.side_drawer_reminders_title),
+                subtitle = stringResource(R.string.side_drawer_reminders_subtitle),
+                icon = painterResource(R.drawable.ic_reminders),
+                onClick = params.navigateToReminders
+            )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
-                    .clickable {
-
-                    }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_friends),
-                    tint = Color.Unspecified,
-                    contentDescription = "",
-                    modifier = Modifier.size(MaterialTheme.dimens.sideDrawerIconSize)
-                )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-                Column {
-                    Text(
-                        text = stringResource(R.string.side_drawer_friends_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.side_drawer_friends_subtitle),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = ""
-                )
-            }
+            SideDrawerListItem(
+                title = stringResource(R.string.side_drawer_friends_title),
+                subtitle = stringResource(R.string.side_drawer_friends_subtitle),
+                icon = painterResource(R.drawable.ic_friends),
+                onClick = params.navigateToFriends
+            )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
-                    .clickable {
-
-                    }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_reports),
-                    tint = Color.Unspecified,
-                    contentDescription = "",
-                    modifier = Modifier.size(MaterialTheme.dimens.sideDrawerIconSize)
-                )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-                Column {
-                    Text(
-                        text = stringResource(R.string.side_drawer_reports_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.side_drawer_reports_subtitle),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = ""
-                )
-            }
+            SideDrawerListItem(
+                title = stringResource(R.string.side_drawer_reports_title),
+                subtitle = stringResource(R.string.side_drawer_reports_subtitle),
+                icon = painterResource(R.drawable.ic_reports),
+                onClick = params.navigateToReports
+            )
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = {
@@ -195,7 +112,10 @@ fun SideDrawer(
 }
 
 data class SideDrawerParams(
-    val currentUser: State<User?>,
+    val currentUser: User?,
+    val navigateToReminders: () -> Unit,
+    val navigateToFriends: () -> Unit,
+    val navigateToReports: () -> Unit,
     val onSignOutClick: () -> Unit,
 )
 

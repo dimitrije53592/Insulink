@@ -14,6 +14,10 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,9 +35,11 @@ fun GlucoseReadingItem(
     glucoseReading: GlucoseReading,
     onSwipeFromStartToEnd: () -> Unit
 ) {
+    var hasBeenSwiped by remember { mutableStateOf(false) }
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.StartToEnd) {
+            if (value == SwipeToDismissBoxValue.StartToEnd && !hasBeenSwiped) {
+                hasBeenSwiped = true
                 onSwipeFromStartToEnd()
                 true
             } else {

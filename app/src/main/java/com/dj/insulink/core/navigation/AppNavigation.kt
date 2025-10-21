@@ -1,7 +1,9 @@
 package com.dj.insulink.core.navigation
 
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
@@ -49,19 +51,30 @@ import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
+import com.dj.insulink.feature.domain.models.Reminder
+import com.dj.insulink.feature.domain.models.ReminderType
 import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.FriendsScreen
+import com.dj.insulink.feature.ui.screen.FriendsScreenParams
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
 import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
 import com.dj.insulink.feature.ui.screen.MealsScreen
+import com.dj.insulink.feature.ui.screen.RemindersScreen
+import com.dj.insulink.feature.ui.screen.RemindersScreenParams
+import com.dj.insulink.feature.ui.screen.ReportsScreen
+import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
     val sharedViewModel: SharedViewModel = hiltViewModel()
+    val currentUser = sharedViewModel.currentUser.collectAsState()
 
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -71,34 +84,33 @@ fun AppNavigation() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-    // Google Sign-In client for sign out functionality
-    val gso = remember {
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(context.getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-    }
-    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
-
     LaunchedEffect(Unit) {
         sharedViewModel.getCurrentUser()
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentDestinationRoute in Screen.bottomBarDestinations.map { it.route },
+        gesturesEnabled = currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route },
         drawerContent = {
-            val currentUser = sharedViewModel.currentUser.collectAsState()
-
             SideDrawer(
                 params = SideDrawerParams(
-                    currentUser = currentUser,
+                    currentUser = currentUser.value,
+                    navigateToReminders = {
+                        navController.navigateTo(Screen.Reminders.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
+                    navigateToFriends = {
+                        navController.navigateTo(Screen.Friends.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
+                    navigateToReports = {
+                        navController.navigateTo(Screen.Report.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
                     onSignOutClick = {
-                        sharedViewModel.signOut(drawerState, context)
+                        sharedViewModel.signOut(context)
                         navController.navigateTo(Screen.Login.route)
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
+                        coroutineScope.launch { drawerState.close() }
                     }
                 )
             )
@@ -106,7 +118,7 @@ fun AppNavigation() {
     ) {
         Scaffold(
             topBar = {
-                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
+                if (currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route }) {
                     CenterAlignedTopAppBar(
                         title = {
                             currentDestination?.title?.let {
@@ -135,7 +147,7 @@ fun AppNavigation() {
                 }
             },
             bottomBar = {
-                if (currentDestinationRoute in Screen.bottomBarDestinations.map { it.route }) {
+                if (currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route }) {
                     NavigationBar {
                         Screen.bottomBarDestinations.forEach { destination ->
                             destination.icon?.let {
@@ -185,6 +197,7 @@ fun AppNavigation() {
 
                     LaunchedEffect(registrationSuccess.value) {
                         if (registrationSuccess.value) {
+                            sharedViewModel.getCurrentUser()
                             navController.navigateTo(Screen.Glucose.route)
                         }
                     }
@@ -221,7 +234,7 @@ fun AppNavigation() {
                     val loginSuccess = viewModel.loginSuccess.collectAsState()
                     val gso = remember {
                         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(context.getString(R.string.default_web_client_id)) // Get token from strings.xml
+                            .requestIdToken(context.getString(R.string.default_web_client_id))
                             .requestEmail()
                             .build()
                     }
@@ -249,6 +262,7 @@ fun AppNavigation() {
                     }
                     LaunchedEffect(loginSuccess.value) {
                         if (loginSuccess.value) {
+                            sharedViewModel.getCurrentUser()
                             navController.navigateTo(Screen.Glucose.route)
                         }
                     }
@@ -302,12 +316,18 @@ fun AppNavigation() {
 
                     val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
                     val latestGlucoseReading = viewModel.latestGlucoseReading.collectAsState()
-                    val newGlucoseReadingTimestamp = viewModel.newGlucoseReadingTimestamp.collectAsState()
+                    val newGlucoseReadingTimestamp =
+                        viewModel.newGlucoseReadingTimestamp.collectAsState()
                     val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
-                    val newGlucoseReadingComment = viewModel.newGlucoseReadingComment.collectAsState()
-                    val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsState()
+                    val newGlucoseReadingComment =
+                        viewModel.newGlucoseReadingComment.collectAsState()
+                    val showAddGlucoseReadingDialog =
+                        viewModel.showAddGlucoseReadingDialog.collectAsState()
                     val selectedTimespan = viewModel.selectedTimespan.collectAsState()
 
+                    LaunchedEffect(currentUser.value) {
+                        viewModel.fetchAllGlucoseReadingsForUserAndUpdateDatabase(currentUser.value?.uid)
+                    }
                     GlucoseScreen(
                         params = GlucoseScreenParams(
                             allGlucoseReadings = allGlucoseReadings,
@@ -322,8 +342,12 @@ fun AppNavigation() {
                             setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
                             showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
                             setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
-                            submitNewGlucoseReading = viewModel::submitNewGlucoseReading,
-                            deleteGlucoseReading = viewModel::deleteGlucoseReading
+                            submitNewGlucoseReading = {
+                                viewModel.submitNewGlucoseReading(currentUser.value?.uid)
+                            },
+                            deleteGlucoseReading = {
+                                viewModel.deleteGlucoseReading(currentUser.value?.uid, it)
+                            }
                         )
                     )
                 }
@@ -332,6 +356,83 @@ fun AppNavigation() {
                 }
                 composable(Screen.Fitness.route) {
                     FitnessScreen()
+                }
+                composable(Screen.Reminders.route) {
+                    RemindersScreen(
+                        params = RemindersScreenParams(
+                            todayReminders = listOf(
+                                Reminder(
+                                    "Breakfast",
+                                    ReminderType.MEAL_REMINDER,
+                                    true,
+                                    "7:30 AM"
+                                ),
+                                Reminder(
+                                    "Morning insulin",
+                                    ReminderType.INSULIN_REMINDER,
+                                    false,
+                                    "8:30 AM"
+                                ),
+                                Reminder(
+                                    "Blood sugar check",
+                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
+                                    false,
+                                    "12 AM"
+                                )
+                            ),
+                            upcomingReminders = listOf(
+                                Reminder(
+                                    "Breakfast",
+                                    ReminderType.MEAL_REMINDER,
+                                    true,
+                                    "7:30 AM"
+                                ),
+                                Reminder(
+                                    "Morning insulin",
+                                    ReminderType.INSULIN_REMINDER,
+                                    false,
+                                    "8:30 AM"
+                                ),
+                                Reminder(
+                                    "Blood sugar check",
+                                    ReminderType.BLOOD_SUGAR_CHECK_REMINDER,
+                                    false,
+                                    "12 AM"
+                                )
+                            )
+                        )
+                    )
+                }
+                composable(Screen.Friends.route) {
+                    val viewModel: FriendViewModel = hiltViewModel()
+
+                    val allFriendsForUser =
+                        viewModel.allFriendsForUser(currentUser.value?.uid!!).collectAsState()
+                    val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
+                    val enteredCode = viewModel.enteredCode.collectAsState()
+
+                    currentUser.value?.let {
+                        LaunchedEffect(Unit) {
+                            viewModel.fetchFriendDataAndUpdateDatabase(currentUser.value!!.uid)
+                        }
+
+                        FriendsScreen(
+                            params = FriendsScreenParams(
+                                friendsList = allFriendsForUser,
+                                showAddNewFriendDialog = showAddNewFriendDialog,
+                                setShowAddNewFriendDialog = viewModel::setShowAddNewFriendDialog,
+                                usersFriendCode = currentUser.value!!.friendCode,
+                                enteredCode = enteredCode,
+                                setEnteredCode = viewModel::setEnteredCode,
+                                onAddFriendClick = {
+                                    viewModel.onAddFriendClick(userId = currentUser.value!!.uid)
+                                }
+                            )
+                        )
+                    }
+                }
+                composable(Screen.Report.route) {
+                    ReportsScreen()
                 }
             }
         }

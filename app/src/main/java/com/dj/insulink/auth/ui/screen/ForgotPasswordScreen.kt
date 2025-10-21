@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -61,8 +62,16 @@ fun ForgotPasswordScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.33f)
-                    .background(Color.Blue)
-                    .padding(24.dp),
+                    .background(
+                        brush = Brush
+                            .verticalGradient(
+                                colors = listOf(
+                                    Color(0xFF4A7BF6),
+                                    Color(0xFF8A5CF5)
+                                )
+                            )
+                    )
+                    .padding(24.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -72,7 +81,9 @@ fun ForgotPasswordScreen(
                     Image(
                         painter = painterResource(id = R.drawable.ic_insulink_logo),
                         contentDescription = "Logo",
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(12.dp))
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -105,7 +116,7 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
                 .align(Alignment.TopCenter)
-                .offset(y = 250.dp)
+                .offset(y = 230.dp)
                 .border(
                     width = 1.dp,
                     color = Color.LightGray,

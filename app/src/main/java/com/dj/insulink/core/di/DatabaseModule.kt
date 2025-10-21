@@ -23,19 +23,23 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideGlucoseReadingDao(database: InsulinkDatabase) = database.glucoseReadingDao()
-    
+
+    @Provides
+    @Singleton
+    fun provideFriendDao(database: InsulinkDatabase) = database.friendDao()
+
     @Provides
     @Singleton
     fun provideMealDao(database: InsulinkDatabase) = database.mealDao()
-    
+
     @Provides
     @Singleton
     fun provideIngredientDao(database: InsulinkDatabase) = database.ingredientDao()
-    
+
     @Provides
     @Singleton
     fun provideMealIngredientDao(database: InsulinkDatabase) = database.mealIngredientDao()
-    
+
     @Provides
     @Singleton
     fun provideMealRepository(
@@ -43,7 +47,7 @@ object DatabaseModule {
         ingredientDao: com.dj.insulink.feature.data.room.dao.IngredientDao,
         mealIngredientDao: com.dj.insulink.feature.data.room.dao.MealIngredientDao
     ): MealRepository = MealRepositoryImpl(mealDao, ingredientDao, mealIngredientDao)
-    
+
     @Provides
     @Singleton
     fun provideInitialData(
