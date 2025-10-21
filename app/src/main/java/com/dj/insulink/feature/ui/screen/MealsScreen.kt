@@ -82,6 +82,12 @@ fun MealsScreen(
             viewModel.setCurrentUserId("dummy_user_id")
         }
     }
+
+    // Ensure meals are refreshed when selected date changes
+    LaunchedEffect(selectedDate.value) {
+        viewModel.loadMealsForSelectedDate()
+        viewModel.loadDailyNutritionForDate(selectedDate.value)
+    }
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { // Theme Color for Background
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {

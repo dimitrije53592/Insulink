@@ -61,9 +61,9 @@ class MealsViewModel @Inject constructor(
     fun setCurrentUserId(userId: String) {
         _currentUserId.value = userId
         initializeData()
-        loadMeals()
-        loadDailyNutrition()
+        // Only load meals for selected date, not all meals
         loadMealsForSelectedDate()
+        loadDailyNutritionForDate(_selectedDate.value)
     }
 
     fun setSelectedDate(date: Long) {
@@ -216,7 +216,9 @@ class MealsViewModel @Inject constructor(
             try {
                 mealRepository.insertMeal(meal)
                 setShowAddMealDialog(false)
-                loadDailyNutrition() // Refresh daily nutrition
+                // Refresh meals for selected date and daily nutrition
+                loadMealsForSelectedDate()
+                loadDailyNutritionForDate(_selectedDate.value)
             } catch (e: Exception) {
                 // Handle error
             } finally {
@@ -229,7 +231,9 @@ class MealsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 mealRepository.deleteMeal(meal)
-                loadDailyNutrition() // Refresh daily nutrition
+                // Refresh meals for selected date and daily nutrition
+                loadMealsForSelectedDate()
+                loadDailyNutritionForDate(_selectedDate.value)
             } catch (e: Exception) {
                 // Handle error
             }
