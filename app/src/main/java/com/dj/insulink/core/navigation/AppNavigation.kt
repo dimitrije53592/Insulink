@@ -68,6 +68,7 @@ import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.ui.viewmodel.PdfGenerationState
 import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
 import com.dj.insulink.feature.ui.viewmodel.ReportViewModel
 import kotlinx.coroutines.delay
@@ -467,6 +468,7 @@ fun AppNavigation() {
                     val selectedMinDate = viewModel.selectedMinDate.collectAsState()
                     val selectedMaxDate = viewModel.selectedMaxDate.collectAsState()
                     val filteredReadings = viewModel.filteredReadings.collectAsState()
+                    val pdfGenerationState = viewModel.pdfGenerationState.collectAsState()
 
                     LaunchedEffect(currentUser.value) {
                        viewModel.initializeDateRange(userId = currentUser.value!!.uid)
@@ -478,7 +480,14 @@ fun AppNavigation() {
                             selectedMinDate = selectedMinDate,
                             selectedMaxDate = selectedMaxDate,
                             updateDateRange = viewModel::updateDateRange,
-                            filteredReadings = filteredReadings
+                            filteredReadings = filteredReadings,
+                            pdfGenerationState = pdfGenerationState,
+                            filterReadingsByCurrentDateRange = {
+                                viewModel.filterReadingsByCurrentDateRange(currentUser.value!!.uid)
+                            },
+                            generatePdfReport = {
+                                viewModel.generatePdfReport(currentUser.value!!.uid)
+                            }
                         )
                     )
                 }
