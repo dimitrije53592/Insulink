@@ -47,8 +47,10 @@ import java.util.Date
 import java.util.Locale
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.ui.components.AddMealDialog
+import com.dj.insulink.feature.ui.components.CreateIngredientDialog
 import com.dj.insulink.feature.ui.components.DailyNutritionSummary
 import com.dj.insulink.feature.ui.components.MealItem
+import com.dj.insulink.feature.ui.components.MyIngredientsDialog
 import com.dj.insulink.feature.ui.viewmodel.MealsViewModel
 import com.dj.insulink.feature.domain.models.DailyNutrition
 import com.dj.insulink.feature.domain.models.Meal
@@ -72,6 +74,9 @@ fun MealsScreen(
     val selectedIngredients = viewModel.selectedIngredients.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
     val selectedDate = viewModel.selectedDate.collectAsState()
+    val showCreateIngredientDialog = viewModel.showCreateIngredientDialog.collectAsState()
+    val showMyIngredientsDialog = viewModel.showMyIngredientsDialog.collectAsState()
+    val userIngredients = viewModel.userIngredients.collectAsState()
 
     // Initialize with current user ID
     LaunchedEffect(currentUserId) {
@@ -216,7 +221,33 @@ fun MealsScreen(
                     viewModel.submitNewMeal()
                 }
             },
-            isLoading = isLoading
+            isLoading = isLoading,
+            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
+            onShowMyIngredients = { viewModel.setShowMyIngredientsDialog(true) }
+        )
+    }
+
+    // --- CREATE INGREDIENT DIALOG ---
+    if (showCreateIngredientDialog.value) {
+        CreateIngredientDialog(
+            onDismiss = { viewModel.setShowCreateIngredientDialog(false) },
+            onSave = { ingredient ->
+                viewModel.createCustomIngredient(ingredient)
+            },
+            isLoading = isLoading.value
+        )
+    }
+
+    // --- MY INGREDIENTS DIALOG ---
+    if (showMyIngredientsDialog.value) {
+        MyIngredientsDialog(
+            userIngredients = viewModel.userIngredients,
+            onDismiss = { viewModel.setShowMyIngredientsDialog(false) },
+            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
+            onDeleteIngredient = { ingredient ->
+                viewModel.deleteCustomIngredient(ingredient)
+            },
+            isLoading = isLoading.value
         )
     }
 }

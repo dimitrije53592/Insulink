@@ -52,6 +52,16 @@ class MealsViewModel @Inject constructor(
     private val _currentUserId = MutableStateFlow("")
     val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
 
+    // Custom ingredients management
+    private val _userIngredients = MutableStateFlow<List<Ingredient>>(emptyList())
+    val userIngredients: StateFlow<List<Ingredient>> = _userIngredients.asStateFlow()
+
+    private val _showCreateIngredientDialog = MutableStateFlow(false)
+    val showCreateIngredientDialog: StateFlow<Boolean> = _showCreateIngredientDialog.asStateFlow()
+
+    private val _showMyIngredientsDialog = MutableStateFlow(false)
+    val showMyIngredientsDialog: StateFlow<Boolean> = _showMyIngredientsDialog.asStateFlow()
+
     private val _selectedDate = MutableStateFlow(System.currentTimeMillis())
     val selectedDate: StateFlow<Long> = _selectedDate.asStateFlow()
 
@@ -64,6 +74,7 @@ class MealsViewModel @Inject constructor(
         // Only load meals for selected date, not all meals
         loadMealsForSelectedDate()
         loadDailyNutritionForDate(_selectedDate.value)
+        loadUserIngredients()
     }
 
     fun setSelectedDate(date: Long) {
@@ -234,6 +245,56 @@ class MealsViewModel @Inject constructor(
                 // Refresh meals for selected date and daily nutrition
                 loadMealsForSelectedDate()
                 loadDailyNutritionForDate(_selectedDate.value)
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    // Custom ingredients management
+    fun loadUserIngredients() {
+        val userId = _currentUserId.value
+        if (userId.isNotEmpty()) {
+            viewModelScope.launch {
+                mealRepository.getUserIngredients(userId).collect { ingredients ->
+                    _userIngredients.value = ingredients
+                }
+            }
+        }
+    }
+
+    fun setShowCreateIngredientDialog(show: Boolean) {
+        _showCreateIngredientDialog.value = show
+    }
+
+    fun setShowMyIngredientsDialog(show: Boolean) {
+        _showMyIngredientsDialog.value = show
+    }
+
+    fun createCustomIngredient(ingredient: Ingredient) {
+        val userId = _currentUserId.value
+        if (userId.isNotEmpty()) {
+            viewModelScope.launch {
+                _isLoading.value = true
+                try {
+                    val customIngredient = ingredient.copy(userId = userId)
+                    mealRepository.insertIngredient(customIngredient)
+                    loadUserIngredients() // Refresh the list
+                    setShowCreateIngredientDialog(false)
+                } catch (e: Exception) {
+                    // Handle error
+                } finally {
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+    fun deleteCustomIngredient(ingredient: Ingredient) {
+        viewModelScope.launch {
+            try {
+                mealRepository.deleteIngredient(ingredient)
+                loadUserIngredients() // Refresh the list
             } catch (e: Exception) {
                 // Handle error
             }

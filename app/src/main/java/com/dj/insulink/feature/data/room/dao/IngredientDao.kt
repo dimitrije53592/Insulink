@@ -12,6 +12,9 @@ interface IngredientDao {
     @Query("SELECT * FROM ingredients ORDER BY name ASC")
     fun getAllIngredients(): Flow<List<IngredientEntity>>
 
+    @Query("SELECT * FROM ingredients WHERE userId = :userId ORDER BY name ASC")
+    fun getUserIngredients(userId: String): Flow<List<IngredientEntity>>
+
     @Query("SELECT * FROM ingredients WHERE id = :id")
     suspend fun getIngredientById(id: Long): IngredientEntity?
 

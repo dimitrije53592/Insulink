@@ -136,6 +136,20 @@ class MealRepositoryImpl @Inject constructor(
         return ingredientDao.getIngredientById(id)?.toDomain()
     }
 
+    override fun getUserIngredients(userId: String): Flow<List<Ingredient>> {
+        return ingredientDao.getUserIngredients(userId).map { ingredientEntities ->
+            ingredientEntities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun updateIngredient(ingredient: Ingredient) {
+        ingredientDao.updateIngredient(ingredient.toEntity())
+    }
+
+    override suspend fun deleteIngredient(ingredient: Ingredient) {
+        ingredientDao.deleteIngredient(ingredient.toEntity())
+    }
+
     private suspend fun getMealIngredients(mealId: Long): List<MealIngredient> {
         val mealIngredientEntities = mealIngredientDao.getIngredientsForMealSync(mealId)
         return mealIngredientEntities.mapNotNull { mealIngredientEntity ->

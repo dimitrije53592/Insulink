@@ -19,4 +19,7 @@ interface MealRepository {
     fun searchIngredients(query: String): Flow<List<Ingredient>>
     suspend fun insertIngredient(ingredient: Ingredient)
     suspend fun getIngredientById(id: Long): Ingredient?
+    fun getUserIngredients(userId: String): Flow<List<Ingredient>>
+    suspend fun updateIngredient(ingredient: Ingredient)
+    suspend fun deleteIngredient(ingredient: Ingredient)
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -57,7 +58,9 @@ fun AddMealDialog(
     onUpdateIngredientQuantity: (MealIngredient, Double) -> Unit,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
-    isLoading: State<Boolean>
+    isLoading: State<Boolean>,
+    onCreateIngredient: () -> Unit,
+    onShowMyIngredients: () -> Unit
 ) {
     val mealNameValue by mealName.collectAsState()
     val mealCommentValue by mealComment.collectAsState()
@@ -173,6 +176,16 @@ fun AddMealDialog(
                     label = { Text("Add Ingredients") },
                     placeholder = { Text("Search ingredients...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    trailingIcon = {
+                        Row {
+                            IconButton(onClick = onCreateIngredient) {
+                                Icon(Icons.Default.Add, contentDescription = "Create ingredient")
+                            }
+                            IconButton(onClick = onShowMyIngredients) {
+                                Icon(Icons.Default.Person, contentDescription = "My ingredients")
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
