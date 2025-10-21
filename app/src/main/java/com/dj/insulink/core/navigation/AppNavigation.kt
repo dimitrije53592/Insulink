@@ -54,6 +54,7 @@ import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.feature.domain.models.Reminder
 import com.dj.insulink.feature.domain.models.ReminderType
 import com.dj.insulink.feature.ui.screen.FitnessScreen
+import com.dj.insulink.feature.ui.screen.FitnessScreenParams
 import com.dj.insulink.feature.ui.screen.FriendsScreen
 import com.dj.insulink.feature.ui.screen.FriendsScreenParams
 import com.dj.insulink.feature.ui.screen.GlucoseScreen
@@ -64,6 +65,7 @@ import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
+import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
 import kotlinx.coroutines.delay
@@ -356,7 +358,33 @@ fun AppNavigation() {
                     MealsScreen()
                 }
                 composable(Screen.Fitness.route) {
-                    FitnessScreen()
+                    val viewModel: FitnessViewModel = hiltViewModel()
+
+                    val showAddSportsActivityDialog = viewModel.showAddSportsActivityDialog.collectAsState()
+                    val activityName = viewModel.activityName.collectAsState()
+                    val durationHours = viewModel.durationHours.collectAsState()
+                    val durationMinutes = viewModel.durationMinutes.collectAsState()
+                    val glucoseBefore = viewModel.glucoseBefore.collectAsState()
+                    val glucoseAfter = viewModel.glucoseAfter.collectAsState()
+
+                    FitnessScreen(
+                        params = FitnessScreenParams(
+                            sports = emptyList(),
+                            showAddSportsActivityDialog = showAddSportsActivityDialog,
+                            setShowSportsActivityDialog = viewModel::setShowSportsActivityDialog,
+                            sportName = activityName,
+                            setSportName = viewModel::setActivityName,
+                            durationHours = durationHours,
+                            setDurationHours = viewModel::setDurationHours,
+                            durationMinutes = durationMinutes,
+                            setDurationMinutes = viewModel::setDurationMinutes,
+                            glucoseBefore = glucoseBefore,
+                            setGlucoseBefore = viewModel::setGlucoseBefore,
+                            glucoseAfter = glucoseAfter,
+                            setGlucoseAfter = viewModel::setGlucoseAfter,
+                            onAddExerciseClick = viewModel::onAddExerciseClick
+                        )
+                    )
                 }
                 composable(Screen.Reminders.route) {
                     val currentUser = sharedViewModel.currentUser.collectAsState()
