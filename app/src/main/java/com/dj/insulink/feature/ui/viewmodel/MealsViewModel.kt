@@ -171,7 +171,10 @@ class MealsViewModel @Inject constructor(
 
     fun setShowAddMealDialog(show: Boolean) {
         _showAddMealDialog.value = show
-        if (!show) {
+        if (show) {
+            // Initialize with current date when opening dialog
+            _newMealTimestamp.value = System.currentTimeMillis()
+        } else {
             // Reset form when dialog is closed
             _newMealName.value = ""
             _newMealComment.value = ""

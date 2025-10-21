@@ -187,6 +187,8 @@ fun MealsScreen(
             onMealNameChange = viewModel::setNewMealName,
             mealComment = viewModel.newMealComment,
             onMealCommentChange = viewModel::setNewMealComment,
+            mealDate = viewModel.newMealTimestamp,
+            onMealDateChange = viewModel::setNewMealTimestamp,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery.value = it },
             searchResults = searchResults,

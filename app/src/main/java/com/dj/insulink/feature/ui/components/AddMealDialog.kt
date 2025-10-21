@@ -6,10 +6,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -26,6 +29,9 @@ import com.dj.insulink.feature.domain.models.Ingredient
 import com.dj.insulink.feature.domain.models.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun AddMealDialog(
@@ -33,6 +39,8 @@ fun AddMealDialog(
     onMealNameChange: (String) -> Unit,
     mealComment: StateFlow<String>,
     onMealCommentChange: (String) -> Unit,
+    mealDate: StateFlow<Long>,
+    onMealDateChange: (Long) -> Unit,
     searchQuery: State<String>,
     onSearchQueryChange: (String) -> Unit,
     searchResults: State<List<Ingredient>>,
@@ -46,6 +54,7 @@ fun AddMealDialog(
 ) {
     val mealNameValue by mealName.collectAsState()
     val mealCommentValue by mealComment.collectAsState()
+    val mealDateValue by mealDate.collectAsState()
     val searchQueryValue by searchQuery
     val searchResultsValue by searchResults
     val selectedIngredientsValue by selectedIngredients
@@ -63,6 +72,7 @@ fun AddMealDialog(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(MaterialTheme.dimens.commonPadding16)
+                    .verticalScroll(rememberScrollState())
             ) {
                 // Header
                 Row(
@@ -90,6 +100,30 @@ fun AddMealDialog(
                     placeholder = { Text("Enter meal name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+
+                // Meal Date Input
+                val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                OutlinedTextField(
+                    value = dateFormatter.format(Date(mealDateValue)),
+                    onValueChange = { }, // Read-only, handled by date picker
+                    label = { Text("Meal Date") },
+                    placeholder = { Text("Select date") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { 
+                            // TODO: Open date picker dialog
+                        },
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            Icons.Default.CalendarToday,
+                            contentDescription = "Select date",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
