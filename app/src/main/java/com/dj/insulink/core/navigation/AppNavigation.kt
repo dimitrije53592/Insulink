@@ -63,11 +63,13 @@ import com.dj.insulink.feature.ui.screen.MealsScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
+import com.dj.insulink.feature.ui.screen.ReportsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
 import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
+import com.dj.insulink.feature.ui.viewmodel.ReportViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -458,7 +460,27 @@ fun AppNavigation() {
                     }
                 }
                 composable(Screen.Report.route) {
-                    ReportsScreen()
+                   val viewModel: ReportViewModel = hiltViewModel()
+
+                    val minDate = viewModel.minDate.collectAsState()
+                    val maxDate = viewModel.maxDate.collectAsState()
+                    val selectedMinDate = viewModel.selectedMinDate.collectAsState()
+                    val selectedMaxDate = viewModel.selectedMaxDate.collectAsState()
+                    val filteredReadings = viewModel.filteredReadings.collectAsState()
+
+                    LaunchedEffect(currentUser.value) {
+                       viewModel.initializeDateRange(userId = currentUser.value!!.uid)
+                    }
+                    ReportsScreen(
+                        params = ReportsScreenParams(
+                            minDate = minDate,
+                            maxDate = maxDate,
+                            selectedMinDate = selectedMinDate,
+                            selectedMaxDate = selectedMaxDate,
+                            updateDateRange = viewModel::updateDateRange,
+                            filteredReadings = filteredReadings
+                        )
+                    )
                 }
             }
         }
