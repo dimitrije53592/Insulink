@@ -2,6 +2,7 @@ package com.dj.insulink.feature.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -118,25 +119,50 @@ fun AddMealDialog(
 
                 // Meal Date Input
                 val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                OutlinedTextField(
-                    value = dateFormatter.format(Date(mealDateValue)),
-                    onValueChange = { }, // Read-only, handled by date picker
-                    label = { Text("Meal Date") },
-                    placeholder = { Text("Select date") },
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { 
                             showDatePicker = true
                         },
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            Icons.Default.CalendarToday,
-                            contentDescription = "Select date",
-                            tint = MaterialTheme.colorScheme.primary
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp, 
+                        MaterialTheme.colorScheme.outline
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Meal Date",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = dateFormatter.format(Date(mealDateValue)),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Icon(
+                                Icons.Default.CalendarToday,
+                                contentDescription = "Select date",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
-                )
+                }
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
