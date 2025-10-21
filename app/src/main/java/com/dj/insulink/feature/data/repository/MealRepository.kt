@@ -16,7 +16,7 @@ interface MealRepository {
     suspend fun getDailyNutrition(userId: String, date: Long): DailyNutrition
     
     // Ingredient management
-    fun searchIngredients(query: String): Flow<List<Ingredient>>
+    fun searchIngredients(query: String, userId: String): Flow<List<Ingredient>>
     suspend fun insertIngredient(ingredient: Ingredient)
     suspend fun getIngredientById(id: Long): Ingredient?
     fun getUserIngredients(userId: String): Flow<List<Ingredient>>
