@@ -30,7 +30,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun signOut(drawerState: DrawerState, context: Context) {
+    fun signOut(context: Context) {
         authRepository.signOut(context)
     }
 }

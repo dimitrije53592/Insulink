@@ -65,6 +65,7 @@ import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -73,6 +74,7 @@ import kotlinx.coroutines.launch
 fun AppNavigation() {
     val context = LocalContext.current
     val sharedViewModel: SharedViewModel = hiltViewModel()
+    val currentUser = sharedViewModel.currentUser.collectAsState()
 
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -82,15 +84,6 @@ fun AppNavigation() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-    // Google Sign-In client for sign out functionality
-    val gso = remember {
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(context.getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-    }
-    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
-
     LaunchedEffect(Unit) {
         sharedViewModel.getCurrentUser()
     }
@@ -99,11 +92,9 @@ fun AppNavigation() {
         drawerState = drawerState,
         gesturesEnabled = currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route },
         drawerContent = {
-            val currentUser = sharedViewModel.currentUser.collectAsState()
-
             SideDrawer(
                 params = SideDrawerParams(
-                    currentUser = currentUser,
+                    currentUser = currentUser.value,
                     navigateToReminders = {
                         navController.navigateTo(Screen.Reminders.route)
                         coroutineScope.launch { drawerState.close() }
@@ -117,7 +108,7 @@ fun AppNavigation() {
                         coroutineScope.launch { drawerState.close() }
                     },
                     onSignOutClick = {
-                        sharedViewModel.signOut(drawerState, context)
+                        sharedViewModel.signOut(context)
                         navController.navigateTo(Screen.Login.route)
                         coroutineScope.launch { drawerState.close() }
                     }
@@ -206,6 +197,7 @@ fun AppNavigation() {
 
                     LaunchedEffect(registrationSuccess.value) {
                         if (registrationSuccess.value) {
+                            sharedViewModel.getCurrentUser()
                             navController.navigateTo(Screen.Glucose.route)
                         }
                     }
@@ -242,7 +234,7 @@ fun AppNavigation() {
                     val loginSuccess = viewModel.loginSuccess.collectAsState()
                     val gso = remember {
                         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(context.getString(R.string.default_web_client_id)) // Get token from strings.xml
+                            .requestIdToken(context.getString(R.string.default_web_client_id))
                             .requestEmail()
                             .build()
                     }
@@ -270,6 +262,7 @@ fun AppNavigation() {
                     }
                     LaunchedEffect(loginSuccess.value) {
                         if (loginSuccess.value) {
+                            sharedViewModel.getCurrentUser()
                             navController.navigateTo(Screen.Glucose.route)
                         }
                     }
@@ -319,7 +312,6 @@ fun AppNavigation() {
 
                 }
                 composable(Screen.Glucose.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsState()
                     val viewModel: GlucoseViewModel = hiltViewModel()
 
                     val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
@@ -412,7 +404,6 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Friends.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsState()
                     val viewModel: FriendViewModel = hiltViewModel()
 
                     val allFriendsForUser =

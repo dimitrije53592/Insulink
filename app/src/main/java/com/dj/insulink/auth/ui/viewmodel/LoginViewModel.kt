@@ -116,7 +116,7 @@ class LoginViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Login failed with exception.", e)
-                _errorMessage.value = "Login failed: ${e.message}"
+                _errorMessage.value = "Login failed! Please try again."
                 _showErrorMessage.value = true
                 _loginSuccess.value = false
             } finally {
@@ -126,7 +126,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun sendPasswordReset() {
-        Log.d(TAG, "sendPasswordReset: uslo u fju za kliknuto dugme")
         if (_email.value.isBlank()) {
             Toast.makeText(context, "Please enter your email address.", Toast.LENGTH_SHORT).show()
             _passwordResetState.update { it.copy(errorMessage = "Please enter your email address.") }

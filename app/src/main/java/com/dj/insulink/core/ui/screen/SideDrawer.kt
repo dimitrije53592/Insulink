@@ -50,12 +50,12 @@ fun SideDrawer(
         ) {
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
             Text(
-                text = "${params.currentUser.value?.firstName ?: ""} ${params.currentUser.value?.lastName ?: ""}",
+                text = "${params.currentUser?.firstName ?: ""} ${params.currentUser?.lastName ?: ""}",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = params.currentUser.value?.email ?: "",
+                text = params.currentUser?.email ?: "",
                 style = MaterialTheme.typography.labelLarge
             )
             Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
@@ -112,7 +112,7 @@ fun SideDrawer(
 }
 
 data class SideDrawerParams(
-    val currentUser: State<User?>,
+    val currentUser: User?,
     val navigateToReminders: () -> Unit,
     val navigateToFriends: () -> Unit,
     val navigateToReports: () -> Unit,

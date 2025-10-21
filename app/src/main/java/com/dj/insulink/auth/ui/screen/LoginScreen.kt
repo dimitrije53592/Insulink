@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,6 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,67 +44,74 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
+import com.dj.insulink.core.ui.theme.dimens
 
 @Composable
 fun LoginScreen(
     params: LoginScreenParams
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+        // Header section with logo and title
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF4A7BF6),
+                            Color(0xFF8A5CF5)
+                        )
+                    )
+                )
+                .padding(24.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.33f)
-                    .background(Color(0xFF4A7BF6))
-                    .padding(24.dp),
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_insulink_logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(100.dp)
-                    )
+                Spacer(modifier = Modifier.height(40.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.ic_insulink_logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
 
-                    Text(
-                        text = stringResource(R.string.login_insulink),
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        text = stringResource(R.string.login_description),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(0.8f)
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.login_insulink),
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = stringResource(R.string.login_description),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.67f)
-                    .background(Color.White)
-            )
         }
 
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .align(Alignment.TopCenter)
-                .offset(y = 250.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .offset(y = (-24).dp)
                 .border(
                     width = 1.dp,
                     color = Color.LightGray,
@@ -115,14 +126,14 @@ fun LoginScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = stringResource(R.string.login_welcome_back),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 24.dp, top = 24.dp),
+                    modifier = Modifier.padding(bottom = 32.dp, top = 16.dp),
                     color = Color.Black
                 )
 
@@ -158,13 +169,14 @@ fun LoginScreen(
                             color = Color.Black
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_password),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
-
                         )
                     },
                     visualTransformation = PasswordVisualTransformation(),
@@ -174,27 +186,29 @@ fun LoginScreen(
 
                 Text(
                     text = stringResource(R.string.login_forgot_password),
-                    style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF7F56D9)),
+                    style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .align(Alignment.End)
                         .clickable(onClick = params.onForgotPasswordClicked)
-                        .padding(top = 8.dp, bottom = 24.dp),
+                        .padding(bottom = 24.dp),
                     color = Color.Blue,
                 )
+
                 Button(
                     onClick = {
                         Log.d("Sign in dugme", "kliknuto dugme")
                         params.onLogin()
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black,
-                        contentColor = Color.Black
+                        contentColor = Color.White
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp) // Remove shadow
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Text(stringResource(R.string.login_sign_in), color = Color.White)
                 }
@@ -207,19 +221,22 @@ fun LoginScreen(
                 ) {
                     Divider(
                         modifier = Modifier.weight(1f),
-                        color = Color.Black
+                        color = Color.LightGray
                     )
                     Text(
                         "Or continue with",
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = Color.Gray
                     )
                     Divider(
                         modifier = Modifier.weight(1f),
-                        color = Color.Black
+                        color = Color.LightGray
                     )
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
+
                 Button(
                     onClick = { params.onSignInWithGoogle() },
                     modifier = Modifier
@@ -230,7 +247,7 @@ fun LoginScreen(
                         containerColor = Color.White,
                         contentColor = Color.Black
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp) // Remove shadow
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -250,13 +267,15 @@ fun LoginScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
+
+        // Sign up link at the bottom
         Row(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 96.dp)
+                .padding(bottom = 32.dp, top = 16.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = stringResource(R.string.login_dont_have_account),
@@ -273,6 +292,9 @@ fun LoginScreen(
                 }
             )
         }
+
+        // Extra bottom spacing for better scrolling
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

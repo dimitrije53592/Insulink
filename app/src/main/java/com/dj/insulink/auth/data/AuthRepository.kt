@@ -94,7 +94,8 @@ class AuthRepository @Inject constructor(
     suspend fun signInWithGoogle(credential: AuthCredential): User {
         try {
             val authResult = firebaseAuth.signInWithCredential(credential).await()
-            val firebaseUser = authResult.user ?: throw Exception("Google Sign-In failed: User is null.")
+            val firebaseUser =
+                authResult.user ?: throw Exception("Google Sign-In failed: User is null.")
 
             // Check if user already exists in Firestore
             val userDocRef = firestore.collection("users").document(firebaseUser.uid)
@@ -106,11 +107,13 @@ class AuthRepository @Inject constructor(
                 val nameParts = displayName.split(" ")
                 val firstName = nameParts.getOrNull(0) ?: ""
                 val lastName = nameParts.drop(1).joinToString(" ")
+                val friendCode = DeterministicCodeGenerator.generateCodeFromEmail(firebaseUser.email!!)
 
                 val newUser = hashMapOf(
                     "firstName" to firstName,
                     "lastName" to lastName,
                     "email" to firebaseUser.email!!,
+                    "friendCode" to friendCode,
                     "createdAt" to Timestamp.now(),
                     "userId" to firebaseUser.uid
                 )
@@ -121,6 +124,7 @@ class AuthRepository @Inject constructor(
                     firstName = firstName,
                     lastName = lastName,
                     email = firebaseUser.email!!,
+                    friendCode = friendCode,
                     isEmailVerified = firebaseUser.isEmailVerified
                 )
             } else {
@@ -130,6 +134,7 @@ class AuthRepository @Inject constructor(
                     firstName = userDoc.getString("firstName") ?: "",
                     lastName = userDoc.getString("lastName") ?: "",
                     email = firebaseUser.email ?: "",
+                    friendCode = userDoc.getString("friendCode") ?: "",
                     isEmailVerified = firebaseUser.isEmailVerified
                 )
             }
@@ -138,6 +143,7 @@ class AuthRepository @Inject constructor(
             throw e
         }
     }
+
     suspend fun getCurrentUser(): User? {
         val firebaseUser = firebaseAuth.currentUser ?: return null
 
