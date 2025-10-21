@@ -2,8 +2,11 @@ package com.dj.insulink.feature.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -31,6 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.ui.components.AddMealDialog
 import com.dj.insulink.feature.ui.components.DailyNutritionSummary
@@ -41,12 +50,13 @@ import com.dj.insulink.feature.domain.models.Meal
 
 @Composable
 fun MealsScreen(
-    params: MealsScreenParams? = null
+    params: MealsScreenParams? = null,
+    currentUserId: String? = null
 ) {
     val viewModel: MealsViewModel = hiltViewModel()
     
     // Use ViewModel state if params is null (for real implementation)
-    val allMeals = if (params != null) params.allMeals else viewModel.allMeals.collectAsState()
+    val allMeals = if (params != null) params.allMeals else viewModel.mealsForSelectedDate.collectAsState()
     val dailyNutrition = if (params != null) params.dailyNutritionData else viewModel.dailyNutrition.collectAsState()
     val showAddMealDialog = if (params != null) params.showAddMealDialog else viewModel.showAddMealDialog.collectAsState()
     val newMealName = if (params != null) params.newMealName else viewModel.newMealName
@@ -56,10 +66,16 @@ fun MealsScreen(
     val searchResults = viewModel.searchResults.collectAsState()
     val selectedIngredients = viewModel.selectedIngredients.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
+    val selectedDate = viewModel.selectedDate.collectAsState()
 
-    // Initialize with dummy user ID for now
-    LaunchedEffect(Unit) {
-        viewModel.setCurrentUserId("dummy_user_id")
+    // Initialize with current user ID
+    LaunchedEffect(currentUserId) {
+        if (currentUserId != null) {
+            viewModel.setCurrentUserId(currentUserId)
+        } else {
+            // Fallback to dummy user for testing
+            viewModel.setCurrentUserId("dummy_user_id")
+        }
     }
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { // Theme Color for Background
 
@@ -67,33 +83,15 @@ fun MealsScreen(
 
             // --- TOP DATE CARD ---
             item {
-                Card(
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), // Theme Color for Card
-                    elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+                DatePickerCard(
+                    selectedDate = selectedDate.value,
+                    onDateSelected = { date ->
+                        viewModel.setSelectedDate(date)
+                    },
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .padding(top = MaterialTheme.dimens.commonPadding16, start = MaterialTheme.dimens.commonPadding16)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = MaterialTheme.dimens.commonPadding8)
-                    ) {
-                        Text(
-                            text = "Today, Sept 10", // Hardcoded date placeholder
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Monday", // Hardcoded day placeholder
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                )
             }
 
             // --- DAILY NUTRITION SUMMARY CARD ---
@@ -280,4 +278,62 @@ fun getDummyMealsScreenParams(): MealsScreenParams {
         submitNewMeal = { Log.d("MealsScreen", "Submit new meal") },
         deleteMeal = { Log.d("MealsScreen", "Delete meal: ${it.name}") }
     )
+}
+
+@Composable
+fun DatePickerCard(
+    selectedDate: Long,
+    onDateSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    val dayFormatter = SimpleDateFormat("EEEE", Locale.getDefault())
+    val isToday = remember(selectedDate) {
+        val today = Calendar.getInstance()
+        val selected = Calendar.getInstance().apply { timeInMillis = selectedDate }
+        today.get(Calendar.YEAR) == selected.get(Calendar.YEAR) &&
+        today.get(Calendar.DAY_OF_YEAR) == selected.get(Calendar.DAY_OF_YEAR)
+    }
+    
+    Card(
+        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+        modifier = modifier
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { 
+                    // TODO: Open date picker dialog
+                    Log.d("DatePicker", "Date picker clicked")
+                }
+                .padding(vertical = MaterialTheme.dimens.commonPadding8)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Calendar",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = if (isToday) "Today" else dateFormatter.format(Date(selectedDate)),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Text(
+                text = dayFormatter.format(Date(selectedDate)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }

@@ -52,11 +52,24 @@ class MealsViewModel @Inject constructor(
     private val _currentUserId = MutableStateFlow("")
     val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
 
+    private val _selectedDate = MutableStateFlow(System.currentTimeMillis())
+    val selectedDate: StateFlow<Long> = _selectedDate.asStateFlow()
+
+    private val _mealsForSelectedDate = MutableStateFlow<List<Meal>>(emptyList())
+    val mealsForSelectedDate: StateFlow<List<Meal>> = _mealsForSelectedDate.asStateFlow()
+
     fun setCurrentUserId(userId: String) {
         _currentUserId.value = userId
         initializeData()
         loadMeals()
         loadDailyNutrition()
+        loadMealsForSelectedDate()
+    }
+
+    fun setSelectedDate(date: Long) {
+        _selectedDate.value = date
+        loadMealsForSelectedDate()
+        loadDailyNutritionForDate(date)
     }
 
     private fun initializeData() {
@@ -83,6 +96,28 @@ class MealsViewModel @Inject constructor(
                 val today = System.currentTimeMillis()
                 val nutrition = mealRepository.getDailyNutrition(userId, today)
                 _dailyNutrition.value = nutrition
+            }
+        }
+    }
+
+    fun loadDailyNutritionForDate(date: Long) {
+        val userId = _currentUserId.value
+        if (userId.isNotEmpty()) {
+            viewModelScope.launch {
+                val nutrition = mealRepository.getDailyNutrition(userId, date)
+                _dailyNutrition.value = nutrition
+            }
+        }
+    }
+
+    fun loadMealsForSelectedDate() {
+        val userId = _currentUserId.value
+        val selectedDate = _selectedDate.value
+        if (userId.isNotEmpty()) {
+            viewModelScope.launch {
+                mealRepository.getMealsByDate(userId, selectedDate).collect { meals ->
+                    _mealsForSelectedDate.value = meals
+                }
             }
         }
     }

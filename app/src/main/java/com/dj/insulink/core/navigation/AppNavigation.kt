@@ -355,7 +355,8 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Meals.route) {
-                    MealsScreen()
+                    val currentUser = sharedViewModel.currentUser.collectAsState()
+                    MealsScreen(currentUserId = currentUser.value?.uid)
                 }
                 composable(Screen.Fitness.route) {
                     val viewModel: FitnessViewModel = hiltViewModel()
