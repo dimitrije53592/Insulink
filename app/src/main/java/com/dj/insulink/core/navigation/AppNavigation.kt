@@ -360,6 +360,7 @@ fun AppNavigation() {
                 composable(Screen.Fitness.route) {
                     val viewModel: FitnessViewModel = hiltViewModel()
 
+                    val calculatedSports = viewModel.calculatedSports.collectAsState()
                     val showAddSportsActivityDialog = viewModel.showAddSportsActivityDialog.collectAsState()
                     val activityName = viewModel.activityName.collectAsState()
                     val durationHours = viewModel.durationHours.collectAsState()
@@ -369,7 +370,7 @@ fun AppNavigation() {
 
                     FitnessScreen(
                         params = FitnessScreenParams(
-                            sports = emptyList(),
+                            sports = calculatedSports,
                             showAddSportsActivityDialog = showAddSportsActivityDialog,
                             setShowSportsActivityDialog = viewModel::setShowSportsActivityDialog,
                             sportName = activityName,
@@ -382,7 +383,9 @@ fun AppNavigation() {
                             setGlucoseBefore = viewModel::setGlucoseBefore,
                             glucoseAfter = glucoseAfter,
                             setGlucoseAfter = viewModel::setGlucoseAfter,
-                            onAddExerciseClick = viewModel::onAddExerciseClick
+                            onAddExerciseClick = {
+                                viewModel.onAddExerciseClick(currentUser.value?.uid)
+                            }
                         )
                     )
                 }

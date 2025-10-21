@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.dj.insulink.feature.data.room.dao.ExerciseDao
 import com.dj.insulink.feature.data.room.dao.FriendDao
 import com.dj.insulink.feature.data.room.dao.GlucoseReadingDao
 import com.dj.insulink.feature.data.room.dao.ReminderDao
@@ -11,6 +12,7 @@ import com.dj.insulink.feature.data.room.entity.FriendEntity
 import com.dj.insulink.feature.data.room.dao.IngredientDao
 import com.dj.insulink.feature.data.room.dao.MealDao
 import com.dj.insulink.feature.data.room.dao.MealIngredientDao
+import com.dj.insulink.feature.data.room.entity.ExerciseEntity
 import com.dj.insulink.feature.data.room.entity.GlucoseReadingEntity
 import com.dj.insulink.feature.data.room.entity.ReminderEntity
 import com.dj.insulink.feature.data.room.entity.IngredientEntity
@@ -24,7 +26,8 @@ import com.dj.insulink.feature.data.room.entity.MealIngredientEntity
         ReminderEntity::class,
         MealEntity::class,
         IngredientEntity::class,
-        MealIngredientEntity::class
+        MealIngredientEntity::class,
+        ExerciseEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -36,6 +39,7 @@ abstract class InsulinkDatabase : RoomDatabase() {
     abstract fun mealDao(): MealDao
     abstract fun ingredientDao(): IngredientDao
     abstract fun mealIngredientDao(): MealIngredientDao
+    abstract fun exerciseDao(): ExerciseDao
 
     companion object {
         private var INSTANCE: InsulinkDatabase? = null

@@ -46,6 +46,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideExerciseDao(database: InsulinkDatabase) = database.exerciseDao()
+
+    @Provides
+    @Singleton
     fun provideMealRepository(
         mealDao: com.dj.insulink.feature.data.room.dao.MealDao,
         ingredientDao: com.dj.insulink.feature.data.room.dao.IngredientDao,

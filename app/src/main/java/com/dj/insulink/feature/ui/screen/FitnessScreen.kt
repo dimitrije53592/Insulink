@@ -47,7 +47,7 @@ fun FitnessScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
             ) {
-                items(params.sports) { sport ->
+                items(params.sports.value) { sport ->
                     SportActivityItem(sport = sport)
                 }
             }
@@ -189,7 +189,7 @@ private fun MetricCard(
 }
 
 data class FitnessScreenParams(
-    val sports: List<Sport>,
+    val sports: State<List<Sport>>,
     val showAddSportsActivityDialog: State<Boolean>,
     val setShowSportsActivityDialog: (Boolean) -> Unit,
     val sportName: State<String>,

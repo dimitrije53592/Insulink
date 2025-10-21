@@ -24,7 +24,6 @@ interface ReminderDao {
     @Delete
     suspend fun delete(reminderEntity: ReminderEntity)
 
-
     @Query("DELETE FROM reminders WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)
 }

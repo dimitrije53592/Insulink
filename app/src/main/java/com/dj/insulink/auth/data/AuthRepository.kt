@@ -7,6 +7,7 @@ import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.auth.domain.models.UserLogin
 import com.dj.insulink.auth.domain.models.UserRegistration
 import com.dj.insulink.core.utils.DeterministicCodeGenerator
+import com.dj.insulink.feature.domain.models.Exercise
 import com.dj.insulink.feature.domain.models.Friend
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -65,7 +66,8 @@ class AuthRepository @Inject constructor(
             "readings" to emptyList<GlucoseReading>(),
             "friendCode" to friendCode,
             "friends" to emptyList<Friend>(),
-            "reminders" to emptyList<Reminder>()
+            "reminders" to emptyList<Reminder>(),
+            "exercises" to emptyList<Exercise>()
         )
 
         firestore.collection("users")
@@ -109,7 +111,8 @@ class AuthRepository @Inject constructor(
                 val nameParts = displayName.split(" ")
                 val firstName = nameParts.getOrNull(0) ?: ""
                 val lastName = nameParts.drop(1).joinToString(" ")
-                val friendCode = DeterministicCodeGenerator.generateCodeFromEmail(firebaseUser.email!!)
+                val friendCode =
+                    DeterministicCodeGenerator.generateCodeFromEmail(firebaseUser.email!!)
 
                 val newUser = hashMapOf(
                     "firstName" to firstName,
