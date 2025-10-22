@@ -1,6 +1,7 @@
 package com.dj.insulink.auth.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun RegistrationScreen(
@@ -48,24 +50,26 @@ fun RegistrationScreen(
         modifier = Modifier
             .fillMaxHeight()
             .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing20))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing20))
         Image(
             painter = painterResource(id = R.drawable.ic_profile),
             contentDescription = "",
-            modifier = Modifier.size(MaterialTheme.dimens.registrationMainIconSize)
+            modifier = Modifier.size(InsulinkTheme.dimens.registrationMainIconSize)
         )
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing20))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing20))
         Text(
             text = stringResource(R.string.registration_screen_title),
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing24))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24)
         ) {
             OutlinedTextField(
                 value = params.firstName.value,
@@ -77,9 +81,28 @@ fun RegistrationScreen(
                 },
                 modifier = Modifier.weight(1f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    errorTextColor = MaterialTheme.colorScheme.error,
+
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    errorLabelColor = MaterialTheme.colorScheme.error,
+
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    errorCursorColor = MaterialTheme.colorScheme.error
+                )
             )
-            Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+            Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
             OutlinedTextField(
                 value = params.lastName.value,
                 onValueChange = {
@@ -87,150 +110,232 @@ fun RegistrationScreen(
                 },
                 label = {
                     Text(
-                        text = stringResource(R.string.registration_screen_last_name_label),
-                        color = Color.Black
+                        text = stringResource(R.string.registration_screen_last_name_label)
                     )
                 },
                 modifier = Modifier.weight(1f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    errorTextColor = MaterialTheme.colorScheme.error,
+
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    errorLabelColor = MaterialTheme.colorScheme.error,
+
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    errorCursorColor = MaterialTheme.colorScheme.error
+                )
             )
         }
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         OutlinedTextField(
             value = params.emailAddress.value,
             onValueChange = {
                 params.setEmailAddress(it)
             },
             leadingIcon = {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_email),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.dimens.textFieldIconSize)
+                    modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                 )
             },
             label = {
                 Text(
-                    text = stringResource(R.string.registration_screen_email_address_label),
-                    color = Color.Black
+                    text = stringResource(R.string.registration_screen_email_address_label)
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24),
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorTextColor = MaterialTheme.colorScheme.error,
+
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorLabelColor = MaterialTheme.colorScheme.error,
+
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                errorBorderColor = MaterialTheme.colorScheme.error,
+
+                cursorColor = MaterialTheme.colorScheme.primary,
+                errorCursorColor = MaterialTheme.colorScheme.error
+            )
         )
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         OutlinedTextField(
             value = params.password.value,
             onValueChange = {
                 params.setPassword(it)
             },
             leadingIcon = {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_password),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.dimens.textFieldIconSize)
+                    modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                 )
             },
             label = {
                 Text(
-                    text = stringResource(R.string.registration_screen_password_label),
-                    color = Color.Black
+                    text = stringResource(R.string.registration_screen_password_label)
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24),
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorTextColor = MaterialTheme.colorScheme.error,
+
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorLabelColor = MaterialTheme.colorScheme.error,
+
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                errorBorderColor = MaterialTheme.colorScheme.error,
+
+                cursorColor = MaterialTheme.colorScheme.primary,
+                errorCursorColor = MaterialTheme.colorScheme.error
+            )
         )
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         OutlinedTextField(
             value = params.confirmPassword.value,
             onValueChange = {
                 params.setConfirmPassword(it)
             },
             leadingIcon = {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_password),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.dimens.textFieldIconSize)
+                    modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                 )
             },
             label = {
                 Text(
-                    text = stringResource(R.string.registration_screen_confirm_password_label),
-                    color = Color.Black
+                    text = stringResource(R.string.registration_screen_confirm_password_label)
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24),
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorTextColor = MaterialTheme.colorScheme.error,
+
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                errorLabelColor = MaterialTheme.colorScheme.error,
+
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                errorBorderColor = MaterialTheme.colorScheme.error,
+
+                cursorColor = MaterialTheme.colorScheme.primary,
+                errorCursorColor = MaterialTheme.colorScheme.error
+            )
         )
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
         ) {
             Checkbox(
                 checked = params.termsOfServiceAccepted.value,
                 onCheckedChange = {
                     params.setTermsOfServiceAccepted(it)
-                }
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = MaterialTheme.colorScheme.outline,
+                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
             Text(
                 text = stringResource(R.string.registration_screen_terms_of_service_label),
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing24))
         Button(
             onClick = {
                 params.onSubmit()
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(MaterialTheme.dimens.commonButtonHeight50)
-                .padding(horizontal = MaterialTheme.dimens.commonPadding24),
+                .height(InsulinkTheme.dimens.commonButtonHeight50)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,
-                contentColor = Color.Black
+                containerColor = MaterialTheme.colorScheme.onSurface,
+                contentColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = MaterialTheme.dimens.commonElevation0)
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = InsulinkTheme.dimens.commonElevation0)
         ) {
             if (params.isLoading.value) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(MaterialTheme.dimens.commonProgressIndicatorSize25),
-                    color = Color.White
+                    modifier = Modifier.size(InsulinkTheme.dimens.commonProgressIndicatorSize25),
+                    color = MaterialTheme.colorScheme.surface
                 )
             } else {
                 Text(
                     text = stringResource(R.string.registration_screen_submit_button_label),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.surface
                 )
             }
         }
-        Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing24))
+        Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing24))
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = stringResource(R.string.registration_screen_existing_account_label),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing4))
+            Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing4))
             Text(
                 text = stringResource(R.string.registration_screen_sign_in_redirect_label),
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Blue),
+                style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.clickable {
                     params.navigateToLogin()

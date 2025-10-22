@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.R
 import com.dj.insulink.core.utils.combineDateAndTime
 import com.dj.insulink.core.utils.combineTimeWithDate
@@ -128,19 +129,23 @@ fun AddGlucoseReadingDialog(
 
         Dialog(onDismissRequest = { showTimePicker = false }) {
             Card(
-                shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             ) {
                 Column(
-                    modifier = Modifier.padding(MaterialTheme.dimens.commonPadding24),
+                    modifier = Modifier.padding(InsulinkTheme.dimens.commonPadding24),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = stringResource(R.string.new_reading_select_time_label),
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                     TimePicker(state = timePickerState)
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -148,10 +153,10 @@ fun AddGlucoseReadingDialog(
                         TextButton(onClick = { showTimePicker = false }) {
                             Text(
                                 text = stringResource(R.string.new_reading_cancel),
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                         TextButton(
                             onClick = {
                                 setNewGlucoseReadingTimestamp(
@@ -166,7 +171,7 @@ fun AddGlucoseReadingDialog(
                         ) {
                             Text(
                                 text = stringResource(R.string.new_reading_ok),
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -175,17 +180,18 @@ fun AddGlucoseReadingDialog(
         }
     }
 
-    Dialog(
-        onDismissRequest = onDismissRequest
-    ) {
+    Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding16),
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Column(
-                modifier = Modifier.padding(MaterialTheme.dimens.commonPadding24),
+                modifier = Modifier.padding(InsulinkTheme.dimens.commonPadding24),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -193,7 +199,7 @@ fun AddGlucoseReadingDialog(
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -204,36 +210,36 @@ fun AddGlucoseReadingDialog(
                             showDatePicker = true
                         },
                         border = BorderStroke(
-                            MaterialTheme.dimens.commonButtonBorder1,
-                            Color.Black
+                            InsulinkTheme.dimens.commonButtonBorder1,
+                            MaterialTheme.colorScheme.outline
                         ),
-                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius4),
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius4),
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = "$dateString",
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     TextButton(
                         onClick = {
                             showTimePicker = true
                         },
                         border = BorderStroke(
-                            MaterialTheme.dimens.commonButtonBorder1,
-                            Color.Black
+                            InsulinkTheme.dimens.commonButtonBorder1,
+                            MaterialTheme.colorScheme.outline
                         ),
-                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius4),
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius4),
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = "$timeString",
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 OutlinedTextField(
                     value = newGlucoseReadingValue.value,
                     onValueChange = { newValue ->
@@ -244,36 +250,36 @@ fun AddGlucoseReadingDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
 
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 OutlinedTextField(
                     value = newGlucoseReadingComment.value,
                     onValueChange = { newValue ->
@@ -284,36 +290,36 @@ fun AddGlucoseReadingDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
 
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -321,10 +327,10 @@ fun AddGlucoseReadingDialog(
                     TextButton(onClick = onDismissRequest) {
                         Text(
                             text = stringResource(R.string.new_reading_cancel),
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Button(
                         onClick = {
                             if (newGlucoseReadingValue.value.isNotEmpty()) {
@@ -336,11 +342,11 @@ fun AddGlucoseReadingDialog(
                         modifier = Modifier.background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF4A7BF6),
-                                    Color(0xFF8A5CF5)
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
                                 )
                             ),
-                            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent

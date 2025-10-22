@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -27,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun AddSportsActivityDialog(
@@ -46,10 +47,13 @@ fun AddSportsActivityDialog(
 ) {
     Dialog(onDismissRequest = { setShowAddExerciseDialog(false) }) {
         Card(
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Column(
-                modifier = Modifier.padding(MaterialTheme.dimens.commonPadding24),
+                modifier = Modifier.padding(InsulinkTheme.dimens.commonPadding24),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -61,7 +65,7 @@ fun AddSportsActivityDialog(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 OutlinedTextField(
                     value = sportName.value,
                     onValueChange = { newValue ->
@@ -71,44 +75,45 @@ fun AddSportsActivityDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                 Text(
-                    text = stringResource(R.string.fitness_screen_add_duration_label)
+                    text = stringResource(R.string.fitness_screen_add_duration_label),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing4))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing4))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
+                    horizontalArrangement = Arrangement.spacedBy(InsulinkTheme.dimens.commonSpacing8)
                 ) {
                     OutlinedTextField(
                         value = durationHours.value,
@@ -121,34 +126,34 @@ fun AddSportsActivityDialog(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black,
-                            disabledTextColor = Color.Black,
-                            errorTextColor = Color.Black,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorTextColor = MaterialTheme.colorScheme.error,
 
-                            focusedLabelColor = Color.Black,
-                            unfocusedLabelColor = Color.Black,
-                            disabledLabelColor = Color.Black,
-                            errorLabelColor = Color.Red,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorLabelColor = MaterialTheme.colorScheme.error,
 
-                            focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Black,
-                            disabledBorderColor = Color.Black,
-                            errorBorderColor = Color.Red,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                            errorBorderColor = MaterialTheme.colorScheme.error,
 
-                            cursorColor = Color.Black,
-                            errorCursorColor = Color.Red,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            errorCursorColor = MaterialTheme.colorScheme.error,
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                             disabledContainerColor = Color.Transparent,
                             errorContainerColor = Color.Transparent,
 
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Black,
-                            disabledPlaceholderColor = Color.Black,
-                            errorPlaceholderColor = Color.Black
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorPlaceholderColor = MaterialTheme.colorScheme.error
                         )
                     )
                     OutlinedTextField(
@@ -165,38 +170,38 @@ fun AddSportsActivityDialog(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black,
-                            disabledTextColor = Color.Black,
-                            errorTextColor = Color.Black,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorTextColor = MaterialTheme.colorScheme.error,
 
-                            focusedLabelColor = Color.Black,
-                            unfocusedLabelColor = Color.Black,
-                            disabledLabelColor = Color.Black,
-                            errorLabelColor = Color.Red,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorLabelColor = MaterialTheme.colorScheme.error,
 
-                            focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Black,
-                            disabledBorderColor = Color.Black,
-                            errorBorderColor = Color.Red,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                            errorBorderColor = MaterialTheme.colorScheme.error,
 
-                            cursorColor = Color.Black,
-                            errorCursorColor = Color.Red,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            errorCursorColor = MaterialTheme.colorScheme.error,
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                             disabledContainerColor = Color.Transparent,
                             errorContainerColor = Color.Transparent,
 
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color.Black,
-                            disabledPlaceholderColor = Color.Black,
-                            errorPlaceholderColor = Color.Black
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorPlaceholderColor = MaterialTheme.colorScheme.error
                         )
                     )
                 }
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                 OutlinedTextField(
                     value = glucoseBefore.value,
                     onValueChange = { newValue ->
@@ -208,37 +213,37 @@ fun AddSportsActivityDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                 OutlinedTextField(
                     value = glucoseAfter.value,
                     onValueChange = { newValue ->
@@ -250,37 +255,37 @@ fun AddSportsActivityDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -288,10 +293,10 @@ fun AddSportsActivityDialog(
                     TextButton(onClick = { setShowAddExerciseDialog(false) }) {
                         Text(
                             text = stringResource(R.string.new_reading_cancel),
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Button(
                         onClick = {
                             onAddExerciseClick()
@@ -304,11 +309,11 @@ fun AddSportsActivityDialog(
                         modifier = Modifier.background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF4A7BF6),
-                                    Color(0xFF8A5CF5)
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
                                 )
                             ),
-                            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent

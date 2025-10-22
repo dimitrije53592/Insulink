@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.ui.components.AddGlucoseReadingDialog
 import com.dj.insulink.feature.ui.components.DynamicLineChart
@@ -54,7 +54,11 @@ import java.util.Locale
 fun GlucoseScreen(
     params: GlucoseScreenParams
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -66,27 +70,27 @@ fun GlucoseScreen(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(MaterialTheme.dimens.commonPadding12)
+                    .padding(InsulinkTheme.dimens.commonPadding12)
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFF4A7BF6),
-                                Color(0xFF8A5CF5)
+                                InsulinkTheme.colors.insulinkBlue,
+                                InsulinkTheme.colors.insulinkPurple
                             )
                         ),
-                        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                     )
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(vertical = MaterialTheme.dimens.commonPadding16)
-                        .padding(start = MaterialTheme.dimens.commonPadding24)
+                        .padding(vertical = InsulinkTheme.dimens.commonPadding16)
+                        .padding(start = InsulinkTheme.dimens.commonPadding24)
                 ) {
                     Text(
                         text = stringResource(R.string.glucose_screen_latest_reading_label),
                         color = Color.White
                     )
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Text(
                         text = if (params.latestGlucoseReading.value != null) {
                             stringResource(
@@ -100,7 +104,7 @@ fun GlucoseScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Text(
                         text = if (params.latestGlucoseReading.value != null) {
                             SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -110,10 +114,11 @@ fun GlucoseScreen(
                         },
                         color = Color.White
                     )
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     GlucoseLevelIndicator(glucoseLevel = params.latestGlucoseReading.value?.value)
                 }
             }
+
             GlucoseDropdownMenu(
                 items = GlucoseReadingTimespan.entries.map { it.displayName },
                 selectedItem = params.selectedTimespan.value.displayName,
@@ -122,22 +127,26 @@ fun GlucoseScreen(
                         ?: GlucoseReadingTimespan.ALL_READINGS
                     params.setSelectedTimespan(newTimespan)
                 },
-                modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
             )
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
+
             if (params.allGlucoseReadings.value.isNotEmpty()) {
                 DynamicLineChart(
                     xValues = params.allGlucoseReadings.value.map { it.timestamp }.reversed(),
                     yValues = params.allGlucoseReadings.value.map { it.value }.reversed(),
-                    modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                    modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
                 )
             }
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
+
             Column {
                 if (params.allGlucoseReadings.value.isNotEmpty()) {
-                    LazyColumn (
+                    LazyColumn(
                         modifier = Modifier.height(ALLOWED_READINGS_COLUMN_HEIGHT)
-                    ){
+                    ) {
                         items(items = params.allGlucoseReadings.value, key = { item -> item.id }) {
                             GlucoseReadingItem(
                                 glucoseReading = it,
@@ -145,7 +154,7 @@ fun GlucoseScreen(
                                     params.deleteGlucoseReading(it)
                                 }
                             )
-                            Spacer(Modifier.size(MaterialTheme.dimens.commonPadding8))
+                            Spacer(Modifier.size(InsulinkTheme.dimens.commonPadding8))
                         }
                     }
                 } else {
@@ -156,12 +165,14 @@ fun GlucoseScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.glucose_screen_no_readings_title),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
             }
         }
+
         FloatingActionButton(
             onClick = {
                 params.setNewGlucoseReadingTimestamp(System.currentTimeMillis())
@@ -169,16 +180,17 @@ fun GlucoseScreen(
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(MaterialTheme.dimens.commonPadding16),
-            containerColor = Color(0xFF4A7BF6)
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            containerColor = MaterialTheme.colorScheme.primary
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 contentDescription = ""
             )
         }
     }
+
     if (params.showAddGlucoseReadingDialog.value) {
         AddGlucoseReadingDialog(
             newGlucoseReadingTimestamp = params.newGlucoseReadingTimestamp,

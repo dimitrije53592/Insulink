@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.Friend
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.ui.components.FriendsListItem
@@ -48,24 +49,25 @@ fun FriendsScreen(
         modifier = Modifier
             .fillMaxHeight()
             .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Button(
             onClick = {
                 params.setShowAddNewFriendDialog(true)
             },
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = MaterialTheme.dimens.commonPadding12,
-                    vertical = MaterialTheme.dimens.commonPadding24
+                    horizontal = InsulinkTheme.dimens.commonPadding12,
+                    vertical = InsulinkTheme.dimens.commonPadding24
                 )
                 .shadow(
-                    elevation = MaterialTheme.dimens.commonPadding8,
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                    elevation = InsulinkTheme.dimens.commonPadding8,
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                     clip = false
                 )
         ) {
@@ -74,37 +76,37 @@ fun FriendsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = MaterialTheme.dimens.commonPadding12)
+                    .padding(vertical = InsulinkTheme.dimens.commonPadding12)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_new_friends),
                     tint = Color.Unspecified,
                     contentDescription = ""
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 Text(
                     text = stringResource(R.string.friends_screen_add_new_friend_button_label),
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color(0xFF4A7BF6),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Text(
             text = stringResource(
                 R.string.friends_screen_friends_list_label,
                 params.friendsList.value.size
             ),
             style = MaterialTheme.typography.titleMedium,
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = MaterialTheme.dimens.commonPadding12)
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
         )
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
         ) {
             params.friendsList.value.forEach {
                 FriendsListItem(friend = it)
@@ -134,22 +136,27 @@ private fun AddNewFriendDialog(
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Column(
-                modifier = Modifier.padding(MaterialTheme.dimens.commonPadding24),
+                modifier = Modifier.padding(InsulinkTheme.dimens.commonPadding24),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
-                    text = stringResource(R.string.friends_screen_friend_code_label)
+                    text = stringResource(R.string.friends_screen_friend_code_label),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 Text(
                     text = usersFriendCode,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 OutlinedTextField(
                     value = enteredCode.value,
                     onValueChange = {
@@ -160,36 +167,36 @@ private fun AddNewFriendDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        disabledTextColor = Color.Black,
-                        errorTextColor = Color.Black,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
-                        disabledLabelColor = Color.Black,
-                        errorLabelColor = Color.Red,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        disabledBorderColor = Color.Black,
-                        errorBorderColor = Color.Red,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = Color.Black,
-                        errorCursorColor = Color.Red,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
 
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
                         errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = Color.Black,
-                        unfocusedPlaceholderColor = Color.Black,
-                        disabledPlaceholderColor = Color.Black,
-                        errorPlaceholderColor = Color.Black
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing24))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -197,10 +204,10 @@ private fun AddNewFriendDialog(
                     TextButton(onClick = onDismissRequest) {
                         Text(
                             text = stringResource(R.string.new_reading_cancel),
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Button(
                         onClick = {
                             onAddFriendClick()
@@ -208,11 +215,11 @@ private fun AddNewFriendDialog(
                         modifier = Modifier.background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF4A7BF6),
-                                    Color(0xFF8A5CF5)
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
                                 )
                             ),
-                            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent
