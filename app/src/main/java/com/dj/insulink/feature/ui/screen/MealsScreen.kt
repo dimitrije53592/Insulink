@@ -2,8 +2,11 @@ package com.dj.insulink.feature.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +17,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -31,22 +40,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.ui.components.AddMealDialog
+import com.dj.insulink.feature.ui.components.CreateIngredientDialog
 import com.dj.insulink.feature.ui.components.DailyNutritionSummary
 import com.dj.insulink.feature.ui.components.MealItem
+import com.dj.insulink.feature.ui.components.MyIngredientsDialog
 import com.dj.insulink.feature.ui.viewmodel.MealsViewModel
 import com.dj.insulink.feature.domain.models.DailyNutrition
 import com.dj.insulink.feature.domain.models.Meal
 
 @Composable
 fun MealsScreen(
-    params: MealsScreenParams? = null
+    params: MealsScreenParams? = null,
+    currentUserId: String? = null
 ) {
     val viewModel: MealsViewModel = hiltViewModel()
     
     // Use ViewModel state if params is null (for real implementation)
-    val allMeals = if (params != null) params.allMeals else viewModel.allMeals.collectAsState()
+    val allMeals = if (params != null) params.allMeals else viewModel.mealsForSelectedDate.collectAsState()
     val dailyNutrition = if (params != null) params.dailyNutritionData else viewModel.dailyNutrition.collectAsState()
     val showAddMealDialog = if (params != null) params.showAddMealDialog else viewModel.showAddMealDialog.collectAsState()
     val newMealName = if (params != null) params.newMealName else viewModel.newMealName
@@ -56,10 +73,25 @@ fun MealsScreen(
     val searchResults = viewModel.searchResults.collectAsState()
     val selectedIngredients = viewModel.selectedIngredients.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
+    val selectedDate = viewModel.selectedDate.collectAsState()
+    val showCreateIngredientDialog = viewModel.showCreateIngredientDialog.collectAsState()
+    val showMyIngredientsDialog = viewModel.showMyIngredientsDialog.collectAsState()
+    val userIngredients = viewModel.userIngredients.collectAsState()
 
-    // Initialize with dummy user ID for now
-    LaunchedEffect(Unit) {
-        viewModel.setCurrentUserId("dummy_user_id")
+    // Initialize with current user ID
+    LaunchedEffect(currentUserId) {
+        if (currentUserId != null) {
+            viewModel.setCurrentUserEmail(currentUserId)
+        } else {
+            // Fallback to dummy user for testing
+            viewModel.setCurrentUserEmail("dummy@example.com")
+        }
+    }
+
+    // Ensure meals are refreshed when selected date changes
+    LaunchedEffect(selectedDate.value) {
+        viewModel.loadMealsForSelectedDate()
+        viewModel.loadDailyNutritionForDate(selectedDate.value)
     }
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { // Theme Color for Background
 
@@ -67,33 +99,15 @@ fun MealsScreen(
 
             // --- TOP DATE CARD ---
             item {
-                Card(
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), // Theme Color for Card
-                    elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+                DatePickerCard(
+                    selectedDate = selectedDate.value,
+                    onDateSelected = { date ->
+                        viewModel.setSelectedDate(date)
+                    },
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .padding(top = MaterialTheme.dimens.commonPadding16, start = MaterialTheme.dimens.commonPadding16)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = MaterialTheme.dimens.commonPadding8)
-                    ) {
-                        Text(
-                            text = "Today, Sept 10", // Hardcoded date placeholder
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Monday", // Hardcoded day placeholder
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.dimens.commonPadding16, vertical = MaterialTheme.dimens.commonPadding8)
+                )
             }
 
             // --- DAILY NUTRITION SUMMARY CARD ---
@@ -184,6 +198,8 @@ fun MealsScreen(
             onMealNameChange = viewModel::setNewMealName,
             mealComment = viewModel.newMealComment,
             onMealCommentChange = viewModel::setNewMealComment,
+            mealDate = viewModel.newMealTimestamp,
+            onMealDateChange = viewModel::setNewMealTimestamp,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery.value = it },
             searchResults = searchResults,
@@ -205,7 +221,33 @@ fun MealsScreen(
                     viewModel.submitNewMeal()
                 }
             },
-            isLoading = isLoading
+            isLoading = isLoading,
+            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
+            onShowMyIngredients = { viewModel.setShowMyIngredientsDialog(true) }
+        )
+    }
+
+    // --- CREATE INGREDIENT DIALOG ---
+    if (showCreateIngredientDialog.value) {
+        CreateIngredientDialog(
+            onDismiss = { viewModel.setShowCreateIngredientDialog(false) },
+            onSave = { ingredient ->
+                viewModel.createCustomIngredient(ingredient)
+            },
+            isLoading = isLoading.value
+        )
+    }
+
+    // --- MY INGREDIENTS DIALOG ---
+    if (showMyIngredientsDialog.value) {
+        MyIngredientsDialog(
+            userIngredients = viewModel.userIngredients,
+            onDismiss = { viewModel.setShowMyIngredientsDialog(false) },
+            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
+            onDeleteIngredient = { ingredient ->
+                viewModel.deleteCustomIngredient(ingredient)
+            },
+            isLoading = isLoading.value
         )
     }
 }
@@ -280,4 +322,93 @@ fun getDummyMealsScreenParams(): MealsScreenParams {
         submitNewMeal = { Log.d("MealsScreen", "Submit new meal") },
         deleteMeal = { Log.d("MealsScreen", "Delete meal: ${it.name}") }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerCard(
+    selectedDate: Long,
+    onDateSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val showDatePicker = remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate
+    )
+    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    val dayFormatter = SimpleDateFormat("EEEE", Locale.getDefault())
+    val isToday = remember(selectedDate) {
+        val today = Calendar.getInstance()
+        val selected = Calendar.getInstance().apply { timeInMillis = selectedDate }
+        today.get(Calendar.YEAR) == selected.get(Calendar.YEAR) &&
+        today.get(Calendar.DAY_OF_YEAR) == selected.get(Calendar.DAY_OF_YEAR)
+    }
+
+    Card(
+        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+        modifier = modifier
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    showDatePicker.value = true
+                }
+                .padding(vertical = MaterialTheme.dimens.commonPadding8)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Calendar",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(
+                    text = if (isToday) "Today" else dateFormatter.format(Date(selectedDate)),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Text(
+                text = dayFormatter.format(Date(selectedDate)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+
+    if (showDatePicker.value) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { dateMillis ->
+                            onDateSelected(dateMillis)
+                        }
+                        showDatePicker.value = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker.value = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 }

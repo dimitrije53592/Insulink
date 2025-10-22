@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.dj.insulink.feature.data.room.dao.ExerciseDao
 import com.dj.insulink.feature.data.room.dao.FriendDao
 import com.dj.insulink.feature.data.room.dao.GlucoseReadingDao
@@ -29,7 +31,7 @@ import com.dj.insulink.feature.data.room.entity.MealIngredientEntity
         MealIngredientEntity::class,
         ExerciseEntity::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class InsulinkDatabase : RoomDatabase() {
@@ -44,13 +46,23 @@ abstract class InsulinkDatabase : RoomDatabase() {
     companion object {
         private var INSTANCE: InsulinkDatabase? = null
 
+        // Migration from version 1 to 3 - Add userId column to ingredients table
+        private val MIGRATION_1_3 = object : Migration(1, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE ingredients ADD COLUMN userId TEXT")
+            }
+        }
+
         fun getDatabase(context: Context): InsulinkDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     InsulinkDatabase::class.java,
                     "insulink_database"
-                ).build()
+                )
+                .addMigrations(MIGRATION_1_3)
+                .fallbackToDestructiveMigrationOnDowngrade(true) // For development - remove in production
+                .build()
                 INSTANCE = instance
                 return@synchronized instance
             }

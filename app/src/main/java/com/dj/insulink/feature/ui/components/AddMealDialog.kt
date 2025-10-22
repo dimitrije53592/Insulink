@@ -2,18 +2,28 @@ package com.dj.insulink.feature.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,13 +36,19 @@ import com.dj.insulink.feature.domain.models.Ingredient
 import com.dj.insulink.feature.domain.models.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealDialog(
     mealName: StateFlow<String>,
     onMealNameChange: (String) -> Unit,
     mealComment: StateFlow<String>,
     onMealCommentChange: (String) -> Unit,
+    mealDate: StateFlow<Long>,
+    onMealDateChange: (Long) -> Unit,
     searchQuery: State<String>,
     onSearchQueryChange: (String) -> Unit,
     searchResults: State<List<Ingredient>>,
@@ -42,14 +58,23 @@ fun AddMealDialog(
     onUpdateIngredientQuantity: (MealIngredient, Double) -> Unit,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
-    isLoading: State<Boolean>
+    isLoading: State<Boolean>,
+    onCreateIngredient: () -> Unit,
+    onShowMyIngredients: () -> Unit
 ) {
     val mealNameValue by mealName.collectAsState()
     val mealCommentValue by mealComment.collectAsState()
+    val mealDateValue by mealDate.collectAsState()
     val searchQueryValue by searchQuery
     val searchResultsValue by searchResults
     val selectedIngredientsValue by selectedIngredients
     val isLoadingValue by isLoading
+    
+    // Date picker state
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = mealDateValue
+    )
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -63,6 +88,7 @@ fun AddMealDialog(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(MaterialTheme.dimens.commonPadding16)
+                    .verticalScroll(rememberScrollState())
             ) {
                 // Header
                 Row(
@@ -94,6 +120,55 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
+                // Meal Date Input
+                val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { 
+                            showDatePicker = true
+                        },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp, 
+                        MaterialTheme.colorScheme.outline
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Meal Date",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = dateFormatter.format(Date(mealDateValue)),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Icon(
+                                Icons.Default.CalendarToday,
+                                contentDescription = "Select date",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+
                 // Search Ingredients
                 OutlinedTextField(
                     value = searchQueryValue,
@@ -101,6 +176,16 @@ fun AddMealDialog(
                     label = { Text("Add Ingredients") },
                     placeholder = { Text("Search ingredients...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    trailingIcon = {
+                        Row {
+                            IconButton(onClick = onCreateIngredient) {
+                                Icon(Icons.Default.Add, contentDescription = "Create ingredient")
+                            }
+                            IconButton(onClick = onShowMyIngredients) {
+                                Icon(Icons.Default.Person, contentDescription = "My ingredients")
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -258,6 +343,34 @@ fun AddMealDialog(
                     }
                 }
             }
+        }
+    }
+    
+    // Date Picker Dialog
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { dateMillis ->
+                            onMealDateChange(dateMillis)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }

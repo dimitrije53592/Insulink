@@ -49,14 +49,38 @@ class MealsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _currentUserId = MutableStateFlow("")
-    val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
+    private val _currentUserEmail = MutableStateFlow("")
+    val currentUserEmail: StateFlow<String> = _currentUserEmail.asStateFlow()
 
-    fun setCurrentUserId(userId: String) {
-        _currentUserId.value = userId
+    // Custom ingredients management
+    private val _userIngredients = MutableStateFlow<List<Ingredient>>(emptyList())
+    val userIngredients: StateFlow<List<Ingredient>> = _userIngredients.asStateFlow()
+
+    private val _showCreateIngredientDialog = MutableStateFlow(false)
+    val showCreateIngredientDialog: StateFlow<Boolean> = _showCreateIngredientDialog.asStateFlow()
+
+    private val _showMyIngredientsDialog = MutableStateFlow(false)
+    val showMyIngredientsDialog: StateFlow<Boolean> = _showMyIngredientsDialog.asStateFlow()
+
+    private val _selectedDate = MutableStateFlow(System.currentTimeMillis())
+    val selectedDate: StateFlow<Long> = _selectedDate.asStateFlow()
+
+    private val _mealsForSelectedDate = MutableStateFlow<List<Meal>>(emptyList())
+    val mealsForSelectedDate: StateFlow<List<Meal>> = _mealsForSelectedDate.asStateFlow()
+
+    fun setCurrentUserEmail(userEmail: String) {
+        _currentUserEmail.value = userEmail
         initializeData()
-        loadMeals()
-        loadDailyNutrition()
+        // Only load meals for selected date, not all meals
+        loadMealsForSelectedDate()
+        loadDailyNutritionForDate(_selectedDate.value)
+        loadUserIngredients()
+    }
+
+    fun setSelectedDate(date: Long) {
+        _selectedDate.value = date
+        loadMealsForSelectedDate()
+        loadDailyNutritionForDate(date)
     }
 
     private fun initializeData() {
@@ -66,10 +90,10 @@ class MealsViewModel @Inject constructor(
     }
 
     fun loadMeals() {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getAllMeals(userId).collect { meals ->
+                mealRepository.getAllMeals(userEmail).collect { meals ->
                     _allMeals.value = meals
                 }
             }
@@ -77,20 +101,43 @@ class MealsViewModel @Inject constructor(
     }
 
     fun loadDailyNutrition() {
-        val userId = _currentUserId.value
-        if (userId.isNotEmpty()) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
                 val today = System.currentTimeMillis()
-                val nutrition = mealRepository.getDailyNutrition(userId, today)
+                val nutrition = mealRepository.getDailyNutrition(userEmail, today)
                 _dailyNutrition.value = nutrition
             }
         }
     }
 
-    fun searchIngredients(query: String) {
-        if (query.isNotEmpty()) {
+    fun loadDailyNutritionForDate(date: Long) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.searchIngredients(query).collect { ingredients ->
+                val nutrition = mealRepository.getDailyNutrition(userEmail, date)
+                _dailyNutrition.value = nutrition
+            }
+        }
+    }
+
+    fun loadMealsForSelectedDate() {
+        val userEmail = _currentUserEmail.value
+        val selectedDate = _selectedDate.value
+        if (userEmail.isNotEmpty()) {
+            viewModelScope.launch {
+                mealRepository.getMealsByDate(userEmail, selectedDate).collect { meals ->
+                    _mealsForSelectedDate.value = meals
+                }
+            }
+        }
+    }
+
+    fun searchIngredients(query: String) {
+        val userEmail = _currentUserEmail.value
+        if (query.isNotEmpty() && userEmail.isNotEmpty()) {
+            viewModelScope.launch {
+                mealRepository.searchIngredients(query, userEmail).collect { ingredients ->
                     _searchResults.value = ingredients
                 }
             }
@@ -136,7 +183,10 @@ class MealsViewModel @Inject constructor(
 
     fun setShowAddMealDialog(show: Boolean) {
         _showAddMealDialog.value = show
-        if (!show) {
+        if (show) {
+            // Initialize with current date when opening dialog
+            _newMealTimestamp.value = System.currentTimeMillis()
+        } else {
             // Reset form when dialog is closed
             _newMealName.value = ""
             _newMealComment.value = ""
@@ -145,8 +195,8 @@ class MealsViewModel @Inject constructor(
     }
 
     fun submitNewMeal() {
-        val userId = _currentUserId.value
-        if (userId.isEmpty()) return
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isEmpty()) return
 
         val ingredients = _selectedIngredients.value
         if (ingredients.isEmpty()) return
@@ -169,7 +219,7 @@ class MealsViewModel @Inject constructor(
             sugar = totalSugar,
             salt = totalSalt,
             comment = _newMealComment.value.takeIf { it.isNotEmpty() },
-            userId = userId,
+            userId = userEmail,
             ingredients = ingredients
         )
 
@@ -178,7 +228,9 @@ class MealsViewModel @Inject constructor(
             try {
                 mealRepository.insertMeal(meal)
                 setShowAddMealDialog(false)
-                loadDailyNutrition() // Refresh daily nutrition
+                // Refresh meals for selected date and daily nutrition
+                loadMealsForSelectedDate()
+                loadDailyNutritionForDate(_selectedDate.value)
             } catch (e: Exception) {
                 // Handle error
             } finally {
@@ -191,7 +243,59 @@ class MealsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 mealRepository.deleteMeal(meal)
-                loadDailyNutrition() // Refresh daily nutrition
+                // Refresh meals for selected date and daily nutrition
+                loadMealsForSelectedDate()
+                loadDailyNutritionForDate(_selectedDate.value)
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    // Custom ingredients management
+    fun loadUserIngredients() {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
+            viewModelScope.launch {
+                mealRepository.getUserIngredients(userEmail).collect { ingredients ->
+                    _userIngredients.value = ingredients
+                }
+            }
+        }
+    }
+
+    fun setShowCreateIngredientDialog(show: Boolean) {
+        _showCreateIngredientDialog.value = show
+    }
+
+    fun setShowMyIngredientsDialog(show: Boolean) {
+        _showMyIngredientsDialog.value = show
+    }
+
+    fun createCustomIngredient(ingredient: Ingredient) {
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
+            viewModelScope.launch {
+                _isLoading.value = true
+                try {
+                    val customIngredient = ingredient.copy(userId = userEmail)
+                    mealRepository.insertIngredient(customIngredient)
+                    loadUserIngredients() // Refresh the list
+                    setShowCreateIngredientDialog(false)
+                } catch (e: Exception) {
+                    // Handle error
+                } finally {
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+    fun deleteCustomIngredient(ingredient: Ingredient) {
+        viewModelScope.launch {
+            try {
+                mealRepository.deleteIngredient(ingredient)
+                loadUserIngredients() // Refresh the list
             } catch (e: Exception) {
                 // Handle error
             }

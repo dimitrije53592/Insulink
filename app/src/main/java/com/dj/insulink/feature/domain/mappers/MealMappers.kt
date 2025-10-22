@@ -56,6 +56,7 @@ fun IngredientEntity.toDomain(): Ingredient {
         fatPer100g = fatPer100g,
         sugarPer100g = sugarPer100g,
         saltPer100g = saltPer100g,
+        userId = userId,
         firebaseId = firebaseId,
         createdAt = createdAt
     )
@@ -71,6 +72,7 @@ fun Ingredient.toEntity(): IngredientEntity {
         fatPer100g = fatPer100g,
         sugarPer100g = sugarPer100g,
         saltPer100g = saltPer100g,
+        userId = userId,
         firebaseId = firebaseId,
         createdAt = createdAt
     )

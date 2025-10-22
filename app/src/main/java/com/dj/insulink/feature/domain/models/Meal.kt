@@ -38,6 +38,7 @@ data class Ingredient(
     val fatPer100g: Double,
     val sugarPer100g: Double,
     val saltPer100g: Double,
+    val userId: String? = null, // null for system ingredients, userId for custom ingredients
     val firebaseId: String? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

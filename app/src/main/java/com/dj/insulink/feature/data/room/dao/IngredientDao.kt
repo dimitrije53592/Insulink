@@ -6,11 +6,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface IngredientDao {
-    @Query("SELECT * FROM ingredients WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
-    fun searchIngredients(query: String): Flow<List<IngredientEntity>>
+    @Query("SELECT * FROM ingredients WHERE name LIKE '%' || :query || '%' AND (userId IS NULL OR userId = :userId) ORDER BY name ASC")
+    fun searchIngredients(query: String, userId: String): Flow<List<IngredientEntity>>
 
     @Query("SELECT * FROM ingredients ORDER BY name ASC")
     fun getAllIngredients(): Flow<List<IngredientEntity>>
+
+    @Query("SELECT * FROM ingredients WHERE userId = :userId ORDER BY name ASC")
+    fun getUserIngredients(userId: String): Flow<List<IngredientEntity>>
 
     @Query("SELECT * FROM ingredients WHERE id = :id")
     suspend fun getIngredientById(id: Long): IngredientEntity?

@@ -122,8 +122,8 @@ class MealRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun searchIngredients(query: String): Flow<List<Ingredient>> {
-        return ingredientDao.searchIngredients(query).map { ingredientEntities ->
+    override fun searchIngredients(query: String, userId: String): Flow<List<Ingredient>> {
+        return ingredientDao.searchIngredients(query, userId).map { ingredientEntities ->
             ingredientEntities.map { it.toDomain() }
         }
     }
@@ -134,6 +134,20 @@ class MealRepositoryImpl @Inject constructor(
 
     override suspend fun getIngredientById(id: Long): Ingredient? {
         return ingredientDao.getIngredientById(id)?.toDomain()
+    }
+
+    override fun getUserIngredients(userId: String): Flow<List<Ingredient>> {
+        return ingredientDao.getUserIngredients(userId).map { ingredientEntities ->
+            ingredientEntities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun updateIngredient(ingredient: Ingredient) {
+        ingredientDao.updateIngredient(ingredient.toEntity())
+    }
+
+    override suspend fun deleteIngredient(ingredient: Ingredient) {
+        ingredientDao.deleteIngredient(ingredient.toEntity())
     }
 
     private suspend fun getMealIngredients(mealId: Long): List<MealIngredient> {
