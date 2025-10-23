@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.Meal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,20 +56,18 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
 
 @Composable
 private fun MealItemContent(meal: Meal) {
-    // Determine if any key nutritional/tracking data is present to show the full details vs. placeholder
     val hasContent = meal.calories != null || meal.carbs != null || meal.protein != null
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) // Theme Color
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(MaterialTheme.dimens.commonPadding16)
         ) {
-            // Left Content: Meal Name and Time
             Column(modifier = Modifier.align(Alignment.CenterStart)) {
                 Text(
                     text = meal.name,
@@ -83,10 +82,8 @@ private fun MealItemContent(meal: Meal) {
                 )
             }
 
-            // Right Content: Details or Placeholder Circle (as requested by the user's snippet logic)
             if (hasContent) {
                 Column(modifier = Modifier.align(Alignment.CenterEnd), horizontalAlignment = Alignment.End) {
-                    // Calories
                     if (meal.calories != null) {
                         Text(
                             text = "${meal.calories} cal",
@@ -96,30 +93,27 @@ private fun MealItemContent(meal: Meal) {
                         Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing4))
                     }
 
-                    // Protein Info
                     if (meal.protein != null) {
                         Text(
                             text = "Protein: ${String.format("%.1f", meal.protein)}g",
-                            color = Color(0xFF4A7BF6), // Primary Blue
+                            color = InsulinkTheme.colors.insulinkBlue,
                             fontWeight = FontWeight.Medium
                         )
                     }
 
-                    // Carbs Info
                     if (meal.carbs != null) {
                         Text(
                             text = "Carbs: ${String.format("%.1f", meal.carbs)}g",
-                            color = Color(0xFF6F9940), // Darker Green
+                            color = InsulinkTheme.colors.glucoseNormal,
                             fontWeight = FontWeight.Medium
                         )
                     }
                 }
             } else {
-                // Placeholder Blue Circle (similar to Morning Snack card in the image)
                 Box(
                     modifier = Modifier
                         .size(MaterialTheme.dimens.commonSpacing16)
-                        .background(Color(0xFFE6F3FF), shape = RoundedCornerShape(8.dp)) // Light Blue
+                        .background(InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f), shape = RoundedCornerShape(8.dp))
                         .align(Alignment.CenterEnd)
                 )
             }

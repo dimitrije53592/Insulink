@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.DailyNutrition
 
 @Composable
@@ -36,7 +37,6 @@ fun DailyNutritionSummary(nutrition: DailyNutrition) {
             modifier = Modifier.padding(bottom = MaterialTheme.dimens.commonSpacing12)
         )
 
-        // Row 1: Calories and Carbs
         Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
@@ -45,20 +45,19 @@ fun DailyNutritionSummary(nutrition: DailyNutrition) {
                 label = "Calories",
                 value = "${nutrition.calories}",
                 unit = "",
-                color = Color(0xFFE6F3FF), // Light Blue
+                color = InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f),
                 modifier = Modifier.weight(1f)
             )
             NutritionItem(
                 label = "Carbs",
                 value = "${nutrition.carbs}g",
                 unit = "",
-                color = Color(0xFFE8FCE4), // Light Green
+                color = InsulinkTheme.colors.glucoseNormal.copy(alpha = 0.15f),
                 modifier = Modifier.weight(1f)
             )
         }
         Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
 
-        // Row 2: Protein and Fat
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
@@ -67,20 +66,19 @@ fun DailyNutritionSummary(nutrition: DailyNutrition) {
                 label = "Protein",
                 value = "${nutrition.protein}g",
                 unit = "",
-                color = Color(0xFFFDE4FF), // Light Purple
+                color = InsulinkTheme.colors.insulinkPurple.copy(alpha = 0.15f),
                 modifier = Modifier.weight(1f)
             )
             NutritionItem(
                 label = "Fat",
                 value = "${nutrition.fat}g",
                 unit = "",
-                color = Color(0xFFFFF1E6), // Light Orange
+                color = InsulinkTheme.colors.lastDropLabel.copy(alpha = 0.15f),
                 modifier = Modifier.weight(1f)
             )
         }
         Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
 
-        // Row 3: Sugar and Salt
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
@@ -89,14 +87,14 @@ fun DailyNutritionSummary(nutrition: DailyNutrition) {
                 label = "Sugar",
                 value = "${nutrition.sugar}g",
                 unit = "",
-                color = Color(0xFFFFEAEA), // Light Red
+                color = InsulinkTheme.colors.glucoseLow.copy(alpha = 0.15f),
                 modifier = Modifier.weight(1f)
             )
             NutritionItem(
                 label = "Salt",
                 value = "${nutrition.salt}g",
                 unit = "",
-                color = Color(0xFFEEEEEE), // Light Gray
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
                 modifier = Modifier.weight(1f)
             )
         }

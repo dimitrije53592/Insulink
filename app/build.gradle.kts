@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,13 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+}
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
 }
 
 android {
@@ -20,6 +29,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SPOONACULAR_API_KEY", "${localProperties.getProperty("SPOONACULAR_API_KEY")}")
+        buildConfigField("String", "USDA_API_KEY", "${localProperties.getProperty("USDA_API_KEY")}")
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     packaging {

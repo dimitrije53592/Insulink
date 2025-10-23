@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,10 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.domain.models.Ingredient
 
@@ -37,13 +41,13 @@ fun CreateIngredientDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.9f),
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(MaterialTheme.dimens.commonPadding16)
+                    .padding(InsulinkTheme.dimens.commonPadding16)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Header
@@ -53,115 +57,268 @@ fun CreateIngredientDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Create Custom Ingredient",
+                        text = "Create custom ingredient",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 // Ingredient Name
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Ingredient Name") },
-                    placeholder = { Text("e.g., My Custom Bread") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 // Nutrition Information (per 100g)
                 Text(
                     text = "Nutrition Information (per 100g)",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding8))
 
                 // Calories
                 OutlinedTextField(
                     value = calories,
                     onValueChange = { calories = it },
                     label = { Text("Calories") },
-                    placeholder = { Text("250") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding12))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding12))
 
                 // Protein
                 OutlinedTextField(
                     value = protein,
                     onValueChange = { protein = it },
                     label = { Text("Protein (g)") },
-                    placeholder = { Text("8.5") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding12))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding12))
 
                 // Carbs
                 OutlinedTextField(
                     value = carbs,
                     onValueChange = { carbs = it },
                     label = { Text("Carbs (g)") },
-                    placeholder = { Text("45.2") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding12))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding12))
 
                 // Fat
                 OutlinedTextField(
                     value = fat,
                     onValueChange = { fat = it },
                     label = { Text("Fat (g)") },
-                    placeholder = { Text("3.2") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding12))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding12))
 
                 // Sugar
                 OutlinedTextField(
                     value = sugar,
                     onValueChange = { sugar = it },
                     label = { Text("Sugar (g)") },
-                    placeholder = { Text("2.1") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding12))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding12))
 
                 // Salt
                 OutlinedTextField(
                     value = salt,
                     onValueChange = { salt = it },
                     label = { Text("Salt (g)") },
-                    placeholder = { Text("0.8") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = InsulinkTheme.colors.insulinkBlue,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = InsulinkTheme.colors.insulinkBlue,
+                        errorCursorColor = MaterialTheme.colorScheme.error,
+
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing16))
 
                 // Save Button
                 Button(
@@ -179,16 +336,32 @@ fun CreateIngredientDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    enabled = !isLoading && name.isNotEmpty() && calories.isNotEmpty()
+                        .height(50.dp)
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
+                                )
+                            ),
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
+                        ),
+                    enabled = !isLoading && name.isNotEmpty() && calories.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = Color.White
                         )
                     } else {
-                        Text("Create Ingredient")
+                        Text(
+                            "Create Ingredient",
+                            color = Color.White
+                        )
                     }
                 }
             }

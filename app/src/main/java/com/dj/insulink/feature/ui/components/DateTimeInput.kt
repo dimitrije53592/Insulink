@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import com.dj.insulink.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,8 +48,9 @@ fun DateTimeInput(
         InputChip(
             selected = false,
             onClick = { showDatePicker = true },
-            label = { Text(dateFormatter.format(date)) },
-            leadingIcon = { Icon(Icons.Filled.CalendarToday, contentDescription = stringResource(R.string.select_date_label)) }
+            label = { Text(text = dateFormatter.format(date), textAlign = TextAlign.Center) },
+            leadingIcon = { Icon(Icons.Filled.CalendarToday, contentDescription = stringResource(R.string.select_date_label)) },
+            modifier = Modifier.weight(1f)
         )
 
         Spacer(Modifier.size(8.dp))
@@ -57,8 +59,9 @@ fun DateTimeInput(
         InputChip(
             selected = false,
             onClick = { showTimePicker = true },
-            label = { Text(timeFormatter.format(date)) },
-            leadingIcon = { Icon(Icons.Filled.Schedule, contentDescription = stringResource(R.string.select_time_label)) }
+            label = { Text(text = timeFormatter.format(date), textAlign = TextAlign.Center) },
+            leadingIcon = { Icon(Icons.Filled.Schedule, contentDescription = stringResource(R.string.select_time_label)) },
+            modifier = Modifier.weight(1f)
         )
     }
 
