@@ -16,10 +16,10 @@ class FoodApiRepository @Inject constructor(
 ) {
     
     // Spoonacular API key - you should move this to a secure location
-    private val spoonacularApiKey = "e8c64b579aa9488b94807ed395f3aca3" // Replace with your real API key
+    private val spoonacularApiKey = "" // Replace with your real API key
     
     // USDA API key - you should move this to a secure location  
-    private val usdaApiKey = "XnXGyX2WQVeeu73vVeFnQcfZtpu1Tq8qD4hjeBJr"
+    private val usdaApiKey = ""
     
     suspend fun searchFoods(query: String): List<Ingredient> {
         return withContext(Dispatchers.IO) {
