@@ -1,8 +1,7 @@
 package com.dj.insulink.core.di
 
 import android.content.Context
-import com.dj.insulink.feature.data.repository.MealRepository
-import com.dj.insulink.feature.data.repository.MealRepositoryImpl
+import com.dj.insulink.feature.data.repository.MealRepositoryFirebase
 import com.dj.insulink.feature.data.room.InitialData
 import com.dj.insulink.feature.data.room.InsulinkDatabase
 import dagger.Binds
@@ -53,8 +52,10 @@ object DatabaseModule {
     fun provideMealRepository(
         mealDao: com.dj.insulink.feature.data.room.dao.MealDao,
         ingredientDao: com.dj.insulink.feature.data.room.dao.IngredientDao,
-        mealIngredientDao: com.dj.insulink.feature.data.room.dao.MealIngredientDao
-    ): MealRepository = MealRepositoryImpl(mealDao, ingredientDao, mealIngredientDao)
+        mealIngredientDao: com.dj.insulink.feature.data.room.dao.MealIngredientDao,
+        firestore: com.google.firebase.firestore.FirebaseFirestore,
+        foodApiRepository: com.dj.insulink.feature.data.repository.FoodApiRepository
+    ): MealRepositoryFirebase = MealRepositoryFirebase(mealDao, mealIngredientDao, ingredientDao, firestore, foodApiRepository)
 
     @Provides
     @Singleton

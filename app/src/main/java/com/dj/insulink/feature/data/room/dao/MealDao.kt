@@ -47,4 +47,10 @@ interface MealDao {
 
     @Query("SELECT SUM(salt) FROM meals WHERE userId = :userId AND date(timestamp/1000, 'unixepoch') = date(:date/1000, 'unixepoch')")
     suspend fun getTotalSaltForDate(userId: String, date: Long): Double?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(meals: List<MealEntity>)
+
+    @Query("DELETE FROM meals WHERE userId = :userId")
+    suspend fun deleteAllForUser(userId: String)
 }

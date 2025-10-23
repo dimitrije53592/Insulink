@@ -19,11 +19,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.TextButton
+import com.dj.insulink.feature.ui.components.DateTimeInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,9 +33,6 @@ import com.dj.insulink.feature.domain.models.Ingredient
 import com.dj.insulink.feature.domain.models.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,12 +63,6 @@ fun AddMealDialog(
     val searchResultsValue by searchResults
     val selectedIngredientsValue by selectedIngredients
     val isLoadingValue by isLoading
-    
-    // Date picker state
-    var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = mealDateValue
-    )
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -120,52 +108,11 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Meal Date Input
-                val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { 
-                            showDatePicker = true
-                        },
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.dp, 
-                        MaterialTheme.colorScheme.outline
-                    ),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Meal Date",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = dateFormatter.format(Date(mealDateValue)),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Icon(
-                                Icons.Default.CalendarToday,
-                                contentDescription = "Select date",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
+                // Meal Date and Time Input
+                DateTimeInput(
+                    selectedTimestamp = mealDateValue,
+                    onTimestampSelected = onMealDateChange
+                )
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
@@ -343,34 +290,6 @@ fun AddMealDialog(
                     }
                 }
             }
-        }
-    }
-    
-    // Date Picker Dialog
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { dateMillis ->
-                            onMealDateChange(dateMillis)
-                        }
-                        showDatePicker = false
-                    }
-                ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDatePicker = false }
-                ) {
-                    Text("Cancel")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
         }
     }
 }
