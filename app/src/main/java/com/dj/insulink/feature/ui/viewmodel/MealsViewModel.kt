@@ -2,7 +2,7 @@ package com.dj.insulink.feature.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dj.insulink.feature.data.repository.MealRepository
+import com.dj.insulink.feature.data.repository.MealRepositoryFirebase
 import com.dj.insulink.feature.data.room.InitialData
 import com.dj.insulink.feature.domain.models.DailyNutrition
 import com.dj.insulink.feature.domain.models.Ingredient
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MealsViewModel @Inject constructor(
-    private val mealRepository: MealRepository,
+    private val mealRepository: MealRepositoryFirebase,
     private val initialData: InitialData
 ) : ViewModel() {
 
@@ -71,6 +71,8 @@ class MealsViewModel @Inject constructor(
     fun setCurrentUserEmail(userEmail: String) {
         _currentUserEmail.value = userEmail
         initializeData()
+        // Fetch meals from Firebase and update local database
+        fetchAllMealsForUserAndUpdateDatabase(userEmail)
         // Only load meals for selected date, not all meals
         loadMealsForSelectedDate()
         loadDailyNutritionForDate(_selectedDate.value)
@@ -93,7 +95,7 @@ class MealsViewModel @Inject constructor(
         val userEmail = _currentUserEmail.value
         if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getAllMeals(userEmail).collect { meals ->
+                mealRepository.getAllMealsForUser(userEmail).collect { meals ->
                     _allMeals.value = meals
                 }
             }
@@ -126,7 +128,7 @@ class MealsViewModel @Inject constructor(
         val selectedDate = _selectedDate.value
         if (userEmail.isNotEmpty()) {
             viewModelScope.launch {
-                mealRepository.getMealsByDate(userEmail, selectedDate).collect { meals ->
+                mealRepository.getMealsByDateForUser(userEmail, selectedDate).collect { meals ->
                     _mealsForSelectedDate.value = meals
                 }
             }
@@ -226,7 +228,7 @@ class MealsViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                mealRepository.insertMeal(meal)
+                mealRepository.insert(userEmail, meal)
                 setShowAddMealDialog(false)
                 // Refresh meals for selected date and daily nutrition
                 loadMealsForSelectedDate()
@@ -240,14 +242,17 @@ class MealsViewModel @Inject constructor(
     }
 
     fun deleteMeal(meal: Meal) {
-        viewModelScope.launch {
-            try {
-                mealRepository.deleteMeal(meal)
-                // Refresh meals for selected date and daily nutrition
-                loadMealsForSelectedDate()
-                loadDailyNutritionForDate(_selectedDate.value)
-            } catch (e: Exception) {
-                // Handle error
+        val userEmail = _currentUserEmail.value
+        if (userEmail.isNotEmpty()) {
+            viewModelScope.launch {
+                try {
+                    mealRepository.delete(userEmail, meal)
+                    // Refresh meals for selected date and daily nutrition
+                    loadMealsForSelectedDate()
+                    loadDailyNutritionForDate(_selectedDate.value)
+                } catch (e: Exception) {
+                    // Handle error
+                }
             }
         }
     }
@@ -298,6 +303,14 @@ class MealsViewModel @Inject constructor(
                 loadUserIngredients() // Refresh the list
             } catch (e: Exception) {
                 // Handle error
+            }
+        }
+    }
+
+    fun fetchAllMealsForUserAndUpdateDatabase(userId: String?) {
+        viewModelScope.launch {
+            userId?.let {
+                mealRepository.fetchAllMealsForUserAndUpdateDatabase(userId)
             }
         }
     }
