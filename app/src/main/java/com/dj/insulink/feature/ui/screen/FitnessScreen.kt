@@ -116,11 +116,6 @@ private fun SportActivityItem(
                     fontWeight = FontWeight.Medium,
                     color = Color.Black
                 )
-                Text(
-                    text = stringResource(R.string.fitness_screen_last_time_label, ""),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.Gray
-                )
                 Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
                 Row(
                     modifier = Modifier.fillMaxWidth(),

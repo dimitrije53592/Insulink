@@ -25,4 +25,13 @@ interface GlucoseReadingDao {
 
     @Query("DELETE FROM glucose_readings WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)
+
+    @Query("SELECT * FROM glucose_readings WHERE userId = :userId AND timestamp BETWEEN :startDate AND :endDate ORDER BY timestamp ASC")
+    fun getGlucoseReadingsByDateRange(userId: String, startDate: Long, endDate: Long): Flow<List<GlucoseReadingEntity>>
+
+    @Query("SELECT MIN(timestamp) FROM glucose_readings WHERE userId = :userId")
+    suspend fun getEarliestTimestamp(userId: String): Long?
+
+    @Query("SELECT MAX(timestamp) FROM glucose_readings WHERE userId = :userId")
+    suspend fun getLatestTimestamp(userId: String): Long?
 }

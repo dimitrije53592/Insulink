@@ -6,13 +6,10 @@ import com.dj.insulink.feature.data.room.mapper.toDomain
 import com.dj.insulink.feature.data.room.mapper.toEntity
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FieldValue
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,6 +24,24 @@ class GlucoseReadingRepository @Inject constructor(
     fun getAllGlucoseReadingsForUser(userId: String): Flow<List<GlucoseReading>> {
         return glucoseReadingDao.getAllGlucoseReadingsForUser(userId).map {
             it.toDomain()
+        }
+    }
+
+    fun getGlucoseReadingsByDateRange(
+        userId: String,
+        startDate: Long,
+        endDate: Long
+    ): Flow<List<GlucoseReading>> {
+        return glucoseReadingDao.getGlucoseReadingsByDateRange(userId, startDate, endDate).map {
+            it.toDomain()
+        }
+    }
+
+    suspend fun getDateRange(userId: String): Pair<Long?, Long?> {
+        return withContext(Dispatchers.IO) {
+            val minDate = glucoseReadingDao.getEarliestTimestamp(userId)
+            val maxDate = glucoseReadingDao.getLatestTimestamp(userId)
+            Pair(minDate, maxDate)
         }
     }
 

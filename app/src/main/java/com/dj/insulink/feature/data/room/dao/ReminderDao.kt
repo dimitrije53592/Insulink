@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ReminderDao {
 
-    @Query("SELECT * FROM reminders WHERE userId = :userId ORDER BY time")
+    @Query("SELECT * FROM reminders WHERE userId = :userId ORDER BY (time % 86400000)")
     fun getAllRemindersForUser(userId: String): Flow<List<ReminderEntity>>
 
     @Insert

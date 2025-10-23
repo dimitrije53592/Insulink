@@ -77,8 +77,8 @@
     <string name="report_screen_subtitle">Generate a PDF report of your glucose readings for any date range</string>
     <string name="report_screen_start_date_label">Start date</string>
     <string name="report_screen_end_date_label">End date</string>
-    <string name="report_screen_preview_report_button_label">Preview report</string>
-    <string name="report_screen_generate_button_label">Generate &amp; download PDF</string>
+    <string name="report_screen_preview_report_button_label">Generate &amp; share report</string>
+    <string name="report_screen_generate_button_label">Preview report</string>
 
     <!-- Reminders screen -->
     <string name="reminders_screen_today_label">Today</string>

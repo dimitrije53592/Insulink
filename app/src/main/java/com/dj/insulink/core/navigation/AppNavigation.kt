@@ -63,11 +63,14 @@ import com.dj.insulink.feature.ui.screen.MealsScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreen
 import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
+import com.dj.insulink.feature.ui.screen.ReportsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
 import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.ui.viewmodel.PdfGenerationState
 import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
+import com.dj.insulink.feature.ui.viewmodel.ReportViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -245,18 +248,23 @@ fun AppNavigation() {
 
                     val googleSignInLauncher =
                         rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.StartActivityForResult()
-                    ) { result ->
-                        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                        try {
-                            val account = task.getResult(ApiException::class.java)!!
-                            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-                            viewModel.signInWithGoogle(credential)
-                        } catch (e: ApiException) {
-                            Log.w("AppNavigation", "Google sign in failed", e)
-                            Toast.makeText(context, "Google Sign-In failed.", Toast.LENGTH_SHORT).show()
+                            contract = ActivityResultContracts.StartActivityForResult()
+                        ) { result ->
+                            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                            try {
+                                val account = task.getResult(ApiException::class.java)!!
+                                val credential =
+                                    GoogleAuthProvider.getCredential(account.idToken!!, null)
+                                viewModel.signInWithGoogle(credential)
+                            } catch (e: ApiException) {
+                                Log.w("AppNavigation", "Google sign in failed", e)
+                                Toast.makeText(
+                                    context,
+                                    "Google Sign-In failed.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                    }
                     LaunchedEffect(showErrorMessage.value) {
                         if (showErrorMessage.value) {
                             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
@@ -278,7 +286,8 @@ fun AppNavigation() {
                             onLogin = viewModel::loginUser,
                             onSignInWithGoogle = {
                                 Log.d("TAG", "AppNavigation: google sign in ")
-                                googleSignInLauncher.launch(googleSignInClient.signInIntent) },
+                                googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                            },
                             onForgotPasswordClicked = { navController.navigateTo(Screen.ForgotPassword.route) },
                             navigateToRegistration = {
                                 navController.navigateTo(Screen.Registration.route)
@@ -294,7 +303,11 @@ fun AppNavigation() {
                     val resetState = viewModel.passwordResetState.collectAsState()
                     LaunchedEffect(resetState.value.successMessage) {
                         if (resetState.value.successMessage != null) {
-                            Toast.makeText(context, resetState.value.successMessage, Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                resetState.value.successMessage,
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
 
@@ -362,12 +375,19 @@ fun AppNavigation() {
                     val viewModel: FitnessViewModel = hiltViewModel()
 
                     val calculatedSports = viewModel.calculatedSports.collectAsState()
-                    val showAddSportsActivityDialog = viewModel.showAddSportsActivityDialog.collectAsState()
+                    val showAddSportsActivityDialog =
+                        viewModel.showAddSportsActivityDialog.collectAsState()
                     val activityName = viewModel.activityName.collectAsState()
                     val durationHours = viewModel.durationHours.collectAsState()
                     val durationMinutes = viewModel.durationMinutes.collectAsState()
                     val glucoseBefore = viewModel.glucoseBefore.collectAsState()
                     val glucoseAfter = viewModel.glucoseAfter.collectAsState()
+
+                    LaunchedEffect(currentUser.value) {
+                        currentUser.value?.uid?.let {
+                            viewModel.fetchAllExercisesForUserAndUpdateDatabase(it)
+                        }
+                    }
 
                     FitnessScreen(
                         params = FitnessScreenParams(
@@ -458,7 +478,35 @@ fun AppNavigation() {
                     }
                 }
                 composable(Screen.Report.route) {
-                    ReportsScreen()
+                    val viewModel: ReportViewModel = hiltViewModel()
+
+                    val minDate = viewModel.minDate.collectAsState()
+                    val maxDate = viewModel.maxDate.collectAsState()
+                    val selectedMinDate = viewModel.selectedMinDate.collectAsState()
+                    val selectedMaxDate = viewModel.selectedMaxDate.collectAsState()
+                    val filteredReadings = viewModel.filteredReadings.collectAsState()
+                    val pdfGenerationState = viewModel.pdfGenerationState.collectAsState()
+
+                    LaunchedEffect(currentUser.value) {
+                        viewModel.initializeDateRange(userId = currentUser.value!!.uid)
+                    }
+                    ReportsScreen(
+                        params = ReportsScreenParams(
+                            minDate = minDate,
+                            maxDate = maxDate,
+                            selectedMinDate = selectedMinDate,
+                            selectedMaxDate = selectedMaxDate,
+                            updateDateRange = viewModel::updateDateRange,
+                            filteredReadings = filteredReadings,
+                            pdfGenerationState = pdfGenerationState,
+                            filterReadingsByCurrentDateRange = {
+                                viewModel.filterReadingsByCurrentDateRange(currentUser.value!!.uid)
+                            },
+                            generatePdfReport = {
+                                viewModel.generatePdfReport(currentUser.value!!.uid)
+                            }
+                        )
+                    )
                 }
             }
         }
