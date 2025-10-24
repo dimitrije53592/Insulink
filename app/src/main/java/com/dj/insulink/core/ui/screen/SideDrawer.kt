@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.auth.domain.models.User
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.ui.components.SideDrawerListItem
 
 @Composable
@@ -40,7 +40,7 @@ fun SideDrawer(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         modifier = Modifier.fillMaxWidth(SIDE_DRAWER_WIDTH_RATIO)
     ) {
@@ -48,33 +48,38 @@ fun SideDrawer(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing80))
             Text(
                 text = "${params.currentUser?.firstName ?: ""} ${params.currentUser?.lastName ?: ""}",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = params.currentUser?.email ?: "",
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(SIDE_DRAWER_WIDTH_RATIO))
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(SIDE_DRAWER_WIDTH_RATIO),
+                color = MaterialTheme.colorScheme.outline
+            )
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing32))
             SideDrawerListItem(
                 title = stringResource(R.string.side_drawer_reminders_title),
                 subtitle = stringResource(R.string.side_drawer_reminders_subtitle),
                 icon = painterResource(R.drawable.ic_reminders),
                 onClick = params.navigateToReminders
             )
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
             SideDrawerListItem(
                 title = stringResource(R.string.side_drawer_friends_title),
                 subtitle = stringResource(R.string.side_drawer_friends_subtitle),
                 icon = painterResource(R.drawable.ic_friends),
                 onClick = params.navigateToFriends
             )
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing16))
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
             SideDrawerListItem(
                 title = stringResource(R.string.side_drawer_reports_title),
                 subtitle = stringResource(R.string.side_drawer_reports_subtitle),
@@ -86,27 +91,27 @@ fun SideDrawer(
                 onClick = {
                     params.onSignOutClick()
                 },
-                shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFEDEDED)
+                    containerColor = InsulinkTheme.colors.backgroundSecondary
                 ),
-                border = BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color(0xFFB2B2B2)),
+                border = BorderStroke(InsulinkTheme.dimens.commonButtonBorder1, MaterialTheme.colorScheme.outline),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.dimens.commonPadding48)
+                    .padding(horizontal = InsulinkTheme.dimens.commonPadding48)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Logout,
-                    tint = Color(0xFFB2B2B2),
+                    tint = MaterialTheme.colorScheme.outline,
                     contentDescription = ""
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                 Text(
                     text = stringResource(R.string.side_drawer_sign_out_button_label),
-                    color = Color(0xFF8A5CF5)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing80))
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing80))
         }
     }
 }

@@ -8,7 +8,9 @@ data class Dimensions(
     // padding
     val commonPadding48: Dp = 48.dp,
     val commonPadding40: Dp = 40.dp,
+    val commonPadding32: Dp = 32.dp,
     val commonPadding24: Dp = 24.dp,
+    val commonPadding20: Dp = 20.dp,
     val commonPadding16: Dp = 16.dp,
     val commonPadding12: Dp = 12.dp,
     val commonPadding8: Dp = 8.dp,

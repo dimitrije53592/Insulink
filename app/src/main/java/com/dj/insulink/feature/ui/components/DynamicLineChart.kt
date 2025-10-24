@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.MaterialTheme
 import com.dj.insulink.R
 import com.dj.insulink.feature.ui.viewmodel.GlucoseReadingTimespan
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -65,7 +66,7 @@ fun DynamicLineChart(
             startAxis = VerticalAxis.rememberStart(
                 title = stringResource(R.string.new_reading_text_field_label),
                 titleComponent = rememberTextComponent(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
@@ -76,7 +77,7 @@ fun DynamicLineChart(
                 },
                 title = stringResource(R.string.glucose_screen_date_axis_title),
                 titleComponent = rememberTextComponent(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
         ),

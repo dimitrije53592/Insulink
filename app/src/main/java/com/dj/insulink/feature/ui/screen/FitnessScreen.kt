@@ -1,5 +1,6 @@
 package com.dj.insulink.feature.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.Sport
 import com.dj.insulink.feature.ui.components.AddSportsActivityDialog
 
@@ -23,17 +24,19 @@ fun FitnessScreen(
     params: FitnessScreenParams
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(MaterialTheme.dimens.commonPadding16)
+                .padding(InsulinkTheme.dimens.commonPadding16)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = MaterialTheme.dimens.commonPadding16),
+                    .padding(bottom = InsulinkTheme.dimens.commonPadding16),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -41,11 +44,11 @@ fun FitnessScreen(
                     text = stringResource(R.string.fitness_screen_sports_list_title),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
+                verticalArrangement = Arrangement.spacedBy(InsulinkTheme.dimens.commonSpacing8)
             ) {
                 items(params.sports.value) { sport ->
                     SportActivityItem(sport = sport)
@@ -59,9 +62,9 @@ fun FitnessScreen(
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(MaterialTheme.dimens.commonPadding16),
-            containerColor = Color(0xFF4A7BF6),
-            contentColor = Color.White
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -69,7 +72,7 @@ fun FitnessScreen(
             )
         }
     }
-    Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing16))
+    Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing16))
     if(params.showAddSportsActivityDialog.value){
         AddSportsActivityDialog(
             setShowAddExerciseDialog = params.setShowSportsActivityDialog,
@@ -95,16 +98,16 @@ private fun SportActivityItem(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2)
+        elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding16),
+                .padding(InsulinkTheme.dimens.commonPadding16),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -114,28 +117,28 @@ private fun SportActivityItem(
                     text = sport.name,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.commonSpacing8)
+                    horizontalArrangement = Arrangement.spacedBy(InsulinkTheme.dimens.commonSpacing8)
                 ) {
                     MetricCard(
                         label = stringResource(R.string.fitness_screen_average_drop_label),
                         value = sport.avgDropPerHour,
-                        labelColor = Color(0xFFA20000),
-                        valueColor = Color(0xFFFF1B1B),
-                        backgroundColor = Color(0xFFFFC2C2),
+                        labelColor = InsulinkTheme.colors.averageDropTitle,
+                        valueColor = InsulinkTheme.colors.averageDropLabel,
+                        backgroundColor = InsulinkTheme.colors.averageDropBackground,
                         modifier = Modifier.weight(1f)
                     )
 
                     MetricCard(
                         label = stringResource(R.string.fitness_screen_last_drop_label),
                         value = sport.lastDropPerHour,
-                        labelColor = Color(0xFFBD5F00),
-                        valueColor = Color(0xFFF1861B),
-                        backgroundColor = Color(0xFFFEDFC3),
+                        labelColor = InsulinkTheme.colors.lastDropTitle,
+                        valueColor = InsulinkTheme.colors.lastDropLabel,
+                        backgroundColor = InsulinkTheme.colors.lastDropBackground,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -155,16 +158,16 @@ private fun MetricCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation0)
+        elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation0)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding16),
+                .padding(InsulinkTheme.dimens.commonPadding16),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

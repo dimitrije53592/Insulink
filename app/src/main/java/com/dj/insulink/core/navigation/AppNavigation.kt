@@ -51,8 +51,6 @@ import com.dj.insulink.core.ui.screen.SideDrawer
 import com.dj.insulink.core.ui.screen.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.feature.domain.models.Reminder
-import com.dj.insulink.feature.domain.models.ReminderType
 import com.dj.insulink.feature.ui.screen.FitnessScreen
 import com.dj.insulink.feature.ui.screen.FitnessScreenParams
 import com.dj.insulink.feature.ui.screen.FriendsScreen
@@ -65,13 +63,10 @@ import com.dj.insulink.feature.ui.screen.RemindersScreenParams
 import com.dj.insulink.feature.ui.screen.ReportsScreen
 import com.dj.insulink.feature.ui.screen.ReportsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
-import com.dj.insulink.feature.ui.screen.getDummyMealsScreenParams
 import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
-import com.dj.insulink.feature.ui.viewmodel.PdfGenerationState
 import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
 import com.dj.insulink.feature.ui.viewmodel.ReportViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)

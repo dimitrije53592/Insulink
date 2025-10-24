@@ -12,25 +12,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun GlucoseLevelTag(
     glucoseLevel: Int
 ) {
     val (text, backgroundColor, textColor) = when {
-        glucoseLevel < 70 -> Triple("LOW", Color(0xFFFFEBEE), Color(0xFFD32F2F))
-        glucoseLevel <= 180 -> Triple("NORMAL", Color(0xFFE8F5E9), Color(0xFF388E3C))
-        else -> Triple("HIGH", Color(0xFFFFF9C4), Color(0xFFF57F17))
+        glucoseLevel < 70 -> Triple(
+            "LOW",
+            InsulinkTheme.colors.glucoseLow.copy(alpha = 0.2f),
+            InsulinkTheme.colors.glucoseLow
+        )
+        glucoseLevel <= 180 -> Triple(
+            "NORMAL",
+            InsulinkTheme.colors.glucoseNormal.copy(alpha = 0.2f),
+            InsulinkTheme.colors.glucoseNormal
+        )
+        else -> Triple(
+            "HIGH",
+            InsulinkTheme.colors.glucoseHigh.copy(alpha = 0.2f),
+            InsulinkTheme.colors.glucoseHigh
+        )
     }
 
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12))
+            .clip(RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12))
             .background(backgroundColor)
             .padding(
-                horizontal = MaterialTheme.dimens.commonPadding8,
-                vertical = MaterialTheme.dimens.commonPadding4
+                horizontal = InsulinkTheme.dimens.commonPadding8,
+                vertical = InsulinkTheme.dimens.commonPadding4
             ),
         contentAlignment = Alignment.Center
     ) {

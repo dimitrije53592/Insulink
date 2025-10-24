@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.Ingredient
 import com.dj.insulink.feature.domain.models.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
@@ -78,7 +79,6 @@ fun AddMealDialog(
                     .padding(MaterialTheme.dimens.commonPadding16)
                     .verticalScroll(rememberScrollState())
             ) {
-                // Header
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,7 +96,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Meal Name Input
                 OutlinedTextField(
                     value = mealNameValue,
                     onValueChange = onMealNameChange,
@@ -108,7 +107,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Meal Date and Time Input
                 DateTimeInput(
                     selectedTimestamp = mealDateValue,
                     onTimestampSelected = onMealDateChange
@@ -116,7 +114,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Search Ingredients
                 OutlinedTextField(
                     value = searchQueryValue,
                     onValueChange = onSearchQueryChange,
@@ -139,7 +136,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
 
-                // Search Results
                 if (searchResultsValue.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
@@ -163,7 +159,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Added Ingredients
                 Text(
                     text = "Added Ingredients",
                     style = MaterialTheme.typography.titleMedium,
@@ -173,7 +168,6 @@ fun AddMealDialog(
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
 
                 if (selectedIngredientsValue.isEmpty()) {
-                    // Empty state
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -192,18 +186,17 @@ fun AddMealDialog(
                                 Icons.Default.Add,
                                 contentDescription = "Add ingredients",
                                 modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.outline
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Add Ingredients to build your meal",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.outline
+                                text = "No ingredients added yet",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = "Search and add ingredients above",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -223,9 +216,7 @@ fun AddMealDialog(
                             AddedIngredientItem(
                                 mealIngredient = mealIngredient,
                                 onRemove = { onRemoveIngredient(mealIngredient) },
-                                onQuantityChange = { newQuantity ->
-                                    onUpdateIngredientQuantity(mealIngredient, newQuantity)
-                                }
+                                onQuantityChange = { quantity -> onUpdateIngredientQuantity(mealIngredient, quantity) }
                             )
                         }
                     }
@@ -233,7 +224,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Nutrition Facts
                 Text(
                     text = "Nutrition Facts",
                     style = MaterialTheme.typography.titleMedium,
@@ -242,7 +232,6 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
 
-                // Calculate nutrition from selected ingredients
                 val totalCalories = selectedIngredientsValue.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
                 val totalProtein = selectedIngredientsValue.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
                 val totalFat = selectedIngredientsValue.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
@@ -252,15 +241,14 @@ fun AddMealDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    NutritionCard("Calories", totalCalories.toString(), Color(0xFF4FC3F7))
-                    NutritionCard("Protein", "${String.format("%.1f", totalProtein)}g", Color(0xFF81C784))
-                    NutritionCard("Fats", "${String.format("%.1f", totalFat)}g", Color(0xFFFFB74D))
-                    NutritionCard("Carb", "${String.format("%.1f", totalCarbs)}g", Color(0xFFE57373))
+                    NutritionCard("Calories", totalCalories.toString(), InsulinkTheme.colors.insulinkBlue)
+                    NutritionCard("Protein", "${String.format("%.1f", totalProtein)}g", InsulinkTheme.colors.glucoseNormal)
+                    NutritionCard("Fats", "${String.format("%.1f", totalFat)}g", InsulinkTheme.colors.lastDropLabel)
+                    NutritionCard("Carb", "${String.format("%.1f", totalCarbs)}g", InsulinkTheme.colors.glucoseLow)
                 }
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
 
-                // Comment Input
                 OutlinedTextField(
                     value = mealCommentValue,
                     onValueChange = onMealCommentChange,
@@ -270,9 +258,8 @@ fun AddMealDialog(
                     maxLines = 3
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing16))
 
-                // Save Button
                 Button(
                     onClick = onSave,
                     modifier = Modifier
@@ -365,7 +352,7 @@ private fun AddedIngredientItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

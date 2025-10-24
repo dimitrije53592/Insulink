@@ -1,6 +1,7 @@
 package com.dj.insulink.feature.data.repository
 
 import android.util.Log
+import com.dj.insulink.BuildConfig
 import com.dj.insulink.feature.data.api.FoodApiService
 import com.dj.insulink.feature.data.api.FoodItem
 import com.dj.insulink.feature.data.api.UsdaFoodItem
@@ -15,11 +16,8 @@ class FoodApiRepository @Inject constructor(
     private val foodApiService: FoodApiService
 ) {
     
-    // Spoonacular API key - you should move this to a secure location
-    private val spoonacularApiKey = "" // Replace with your real API key
-    
-    // USDA API key - you should move this to a secure location  
-    private val usdaApiKey = ""
+    private val spoonacularApiKey = BuildConfig.SPOONACULAR_API_KEY
+    private val usdaApiKey = BuildConfig.USDA_API_KEY
     
     suspend fun searchFoods(query: String): List<Ingredient> {
         return withContext(Dispatchers.IO) {

@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun GlucoseDropdownMenu(
@@ -47,8 +47,11 @@ fun GlucoseDropdownMenu(
     Box(modifier = modifier) {
         OutlinedButton(
             onClick = { expanded = true },
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
-            border = BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color.Black),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+            border = BorderStroke(InsulinkTheme.dimens.commonButtonBorder1, MaterialTheme.colorScheme.outline),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned {
@@ -66,21 +69,31 @@ fun GlucoseDropdownMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             modifier = Modifier
                 .width(buttonWidth)
                 .padding(0.dp)
         ) {
             items.forEachIndexed { index, item ->
                 DropdownMenuItem(
-                    text = { Text(item) },
+                    text = {
+                        Text(
+                            text = item,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    },
                     onClick = {
                         onItemSelected(item)
                         expanded = false
-                    }
+                    },
+                    colors = MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.onSurface
+                    )
                 )
-                if (index < items.lastIndex) HorizontalDivider()
+                if (index < items.lastIndex) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                }
             }
         }
     }

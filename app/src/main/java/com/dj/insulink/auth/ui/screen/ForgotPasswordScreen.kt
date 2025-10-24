@@ -19,8 +19,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,22 +39,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
 import com.dj.insulink.auth.ui.viewmodel.PasswordResetState
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ForgotPasswordScreen(
     params: ForgotPasswordScreenParams
 ) {
-    val passwordResetButtonGradientColorStart =
-        colorResource(params.passwordResetButtonGradientColorStart)
-    val passwordResetButtonGradientColorEnd =
-        colorResource(params.passwordResetButtonGradientColorEnd)
     val emailState = params.emailState.collectAsState().value
     val resetState = params.resetState.collectAsState().value
 
-
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,12 +66,12 @@ fun ForgotPasswordScreen(
                         brush = Brush
                             .verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF4A7BF6),
-                                    Color(0xFF8A5CF5)
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
                                 )
                             )
                     )
-                    .padding(24.dp)
+                    .padding(InsulinkTheme.dimens.commonPadding24)
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -83,7 +83,7 @@ fun ForgotPasswordScreen(
                         contentDescription = "Logo",
                         modifier = Modifier
                             .size(100.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12))
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -108,7 +108,7 @@ fun ForgotPasswordScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.67f)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.background)
             )
         }
 
@@ -119,32 +119,32 @@ fun ForgotPasswordScreen(
                 .offset(y = 230.dp)
                 .border(
                     width = 1.dp,
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(24.dp)
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonPadding24)
                 ),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(8.dp),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonPadding24),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(InsulinkTheme.dimens.commonPadding20),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = stringResource(R.string.forgot_password_title),
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 24.dp, top = 24.dp),
-                    color = Color.Black
+                    modifier = Modifier.padding(bottom = InsulinkTheme.dimens.commonPadding24, top = InsulinkTheme.dimens.commonPadding24),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
                     text = stringResource(R.string.forgot_password_email_description),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 24.dp),
-                    color = Color.Gray
+                    modifier = Modifier.padding(bottom = InsulinkTheme.dimens.commonPadding24),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 OutlinedTextField(
@@ -152,22 +152,41 @@ fun ForgotPasswordScreen(
                     onValueChange = params.onEmailChange,
                     label = {
                         Text(
-                            stringResource(R.string.login_enter_email_text),
-                            color = Color.Black
+                            stringResource(R.string.login_enter_email_text)
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 24.dp),
+                        .padding(bottom = InsulinkTheme.dimens.commonPadding24),
                     leadingIcon = {
-                        Image(
+                        Icon(
                             painter = painterResource(id = R.drawable.ic_email),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                         )
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error
+                    )
                 )
 
                 Box(
@@ -177,8 +196,8 @@ fun ForgotPasswordScreen(
                         .background(
                             brush = Brush.horizontalGradient(
                                 listOf(
-                                    passwordResetButtonGradientColorStart,
-                                    passwordResetButtonGradientColorEnd
+                                    InsulinkTheme.colors.insulinkBlue,
+                                    InsulinkTheme.colors.insulinkPurple
                                 )
                             ),
                             shape = RoundedCornerShape(8.dp)
@@ -191,7 +210,7 @@ fun ForgotPasswordScreen(
                     if (resetState.isLoading) {
                         CircularProgressIndicator(
                             color = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                         )
                     } else {
                         Text(
@@ -201,7 +220,7 @@ fun ForgotPasswordScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding24))
             }
         }
     }

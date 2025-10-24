@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.domain.models.GlucoseReading
 import com.dj.insulink.feature.ui.viewmodel.PdfGenerationState
 import java.io.File
@@ -159,6 +159,7 @@ fun ReportsScreen(
         modifier = Modifier
             .fillMaxHeight()
             .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -170,7 +171,7 @@ fun ReportsScreen(
                 contentDescription = ""
             )
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
@@ -178,36 +179,46 @@ fun ReportsScreen(
             Text(
                 text = stringResource(R.string.report_screen_title),
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding48)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding48)
         ) {
             Text(
                 text = stringResource(R.string.report_screen_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing32))
         Text(
             text = stringResource(R.string.report_screen_start_date_label),
-            modifier = Modifier.padding(start = MaterialTheme.dimens.commonPadding16)
+            modifier = Modifier.padding(start = InsulinkTheme.dimens.commonPadding16),
+            color = MaterialTheme.colorScheme.onBackground
         )
         OutlinedButton(
             onClick = {
                 showDatePicker = true
                 isFirstOpen = true
             },
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding12),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            border = BorderStroke(
+                InsulinkTheme.dimens.commonButtonBorder1,
+                MaterialTheme.colorScheme.outline
+            )
         ) {
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -219,20 +230,28 @@ fun ReportsScreen(
                 )
             }
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
         Text(
             text = stringResource(R.string.report_screen_end_date_label),
-            modifier = Modifier.padding(start = MaterialTheme.dimens.commonPadding16)
+            modifier = Modifier.padding(start = InsulinkTheme.dimens.commonPadding16),
+            color = MaterialTheme.colorScheme.onBackground
         )
         OutlinedButton(
             onClick = {
                 showDatePicker = true
                 isFirstOpen = false
             },
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding12),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            border = BorderStroke(
+                InsulinkTheme.dimens.commonButtonBorder1,
+                MaterialTheme.colorScheme.outline
+            )
         ) {
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -244,7 +263,7 @@ fun ReportsScreen(
                 )
             }
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing32))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing32))
         Button(
             onClick = {
                 if (params.pdfGenerationState.value is PdfGenerationState.Success) {
@@ -257,15 +276,16 @@ fun ReportsScreen(
                     params.generatePdfReport()
                 }
             },
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
-            border = BorderStroke(MaterialTheme.dimens.commonButtonBorder1, Color.LightGray),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+            border = BorderStroke(InsulinkTheme.dimens.commonButtonBorder1, MaterialTheme.colorScheme.outline),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFEDEDED)
+                containerColor = InsulinkTheme.colors.backgroundSecondary,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = MaterialTheme.dimens.commonPadding12
+                    horizontal = InsulinkTheme.dimens.commonPadding12
                 )
         ) {
             Row(
@@ -273,33 +293,33 @@ fun ReportsScreen(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = MaterialTheme.dimens.commonPadding4)
+                    .padding(vertical = InsulinkTheme.dimens.commonPadding4)
             ) {
                 if (params.pdfGenerationState.value is PdfGenerationState.Generating) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
                         strokeWidth = 2.dp,
-                        color = Color(0xFFB2B2B2)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_download),
-                        tint = Color(0xFFB2B2B2),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         contentDescription = "",
-                        modifier = Modifier.size(MaterialTheme.dimens.buttonIconSize)
+                        modifier = Modifier.size(InsulinkTheme.dimens.buttonIconSize)
                     )
-                    Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                    Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                     Text(
                         text = when (params.pdfGenerationState.value) {
                             is PdfGenerationState.Generating -> "Generating..."
                             else -> stringResource(R.string.report_screen_preview_report_button_label)
                         },
-                        color = Color(0xFFB2B2B2)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
         }
-        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing20))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing20))
         Button(
             onClick = {
                 if (params.pdfGenerationState.value is PdfGenerationState.Success) {
@@ -311,15 +331,15 @@ fun ReportsScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF4A7BF6),
-                            Color(0xFF8A5CF5)
+                            InsulinkTheme.colors.insulinkBlue,
+                            InsulinkTheme.colors.insulinkPurple
                         )
                     ),
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12)
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                 )
         ) {
             Row(
@@ -332,7 +352,7 @@ fun ReportsScreen(
                     tint = Color.White,
                     contentDescription = ""
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing8))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
                 Text(
                     text = stringResource(R.string.report_screen_generate_button_label),
                     color = Color.White,

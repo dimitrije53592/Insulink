@@ -25,9 +25,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -44,7 +46,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun LoginScreen(
@@ -54,7 +56,7 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Header section with logo and title
@@ -64,12 +66,12 @@ fun LoginScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF4A7BF6),
-                            Color(0xFF8A5CF5)
+                            InsulinkTheme.colors.insulinkBlue,
+                            InsulinkTheme.colors.insulinkPurple
                         )
                     )
                 )
-                .padding(24.dp),
+                .padding(InsulinkTheme.dimens.commonPadding24),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -83,10 +85,10 @@ fun LoginScreen(
                     contentDescription = "Logo",
                     modifier = Modifier
                         .size(100.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12))
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonSpacing16))
 
                 Text(
                     text = stringResource(R.string.login_insulink),
@@ -110,31 +112,31 @@ fun LoginScreen(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = InsulinkTheme.dimens.commonPadding24)
                 .offset(y = (-24).dp)
                 .border(
                     width = 1.dp,
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(24.dp)
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonPadding24)
                 ),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             elevation = CardDefaults.cardElevation(8.dp),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonPadding24),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(InsulinkTheme.dimens.commonPadding24),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = stringResource(R.string.login_welcome_back),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 32.dp, top = 16.dp),
-                    color = Color.Black
+                    modifier = Modifier.padding(bottom = InsulinkTheme.dimens.commonPadding32, top = InsulinkTheme.dimens.commonPadding16),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 OutlinedTextField(
@@ -142,22 +144,41 @@ fun LoginScreen(
                     onValueChange = params.setEmail,
                     label = {
                         Text(
-                            stringResource(R.string.login_email_text),
-                            color = Color.Black
+                            stringResource(R.string.login_email_text)
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                        .padding(bottom = InsulinkTheme.dimens.commonPadding16),
                     leadingIcon = {
-                        Image(
+                        Icon(
                             painter = painterResource(id = R.drawable.ic_email),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                         )
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error
+                    )
                 )
 
                 OutlinedTextField(
@@ -165,23 +186,42 @@ fun LoginScreen(
                     onValueChange = params.setPassword,
                     label = {
                         Text(
-                            stringResource(R.string.login_enter_password_text),
-                            color = Color.Black
+                            stringResource(R.string.login_enter_password_text)
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                     leadingIcon = {
-                        Image(
+                        Icon(
                             painter = painterResource(id = R.drawable.ic_password),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                         )
                     },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    singleLine = true
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorTextColor = MaterialTheme.colorScheme.error,
+
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        errorLabelColor = MaterialTheme.colorScheme.error,
+
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        errorCursorColor = MaterialTheme.colorScheme.error
+                    )
                 )
 
                 Text(
@@ -190,8 +230,8 @@ fun LoginScreen(
                     modifier = Modifier
                         .align(Alignment.End)
                         .clickable(onClick = params.onForgotPasswordClicked)
-                        .padding(bottom = 24.dp),
-                    color = Color.Blue,
+                        .padding(bottom = InsulinkTheme.dimens.commonPadding24),
+                    color = MaterialTheme.colorScheme.primary,
                 )
 
                 Button(
@@ -200,52 +240,52 @@ fun LoginScreen(
                         params.onLogin()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.onSurface,
+                        contentColor = MaterialTheme.colorScheme.surface
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                         .height(50.dp),
                     shape = RoundedCornerShape(8.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
-                    Text(stringResource(R.string.login_sign_in), color = Color.White)
+                    Text(stringResource(R.string.login_sign_in), color = MaterialTheme.colorScheme.surface)
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding24))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.weight(1f),
-                        color = Color.LightGray
+                        color = MaterialTheme.colorScheme.outline
                     )
                     Text(
                         "Or continue with",
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.weight(1f),
-                        color = Color.LightGray
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding24))
 
                 Button(
                     onClick = { params.onSignInWithGoogle() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp)),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     ),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
@@ -257,7 +297,7 @@ fun LoginScreen(
                         Image(
                             painter = painterResource(id = R.drawable.ic_google_logo),
                             contentDescription = "Google Logo",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -267,34 +307,32 @@ fun LoginScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonSpacing16))
             }
         }
 
-        // Sign up link at the bottom
         Row(
             modifier = Modifier
-                .padding(bottom = 32.dp, top = 16.dp),
+                .padding(bottom = InsulinkTheme.dimens.commonPadding32, top = InsulinkTheme.dimens.commonPadding16),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = stringResource(R.string.login_dont_have_account),
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(R.string.login_sign_up),
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Blue,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
                     params.navigateToRegistration()
                 }
             )
         }
 
-        // Extra bottom spacing for better scrolling
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding32))
     }
 }
 

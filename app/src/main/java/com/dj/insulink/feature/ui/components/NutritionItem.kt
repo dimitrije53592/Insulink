@@ -19,14 +19,14 @@ public fun NutritionItem(
     label: String,
     value: String,
     unit: String,
-    color: Color, // Using hardcoded color for brand appearance
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
         shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius8),
         colors = CardDefaults.cardColors(containerColor = color),
         modifier = modifier
-            .fillMaxWidth(0.5f) // Half width for two columns
+            .fillMaxWidth(0.5f)
             .padding(horizontal = MaterialTheme.dimens.commonSpacing4)
     ) {
         Column(
@@ -34,7 +34,6 @@ public fun NutritionItem(
         ) {
             Text(
                 text = value,
-                // Text color should contrast with the hardcoded background color
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium
