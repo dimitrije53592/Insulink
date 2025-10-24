@@ -92,7 +92,7 @@ fun DailyNutritionSummary(nutrition: DailyNutrition) {
             )
             NutritionItem(
                 label = "Salt",
-                value = "${nutrition.salt}g",
+                value = "%.2f g".format(nutrition.salt),
                 unit = "",
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
                 modifier = Modifier.weight(1f)

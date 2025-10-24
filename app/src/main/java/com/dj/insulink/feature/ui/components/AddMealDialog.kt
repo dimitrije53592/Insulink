@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -21,7 +22,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.dj.insulink.feature.ui.components.DateTimeInput
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +34,7 @@ import com.dj.insulink.feature.domain.models.Ingredient
 import com.dj.insulink.feature.domain.models.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +217,12 @@ fun AddMealDialog(
                             AddedIngredientItem(
                                 mealIngredient = mealIngredient,
                                 onRemove = { onRemoveIngredient(mealIngredient) },
-                                onQuantityChange = { quantity -> onUpdateIngredientQuantity(mealIngredient, quantity) }
+                                onQuantityChange = { quantity ->
+                                    onUpdateIngredientQuantity(
+                                        mealIngredient,
+                                        quantity
+                                    )
+                                }
                             )
                         }
                     }
@@ -232,19 +238,39 @@ fun AddMealDialog(
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
 
-                val totalCalories = selectedIngredientsValue.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
-                val totalProtein = selectedIngredientsValue.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
-                val totalFat = selectedIngredientsValue.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
-                val totalCarbs = selectedIngredientsValue.sumOf { it.ingredient.carbsPer100g * it.quantity / 100 }
+                val totalCalories =
+                    selectedIngredientsValue.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
+                val totalProtein =
+                    selectedIngredientsValue.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
+                val totalFat =
+                    selectedIngredientsValue.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
+                val totalCarbs =
+                    selectedIngredientsValue.sumOf { it.ingredient.carbsPer100g * it.quantity / 100 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    NutritionCard("Calories", totalCalories.toString(), InsulinkTheme.colors.insulinkBlue)
-                    NutritionCard("Protein", "${String.format("%.1f", totalProtein)}g", InsulinkTheme.colors.glucoseNormal)
-                    NutritionCard("Fats", "${String.format("%.1f", totalFat)}g", InsulinkTheme.colors.lastDropLabel)
-                    NutritionCard("Carb", "${String.format("%.1f", totalCarbs)}g", InsulinkTheme.colors.glucoseLow)
+                    NutritionCard(
+                        "Calories",
+                        totalCalories.toString(),
+                        InsulinkTheme.colors.insulinkBlue
+                    )
+                    NutritionCard(
+                        "Protein",
+                        "${String.format("%.1f", totalProtein)}g",
+                        InsulinkTheme.colors.glucoseNormal
+                    )
+                    NutritionCard(
+                        "Fats",
+                        "${String.format("%.1f", totalFat)}g",
+                        InsulinkTheme.colors.lastDropLabel
+                    )
+                    NutritionCard(
+                        "Carb",
+                        "${String.format("%.1f", totalCarbs)}g",
+                        InsulinkTheme.colors.glucoseLow
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
@@ -334,13 +360,14 @@ private fun AddedIngredientItem(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding12),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(MaterialTheme.dimens.commonPadding12),
+            ) {
                 Text(
                     text = mealIngredient.ingredient.name,
                     style = MaterialTheme.typography.bodyMedium,
@@ -351,29 +378,33 @@ private fun AddedIngredientItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "Quantity (g)",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                OutlinedTextField(
-                    value = quantityText,
-                    onValueChange = { newValue ->
-                        quantityText = newValue
-                        newValue.toDoubleOrNull()?.let { onQuantityChange(it) }
-                    },
-                    modifier = Modifier.width(80.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
-                )
-                IconButton(onClick = onRemove) {
-                    Icon(Icons.Default.Close, contentDescription = "Remove ingredient")
+                Spacer(Modifier.height(MaterialTheme.dimens.commonSpacing8))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Quantity (g)",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    OutlinedTextField(
+                        value = quantityText,
+                        onValueChange = { newValue ->
+                            quantityText = newValue
+                            newValue.toDoubleOrNull()?.let { onQuantityChange(it) }
+                        },
+                        modifier = Modifier.width(80.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true
+                    )
                 }
+            }
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                Icon(Icons.Default.Close, contentDescription = "Remove ingredient")
             }
         }
     }
