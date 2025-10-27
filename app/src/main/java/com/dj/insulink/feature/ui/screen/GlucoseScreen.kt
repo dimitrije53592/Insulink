@@ -136,7 +136,8 @@ fun GlucoseScreen(
                 DynamicLineChart(
                     xValues = params.allGlucoseReadings.value.map { it.timestamp }.reversed(),
                     yValues = params.allGlucoseReadings.value.map { it.value }.reversed(),
-                    modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
+                    modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12),
+                    timespan = params.selectedTimespan.value
                 )
             }
 
