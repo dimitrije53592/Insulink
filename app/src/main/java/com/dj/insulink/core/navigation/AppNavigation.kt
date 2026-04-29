@@ -47,26 +47,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.dj.insulink.core.ui.screen.SideDrawer
-import com.dj.insulink.core.ui.screen.SideDrawerParams
+import com.dj.insulink.core.ui.SideDrawer
+import com.dj.insulink.core.ui.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.feature.ui.screen.FitnessScreen
-import com.dj.insulink.feature.ui.screen.FitnessScreenParams
-import com.dj.insulink.feature.ui.screen.FriendsScreen
-import com.dj.insulink.feature.ui.screen.FriendsScreenParams
-import com.dj.insulink.feature.ui.screen.GlucoseScreen
-import com.dj.insulink.feature.ui.screen.GlucoseScreenParams
-import com.dj.insulink.feature.ui.screen.MealsScreen
-import com.dj.insulink.feature.ui.screen.RemindersScreen
-import com.dj.insulink.feature.ui.screen.RemindersScreenParams
-import com.dj.insulink.feature.ui.screen.ReportsScreen
-import com.dj.insulink.feature.ui.screen.ReportsScreenParams
-import com.dj.insulink.feature.ui.viewmodel.FriendViewModel
-import com.dj.insulink.feature.ui.viewmodel.FitnessViewModel
-import com.dj.insulink.feature.ui.viewmodel.GlucoseViewModel
-import com.dj.insulink.feature.ui.viewmodel.ReminderViewModel
-import com.dj.insulink.feature.ui.viewmodel.ReportViewModel
+import com.dj.insulink.feature.fitness.ui.FitnessScreen
+import com.dj.insulink.feature.fitness.ui.FitnessScreenParams
+import com.dj.insulink.feature.friends.ui.FriendsScreen
+import com.dj.insulink.feature.friends.ui.FriendsScreenParams
+import com.dj.insulink.feature.glucose.ui.GlucoseScreen
+import com.dj.insulink.feature.glucose.ui.GlucoseScreenParams
+import com.dj.insulink.feature.meals.ui.MealsScreen
+import com.dj.insulink.feature.reminders.ui.RemindersScreen
+import com.dj.insulink.feature.reminders.ui.RemindersScreenParams
+import com.dj.insulink.feature.reports.ui.ReportsScreen
+import com.dj.insulink.feature.reports.ui.ReportsScreenParams
+import com.dj.insulink.feature.friends.ui.viewmodel.FriendsViewModel
+import com.dj.insulink.feature.fitness.ui.viewmodel.FitnessViewModel
+import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.reminders.ui.viewmodel.ReminderViewModel
+import com.dj.insulink.feature.reports.ui.viewmodel.ReportsViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -444,7 +444,7 @@ fun AppNavigation() {
                     }
                 }
                 composable(Screen.Friends.route) {
-                    val viewModel: FriendViewModel = hiltViewModel()
+                    val viewModel: FriendsViewModel = hiltViewModel()
 
                     val allFriendsForUser = viewModel.allFriendsForUser.collectAsState()
                     val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
@@ -473,7 +473,7 @@ fun AppNavigation() {
                     }
                 }
                 composable(Screen.Report.route) {
-                    val viewModel: ReportViewModel = hiltViewModel()
+                    val viewModel: ReportsViewModel = hiltViewModel()
 
                     val minDate = viewModel.minDate.collectAsState()
                     val maxDate = viewModel.maxDate.collectAsState()
