@@ -31,7 +31,6 @@ import com.dj.insulink.feature.meals.domain.model.Ingredient
 import com.dj.insulink.feature.meals.domain.model.MealIngredient
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
-import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -78,12 +78,17 @@ fun RemindersScreen(
     ) {
         Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
 
-        Box(modifier = Modifier.weight(1f)) {
+        Box(
+            modifier = Modifier.weight(WEIGHT_VALUE)
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                contentPadding = PaddingValues(bottom = InsulinkTheme.dimens.commonPadding80)
             ) {
-                items(params.reminders, key = { item -> item.id }) {
+                items(
+                    items = params.reminders,
+                    key = { item -> item.id }
+                ) {
                     ReminderListItem(
                         reminder = it,
                         onSwipeFromStartToEnd = params.onSwipeFromStartToEnd
@@ -110,7 +115,7 @@ fun RemindersScreen(
             }
         }
     }
-    if (params.showAddReminderDialog.value) {
+    if (params.showAddReminderDialog) {
         AddReminderDialog(
             setShowAddReminderDialog = params.setShowAddReminderDialog,
             reminderTitle = params.reminderTitle,
@@ -141,7 +146,7 @@ private fun ReminderListItem(
                 false
             }
         },
-        positionalThreshold = { it * 0.25f }
+        positionalThreshold = { it * POSITIONAL_MODIFIER }
     )
 
     SwipeToDismissBox(
@@ -159,7 +164,10 @@ private fun ReminderListItem(
                 .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
                 .clip(RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12))
                 .border(
-                    BorderStroke(InsulinkTheme.dimens.commonButtonBorder1, MaterialTheme.colorScheme.outline),
+                    BorderStroke(
+                        InsulinkTheme.dimens.commonButtonBorder1,
+                        MaterialTheme.colorScheme.outline
+                    ),
                     RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                 )
         ) {
@@ -181,7 +189,7 @@ private fun ReminderListItem(
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.weight(WEIGHT_VALUE))
             Icon(
                 painter = if (reminder.isDoneForToday) {
                     painterResource(R.drawable.ic_done)
@@ -198,23 +206,22 @@ private fun ReminderListItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddReminderDialog(
     setShowAddReminderDialog: (Boolean) -> Unit,
-    reminderTitle: State<String>,
+    reminderTitle: String,
     setReminderTitle: (String) -> Unit,
-    reminderType: State<ReminderType>,
+    reminderType: ReminderType,
     setReminderType: (ReminderType) -> Unit,
-    reminderTime: State<Long>,
+    reminderTime: Long,
     setReminderTime: (Long) -> Unit,
     onAddReminderClick: () -> Unit
 ) {
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-    val timeString = remember(reminderTime.value) {
+    val timeString = remember(reminderTime) {
         timeFormatter.format(
-            Date(reminderTime.value)
+            Date(reminderTime)
         )
     }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -241,7 +248,7 @@ private fun AddReminderDialog(
                 }
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 OutlinedTextField(
-                    value = reminderTitle.value,
+                    value = reminderTitle,
                     onValueChange = { newValue ->
                         setReminderTitle(newValue)
                     },
@@ -253,17 +260,17 @@ private fun AddReminderDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorTextColor = MaterialTheme.colorScheme.error,
 
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorLabelColor = MaterialTheme.colorScheme.error,
 
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = OPACITY_VALUE),
                         errorBorderColor = MaterialTheme.colorScheme.error,
 
                         cursorColor = MaterialTheme.colorScheme.primary,
@@ -275,7 +282,7 @@ private fun AddReminderDialog(
 
                         focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
@@ -286,7 +293,7 @@ private fun AddReminderDialog(
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing4))
                 GlucoseDropdownMenu(
                     items = ReminderType.entries.map { it.displayName },
-                    selectedItem = reminderType.value.displayName,
+                    selectedItem = reminderType.displayName,
                     onItemSelected = {
                         setReminderType(
                             ReminderType.fromDisplayName(it) ?: ReminderType.MEAL_REMINDER
@@ -331,7 +338,7 @@ private fun AddReminderDialog(
                             onAddReminderClick()
                             setShowAddReminderDialog(false)
                         },
-                        enabled = reminderTitle.value.isNotEmpty(),
+                        enabled = reminderTitle.isNotEmpty(),
                         modifier = Modifier.background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
@@ -355,7 +362,7 @@ private fun AddReminderDialog(
         }
     }
     if (showTimePicker) {
-        val calendar = Calendar.getInstance().apply { timeInMillis = reminderTime.value }
+        val calendar = Calendar.getInstance().apply { timeInMillis = reminderTime }
         val timePickerState = rememberTimePickerState(
             initialHour = calendar.get(Calendar.HOUR_OF_DAY),
             initialMinute = calendar.get(Calendar.MINUTE),
@@ -397,7 +404,7 @@ private fun AddReminderDialog(
                                     combineTimeWithDate(
                                         hour = timePickerState.hour,
                                         minute = timePickerState.minute,
-                                        existingTimestamp = reminderTime.value
+                                        existingTimestamp = reminderTime
                                     )
                                 )
                                 showTimePicker = false
@@ -417,14 +424,18 @@ private fun AddReminderDialog(
 
 data class RemindersScreenParams(
     val reminders: List<Reminder>,
-    val showAddReminderDialog: State<Boolean>,
+    val showAddReminderDialog: Boolean,
+    val reminderTitle: String,
+    val reminderType: ReminderType,
+    val reminderTime: Long,
     val setShowAddReminderDialog: (Boolean) -> Unit,
-    val reminderTitle: State<String>,
     val setReminderTitle: (String) -> Unit,
-    val reminderType: State<ReminderType>,
     val setReminderType: (ReminderType) -> Unit,
-    val reminderTime: State<Long>,
     val setReminderTime: (Long) -> Unit,
     val onSwipeFromStartToEnd: (Reminder) -> Unit,
     val onAddReminderClick: () -> Unit
 )
+
+private const val WEIGHT_VALUE = 1f
+private const val OPACITY_VALUE = 0.6f
+private const val POSITIONAL_MODIFIER = 0.25f

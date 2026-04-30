@@ -2,26 +2,25 @@ package com.dj.insulink.feature.reminders.domain.mappers
 
 import com.dj.insulink.feature.reminders.data.room.entity.ReminderEntity
 import com.dj.insulink.feature.reminders.domain.models.Reminder
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
 
-// Entity -> Domain
 fun ReminderEntity.toDomain(): Reminder {
-    val reminderTime = this.time
-    val currentTime = System.currentTimeMillis()
-
-    val reminderTimeOfDay = reminderTime % (24 * 60 * 60 * 1000)
-    val currentTimeOfDay = currentTime % (24 * 60 * 60 * 1000)
+    val reminderLocalTime = Instant.ofEpochMilli(time)
+        .atZone(ZoneId.systemDefault())
+        .toLocalTime()
 
     return Reminder(
         id = id,
         userId = userId,
         title = title,
         reminderType = reminderType,
-        isDoneForToday = reminderTimeOfDay < currentTimeOfDay,
+        isDoneForToday = reminderLocalTime.isBefore(LocalTime.now()),
         time = time
     )
 }
 
-// Domain -> Entity
 fun Reminder.toEntity(): ReminderEntity {
     return ReminderEntity(
         id = id,

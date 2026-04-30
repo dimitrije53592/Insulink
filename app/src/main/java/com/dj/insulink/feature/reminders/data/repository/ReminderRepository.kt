@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 class ReminderRepository @Inject constructor(
@@ -21,13 +24,17 @@ class ReminderRepository @Inject constructor(
 ) {
 
     fun getAllRemindersForUser(userId: String): Flow<List<Reminder>> {
-        return reminderDao.getAllRemindersForUser(userId).map {
-            it.toDomain()
+        return reminderDao.getAllRemindersForUser(userId).map { entities ->
+            entities.toDomain().sortedBy { reminder ->
+                Instant.ofEpochMilli(reminder.time)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalTime()
+            }
         }
     }
 
     suspend fun insert(userId: String, reminder: Reminder): Long {
-        val reminderWithUniqueId = if (reminder.id == 0L) {
+        val reminderWithUniqueId = if (reminder.id == DEFAULT_REMINDER_ID) {
             reminder.copy(id = System.currentTimeMillis())
         } else {
             reminder
@@ -101,22 +108,23 @@ class ReminderRepository @Inject constructor(
             .get()
             .await()
 
-        val remindersData = document.get(DOCUMENT_FIELD_REMINDERS) as? List<Map<String, Any>> ?: emptyList()
+        val remindersData =
+            document.get(DOCUMENT_FIELD_REMINDERS) as? List<Map<String, Any>> ?: emptyList()
 
         return remindersData.map { reminderMap ->
             val reminderTime = (reminderMap["time"] as? Number)?.toLong() ?: 0
-            val currentTime = System.currentTimeMillis()
-
-            val reminderTimeOfDay = reminderTime % (24 * 60 * 60 * 1000)
-            val currentTimeOfDay = currentTime % (24 * 60 * 60 * 1000)
+            val reminderLocalTime = Instant.ofEpochMilli(reminderTime)
+                .atZone(ZoneId.systemDefault())
+                .toLocalTime()
 
             Reminder(
                 id = (reminderMap["id"] as? Number)?.toLong() ?: 0,
                 userId = reminderMap["userId"] as? String ?: "",
                 title = reminderMap["title"] as? String ?: "",
-                reminderType = ReminderType.fromName(reminderMap["reminderType"] as? String) ?: ReminderType.MEAL_REMINDER,
-                isDoneForToday = reminderTimeOfDay < currentTimeOfDay,
-                time = (reminderMap["time"] as? Number)?.toLong() ?: 0,
+                reminderType = ReminderType.fromName(reminderMap["reminderType"] as? String)
+                    ?: ReminderType.MEAL_REMINDER,
+                isDoneForToday = reminderLocalTime.isBefore(LocalTime.now()),
+                time = reminderTime,
             )
         }
     }
@@ -124,3 +132,4 @@ class ReminderRepository @Inject constructor(
 
 private const val COLLECTION_NAME_USERS = "users"
 private const val DOCUMENT_FIELD_REMINDERS = "reminders"
+private const val DEFAULT_REMINDER_ID = 0L
