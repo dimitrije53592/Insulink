@@ -54,19 +54,14 @@ import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
 import com.dj.insulink.feature.fitness.ui.FitnessScreen
 import com.dj.insulink.feature.fitness.ui.FitnessScreenParams
-import com.dj.insulink.feature.friends.ui.FriendsScreen
-import com.dj.insulink.feature.friends.ui.FriendsScreenParams
 import com.dj.insulink.feature.glucose.ui.GlucoseScreen
 import com.dj.insulink.feature.glucose.ui.GlucoseScreenParams
 import com.dj.insulink.feature.meals.ui.MealsScreen
-import com.dj.insulink.feature.reminders.ui.RemindersScreen
-import com.dj.insulink.feature.reminders.ui.RemindersScreenParams
 import com.dj.insulink.feature.reports.ui.ReportsScreen
 import com.dj.insulink.feature.reports.ui.ReportsScreenParams
-import com.dj.insulink.feature.friends.ui.viewmodel.FriendsViewModel
 import com.dj.insulink.feature.fitness.ui.viewmodel.FitnessViewModel
+import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
-import com.dj.insulink.feature.reminders.ui.viewmodel.RemindersViewModel
 import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
 import com.dj.insulink.feature.reports.ui.viewmodel.ReportsViewModel
 import kotlinx.coroutines.launch
@@ -415,33 +410,11 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Friends.route) {
-                    val viewModel: FriendsViewModel = hiltViewModel()
+                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    val allFriendsForUser = viewModel.allFriendsForUser.collectAsState()
-                    val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsState()
-                    val enteredCode = viewModel.enteredCode.collectAsState()
-
-                    LaunchedEffect(currentUser.value) {
-                        currentUser.value?.uid?.let {
-                            viewModel.fetchFriendDataAndUpdateDatabase(it)
-                        }
-                    }
-
-                    currentUser.value?.let {
-                        FriendsScreen(
-                            params = FriendsScreenParams(
-                                friendsList = allFriendsForUser,
-                                showAddNewFriendDialog = showAddNewFriendDialog,
-                                setShowAddNewFriendDialog = viewModel::setShowAddNewFriendDialog,
-                                usersFriendCode = currentUser.value!!.friendCode,
-                                enteredCode = enteredCode,
-                                setEnteredCode = viewModel::setEnteredCode,
-                                onAddFriendClick = {
-                                    viewModel.onAddFriendClick(userId = currentUser.value!!.uid)
-                                }
-                            )
-                        )
-                    }
+                    FriendsWrapper(
+                        currentUser = currentUser.value
+                    )
                 }
                 composable(Screen.Report.route) {
                     val viewModel: ReportsViewModel = hiltViewModel()

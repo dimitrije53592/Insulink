@@ -71,6 +71,9 @@
     <string name="friends_screen_friend_code_label">Your unique code to share</string>
     <string name="friends_screen_enter_code_label">Enter you friends code here</string>
     <string name="friends_screen_add_friend_label">Add friend</string>
+    <string name="friends_screen_empty_reading_label">Last reading: -</string>
+    <string name="friends_screen_reading_label">Last reading: %s</string>
+    <string name="friends_screen_dash_label">-</string>
 
     <!-- Report screen -->
     <string name="report_screen_title">Glucose report</string>

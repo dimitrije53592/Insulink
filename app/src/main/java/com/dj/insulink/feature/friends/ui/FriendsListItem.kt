@@ -50,24 +50,25 @@ fun FriendsListItem(
             }
             if (friend.friendsLastGlucoseReadingTime != null) {
                 Text(
-                    text = "Last reading: ${
+                    text = stringResource(
+                        R.string.friends_screen_reading_label,
                         SimpleDateFormat(
                             "d/M/yy H:mm",
                             Locale.getDefault()
                         ).format(Date(friend.friendsLastGlucoseReadingTime))
-                    }",
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
             } else {
                 Text(
-                    text = "Last reading: -",
+                    text = stringResource(R.string.friends_screen_empty_reading_label),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
             }
         }
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.weight(WEIGHT_VALUE))
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
@@ -85,7 +86,7 @@ fun FriendsListItem(
                 GlucoseLevelTag(glucoseLevel = friend.friendLastGlucoseReadingValue)
             } else {
                 Text(
-                    text = "-",
+                    text = stringResource(R.string.friends_screen_dash_label),
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -96,3 +97,5 @@ fun FriendsListItem(
     }
     Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
 }
+
+private const val WEIGHT_VALUE = 1f
