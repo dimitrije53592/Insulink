@@ -7,12 +7,12 @@ import com.dj.insulink.auth.domain.models.User
 import com.dj.insulink.auth.domain.models.UserLogin
 import com.dj.insulink.auth.domain.models.UserRegistration
 import com.dj.insulink.core.utils.DeterministicCodeGenerator
-import com.dj.insulink.feature.domain.models.Exercise
-import com.dj.insulink.feature.domain.models.Friend
-import com.dj.insulink.feature.domain.models.GlucoseReading
+import com.dj.insulink.feature.fitness.domain.model.Exercise
+import com.dj.insulink.feature.friends.domain.models.Friend
+import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.dj.insulink.feature.domain.models.Reminder
+import com.dj.insulink.feature.reminders.domain.models.Reminder
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth

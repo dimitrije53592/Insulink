@@ -1,10 +1,10 @@
-package com.dj.insulink.feature.data.pdf
+package com.dj.insulink.feature.dataREMOVE.pdf
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.dj.insulink.R
-import com.dj.insulink.feature.domain.models.GlucoseReading
+import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.pdf.PdfDocument

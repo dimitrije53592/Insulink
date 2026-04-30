@@ -1,10 +1,13 @@
 package com.dj.insulink.core.di
 
 import android.content.Context
-import com.dj.insulink.feature.data.repository.MealRepositoryFirebase
-import com.dj.insulink.feature.data.room.InitialData
-import com.dj.insulink.feature.data.room.InsulinkDatabase
-import dagger.Binds
+import com.dj.insulink.core.room.InsulinkDatabase
+import com.dj.insulink.feature.meals.data.repository.FoodApiRepository
+import com.dj.insulink.feature.meals.data.repository.MealRepositoryFirebase
+import com.dj.insulink.feature.meals.data.room.InitialData
+import com.dj.insulink.feature.meals.data.room.dao.IngredientDao
+import com.dj.insulink.feature.meals.data.room.dao.MealDao
+import com.dj.insulink.feature.meals.data.room.dao.MealIngredientDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,16 +53,16 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideMealRepository(
-        mealDao: com.dj.insulink.feature.data.room.dao.MealDao,
-        ingredientDao: com.dj.insulink.feature.data.room.dao.IngredientDao,
-        mealIngredientDao: com.dj.insulink.feature.data.room.dao.MealIngredientDao,
+        mealDao: MealDao,
+        ingredientDao: IngredientDao,
+        mealIngredientDao: MealIngredientDao,
         firestore: com.google.firebase.firestore.FirebaseFirestore,
-        foodApiRepository: com.dj.insulink.feature.data.repository.FoodApiRepository
+        foodApiRepository: FoodApiRepository
     ): MealRepositoryFirebase = MealRepositoryFirebase(mealDao, mealIngredientDao, ingredientDao, firestore, foodApiRepository)
 
     @Provides
     @Singleton
     fun provideInitialData(
-        ingredientDao: com.dj.insulink.feature.data.room.dao.IngredientDao
+        ingredientDao: IngredientDao
     ): InitialData = InitialData(ingredientDao)
 }

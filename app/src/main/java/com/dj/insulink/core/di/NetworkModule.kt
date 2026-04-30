@@ -1,6 +1,6 @@
 package com.dj.insulink.core.di
 
-import com.dj.insulink.feature.data.api.FoodApiService
+import com.dj.insulink.feature.meals.data.api.FoodApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
