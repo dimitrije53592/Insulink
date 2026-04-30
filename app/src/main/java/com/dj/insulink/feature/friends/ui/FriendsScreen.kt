@@ -24,7 +24,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -50,13 +49,13 @@ fun FriendsScreen(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Button(
-            onClick = {
-                params.setShowAddNewFriendDialog(true)
-            },
             shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
+            onClick = {
+                params.setShowAddNewFriendDialog(true)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -94,7 +93,7 @@ fun FriendsScreen(
         Text(
             text = stringResource(
                 R.string.friends_screen_friends_list_label,
-                params.friendsList.value.size
+                params.friendsList.size
             ),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
@@ -106,12 +105,12 @@ fun FriendsScreen(
                 .fillMaxHeight()
                 .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
         ) {
-            params.friendsList.value.forEach {
+            params.friendsList.forEach {
                 FriendsListItem(friend = it)
             }
         }
     }
-    if (params.showAddNewFriendDialog.value) {
+    if (params.showAddNewFriendDialog) {
         AddNewFriendDialog(
             onDismissRequest = {
                 params.setShowAddNewFriendDialog(false)
@@ -128,7 +127,7 @@ fun FriendsScreen(
 private fun AddNewFriendDialog(
     onDismissRequest: () -> Unit,
     usersFriendCode: String,
-    enteredCode: State<String>,
+    enteredCode: String,
     setEnteredCode: (String) -> Unit,
     onAddFriendClick: () -> Unit
 ) {
@@ -156,7 +155,7 @@ private fun AddNewFriendDialog(
                 )
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
                 OutlinedTextField(
-                    value = enteredCode.value,
+                    value = enteredCode,
                     onValueChange = {
                         setEnteredCode(it)
                     },
@@ -167,17 +166,17 @@ private fun AddNewFriendDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorTextColor = MaterialTheme.colorScheme.error,
 
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorLabelColor = MaterialTheme.colorScheme.error,
 
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = OPACITY_VALUE),
                         errorBorderColor = MaterialTheme.colorScheme.error,
 
                         cursorColor = MaterialTheme.colorScheme.primary,
@@ -190,7 +189,7 @@ private fun AddNewFriendDialog(
 
                         focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = OPACITY_VALUE),
                         errorPlaceholderColor = MaterialTheme.colorScheme.error
                     )
                 )
@@ -235,12 +234,14 @@ private fun AddNewFriendDialog(
     }
 }
 
+private const val OPACITY_VALUE = 0.6f
+
 data class FriendsScreenParams(
-    val friendsList: State<List<Friend>>,
-    val showAddNewFriendDialog: State<Boolean>,
-    val setShowAddNewFriendDialog: (Boolean) -> Unit,
+    val friendsList: List<Friend>,
     val usersFriendCode: String,
-    val enteredCode: State<String>,
+    val showAddNewFriendDialog: Boolean,
+    val enteredCode: String,
+    val setShowAddNewFriendDialog: (Boolean) -> Unit,
     val setEnteredCode: (String) -> Unit,
     val onAddFriendClick: () -> Unit
 )
