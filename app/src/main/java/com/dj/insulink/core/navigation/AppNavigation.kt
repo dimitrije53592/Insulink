@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -65,7 +66,8 @@ import com.dj.insulink.feature.reports.ui.ReportsScreenParams
 import com.dj.insulink.feature.friends.ui.viewmodel.FriendsViewModel
 import com.dj.insulink.feature.fitness.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
-import com.dj.insulink.feature.reminders.ui.viewmodel.ReminderViewModel
+import com.dj.insulink.feature.reminders.ui.viewmodel.RemindersViewModel
+import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
 import com.dj.insulink.feature.reports.ui.viewmodel.ReportsViewModel
 import kotlinx.coroutines.launch
 
@@ -406,42 +408,11 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Reminders.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsState()
-                    val viewModel: ReminderViewModel = hiltViewModel()
+                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    val allRemindersForUser = viewModel.allRemindersForUser.collectAsState()
-                    val showAddReminderDialog = viewModel.showAddReminderDialog.collectAsState()
-                    val reminderTitle = viewModel.reminderTitle.collectAsState()
-                    val reminderType = viewModel.reminderType.collectAsState()
-                    val reminderTime = viewModel.reminderTime.collectAsState()
-
-                    LaunchedEffect(currentUser.value) {
-                        currentUser.value?.uid?.let {
-                            viewModel.fetchReminderDataAndUpdateDatabase(it)
-                        }
-                    }
-
-                    currentUser.value?.let {
-                        RemindersScreen(
-                            params = RemindersScreenParams(
-                                reminders = allRemindersForUser.value,
-                                showAddReminderDialog = showAddReminderDialog,
-                                setShowAddReminderDialog = viewModel::setShowAddReminderDialog,
-                                reminderTitle = reminderTitle,
-                                setReminderTitle = viewModel::setReminderTitle,
-                                reminderType = reminderType,
-                                setReminderType = viewModel::setReminderType,
-                                reminderTime = reminderTime,
-                                setReminderTime = viewModel::setReminderTime,
-                                onSwipeFromStartToEnd = {
-                                    viewModel.deleteReminder(currentUser.value?.uid, it)
-                                },
-                                onAddReminderClick = {
-                                    viewModel.addReminder(currentUser.value!!.uid)
-                                }
-                            )
-                        )
-                    }
+                    RemindersWrapper(
+                        currentUser = currentUser.value
+                    )
                 }
                 composable(Screen.Friends.route) {
                     val viewModel: FriendsViewModel = hiltViewModel()

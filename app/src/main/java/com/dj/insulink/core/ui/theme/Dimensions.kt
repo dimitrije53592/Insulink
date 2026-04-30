@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 
 data class Dimensions(
     // padding
+    val commonPadding80: Dp = 80.dp,
     val commonPadding48: Dp = 48.dp,
     val commonPadding40: Dp = 40.dp,
     val commonPadding32: Dp = 32.dp,

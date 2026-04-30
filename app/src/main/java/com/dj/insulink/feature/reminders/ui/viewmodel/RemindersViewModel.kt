@@ -1,5 +1,7 @@
 package com.dj.insulink.feature.reminders.ui.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
@@ -17,11 +19,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Calendar
+import java.time.Instant
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
-class ReminderViewModel @Inject constructor(
+class RemindersViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val authRepository: AuthRepository,
     private val reminderScheduler: ReminderScheduler
@@ -38,7 +42,7 @@ class ReminderViewModel @Inject constructor(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
@@ -72,17 +76,15 @@ class ReminderViewModel @Inject constructor(
         _reminderTime.value = time
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addReminder(userId: String) {
         viewModelScope.launch {
             val reminderTime = _reminderTime.value
-            val currentTime = System.currentTimeMillis()
 
-            val reminderTimeOfDay = reminderTime % (24 * 60 * 60 * 1000)
-            val currentTimeOfDay = currentTime % (24 * 60 * 60 * 1000)
+            val reminderLocalTime = Instant.ofEpochMilli(reminderTime)
+                .atZone(ZoneId.systemDefault())
+                .toLocalTime()
 
-            val calendar = Calendar.getInstance().apply {
-                timeInMillis = reminderTime
-            }
             val reminderId = reminderRepository.insert(
                 userId = userId,
                 reminder = Reminder(
@@ -90,7 +92,7 @@ class ReminderViewModel @Inject constructor(
                     userId = userId,
                     title = _reminderTitle.value,
                     reminderType = _reminderType.value,
-                    isDoneForToday = reminderTimeOfDay < currentTimeOfDay,
+                    isDoneForToday = reminderLocalTime.isBefore(LocalTime.now()),
                     time = _reminderTime.value
                 )
             )
@@ -99,8 +101,8 @@ class ReminderViewModel @Inject constructor(
                 reminderId = reminderId,
                 title = _reminderTitle.value,
                 message = _reminderType.value.displayName,
-                hour = calendar.get(Calendar.HOUR_OF_DAY),
-                minute = calendar.get(Calendar.MINUTE)
+                hour = reminderLocalTime.hour,
+                minute = reminderLocalTime.minute
             )
             resetAddReminderFields()
         }
