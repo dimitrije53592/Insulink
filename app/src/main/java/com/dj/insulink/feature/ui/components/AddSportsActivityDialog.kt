@@ -2,6 +2,7 @@ package com.dj.insulink.feature.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,16 +11,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Dialog
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
@@ -27,12 +38,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
 fun AddSportsActivityDialog(
     setShowAddExerciseDialog: (Boolean) -> Unit,
+    sportsList: List<String>,
     sportName: State<String>,
     setSportName: (String) -> Unit,
     durationHours: State<String>,
@@ -45,6 +58,8 @@ fun AddSportsActivityDialog(
     setGlucoseAfter: (String) -> Unit,
     onAddExerciseClick: () -> Unit
 ) {
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
     Dialog(onDismissRequest = { setShowAddExerciseDialog(false) }) {
         Card(
             shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
@@ -66,45 +81,101 @@ fun AddSportsActivityDialog(
                     )
                 }
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing24))
-                OutlinedTextField(
-                    value = sportName.value,
-                    onValueChange = { newValue ->
-                        setSportName(newValue)
-                    },
-                    label = { Text(stringResource(R.string.fitness_screen_add_sport_name_label)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        errorTextColor = MaterialTheme.colorScheme.error,
+                Box (
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    OutlinedTextField(
+                        value = sportName.value,
+                        onValueChange = { newValue ->
+                            setSportName(newValue)
+                        },
+                        label = { Text(stringResource(R.string.fitness_screen_add_sport_name_label)) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { isDropdownExpanded = !isDropdownExpanded }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = "Select sport from list",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorTextColor = MaterialTheme.colorScheme.error,
 
-                        focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        errorLabelColor = MaterialTheme.colorScheme.error,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorLabelColor = MaterialTheme.colorScheme.error,
 
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
-                        errorBorderColor = MaterialTheme.colorScheme.error,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f),
+                            errorBorderColor = MaterialTheme.colorScheme.error,
 
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        errorCursorColor = MaterialTheme.colorScheme.error,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        errorContainerColor = Color.Transparent,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            errorCursorColor = MaterialTheme.colorScheme.error,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
 
-                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        errorPlaceholderColor = MaterialTheme.colorScheme.error
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            errorPlaceholderColor = MaterialTheme.colorScheme.error
+                        )
                     )
-                )
+                    DropdownMenu(
+                        expanded = isDropdownExpanded,
+                        onDismissRequest = { isDropdownExpanded = false },
+                        containerColor = Color.Transparent,
+                        tonalElevation = 0.dp,
+                        shadowElevation = 0.dp,
+                        modifier = Modifier.fillMaxWidth(0.65f)
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = InsulinkTheme.dimens.commonSpacing4
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                sportsList.forEach { sport ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = sport,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        },
+                                        onClick = {
+                                            setSportName(sport)
+                                            isDropdownExpanded = false
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
                 Text(
                     text = stringResource(R.string.fitness_screen_add_duration_label),
@@ -159,11 +230,8 @@ fun AddSportsActivityDialog(
                     OutlinedTextField(
                         value = durationMinutes.value,
                         onValueChange = { newValue ->
-                            if (newValue.all { it.isDigit() }) {
-                                val minutes = newValue.toIntOrNull() ?: 0
-                                if (minutes <= 59) {
-                                    setDurationMinutes(newValue)
-                                }
+                            if (newValue.all { it.isDigit() } && newValue.length <= 2) {
+                                setDurationMinutes(newValue)
                             }
                         },
                         label = { Text(stringResource(R.string.fitness_screen_minutes_label)) },

@@ -76,6 +76,7 @@ fun FitnessScreen(
     if(params.showAddSportsActivityDialog.value){
         AddSportsActivityDialog(
             setShowAddExerciseDialog = params.setShowSportsActivityDialog,
+            sportsList = params.sports.value.map { it.name },
             sportName = params.sportName,
             setSportName = params.setSportName,
             durationHours = params.durationHours,

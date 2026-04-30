@@ -36,6 +36,7 @@ import java.util.Locale
 fun DynamicLineChart(
     xValues: List<Long>,
     yValues: List<Int>,
+    timespan: GlucoseReadingTimespan,
     modifier: Modifier
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
@@ -43,16 +44,35 @@ fun DynamicLineChart(
         initialScroll = Scroll.Absolute.End
     )
 
-    LaunchedEffect(xValues, yValues) {
-        if (xValues.isNotEmpty() && yValues.isNotEmpty()) {
-            val baseTime = xValues.minOrNull() ?: 0L
-            val normalisedXValues = xValues.map { (it - baseTime) / 3600000 }
+    val dateFormat = remember(timespan) {
+        when (timespan) {
+            GlucoseReadingTimespan.LAST_DAY -> "HH:mm"
+            GlucoseReadingTimespan.LAST_3_DAYS -> "d MMM HH:mm"
+            GlucoseReadingTimespan.LAST_WEEK -> "d MMM"
+            GlucoseReadingTimespan.LAST_MONTH -> "d MMM"
+            GlucoseReadingTimespan.ALL_READINGS -> {
+                if (xValues.isNotEmpty()) {
+                    val timeRange = (xValues.maxOrNull() ?: 0L) - (xValues.minOrNull() ?: 0L)
+                    when {
+                        timeRange <= 7 * 24 * 60 * 60 * 1000L -> "d MMM"
+                        timeRange <= 365 * 24 * 60 * 60 * 1000L -> "d MMM"
+                        else -> "MMM yyyy"
+                    }
+                } else {
+                    "d MMM"
+                }
+            }
+        }
+    }
 
+    LaunchedEffect(xValues, yValues, timespan) {
+        if (xValues.isNotEmpty() && yValues.isNotEmpty()) {
             modelProducer.runTransaction {
                 lineSeries {
                     series(
-                        x = normalisedXValues.map { it.toFloat() },
-                        y = yValues.map { it.toFloat() })
+                        x = xValues.indices.map { it.toFloat() },
+                        y = yValues.map { it.toFloat() }
+                    )
                 }
             }
 
@@ -71,11 +91,19 @@ fun DynamicLineChart(
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
                 valueFormatter = CartesianValueFormatter { context, x, _ ->
-                    val baseTime = xValues.minOrNull() ?: 0L
-                    val realTime = baseTime + (x.toLong() * 3600000)
-                    SimpleDateFormat("d MMM", Locale.getDefault()).format(Date(realTime))
+                    val index = x.toInt()
+                    if (xValues.isNotEmpty() && index >= 0 && index < xValues.size) {
+                        val timestamp = xValues[index]
+                        SimpleDateFormat(dateFormat, Locale.getDefault()).format(Date(timestamp))
+                    } else {
+                        when (timespan) {
+                            GlucoseReadingTimespan.LAST_DAY -> "00:00"
+                            GlucoseReadingTimespan.LAST_3_DAYS -> "1 Jan 00:00"
+                            else -> "1 Jan"
+                        }
+                    }
                 },
-                title = stringResource(R.string.glucose_screen_date_axis_title),
+                title = getAxisTitle(timespan),
                 titleComponent = rememberTextComponent(
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -86,4 +114,12 @@ fun DynamicLineChart(
         scrollState = scrollState,
         zoomState = rememberVicoZoomState(zoomEnabled = true)
     )
+}
+
+@Composable
+private fun getAxisTitle(timespan: GlucoseReadingTimespan): String {
+    return when (timespan) {
+        GlucoseReadingTimespan.LAST_DAY -> "Time"
+        else -> stringResource(R.string.glucose_screen_date_axis_title)
+    }
 }
