@@ -57,13 +57,11 @@ import com.dj.insulink.feature.fitness.ui.FitnessScreenParams
 import com.dj.insulink.feature.glucose.ui.GlucoseScreen
 import com.dj.insulink.feature.glucose.ui.GlucoseScreenParams
 import com.dj.insulink.feature.meals.ui.MealsScreen
-import com.dj.insulink.feature.reports.ui.ReportsScreen
-import com.dj.insulink.feature.reports.ui.ReportsScreenParams
 import com.dj.insulink.feature.fitness.ui.viewmodel.FitnessViewModel
 import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
 import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
-import com.dj.insulink.feature.reports.ui.viewmodel.ReportsViewModel
+import com.dj.insulink.feature.reports.ui.wrapper.ReportsWrapper
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -417,34 +415,10 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.Report.route) {
-                    val viewModel: ReportsViewModel = hiltViewModel()
+                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    val minDate = viewModel.minDate.collectAsState()
-                    val maxDate = viewModel.maxDate.collectAsState()
-                    val selectedMinDate = viewModel.selectedMinDate.collectAsState()
-                    val selectedMaxDate = viewModel.selectedMaxDate.collectAsState()
-                    val filteredReadings = viewModel.filteredReadings.collectAsState()
-                    val pdfGenerationState = viewModel.pdfGenerationState.collectAsState()
-
-                    LaunchedEffect(currentUser.value) {
-                        viewModel.initializeDateRange(userId = currentUser.value!!.uid)
-                    }
-                    ReportsScreen(
-                        params = ReportsScreenParams(
-                            minDate = minDate,
-                            maxDate = maxDate,
-                            selectedMinDate = selectedMinDate,
-                            selectedMaxDate = selectedMaxDate,
-                            updateDateRange = viewModel::updateDateRange,
-                            filteredReadings = filteredReadings,
-                            pdfGenerationState = pdfGenerationState,
-                            filterReadingsByCurrentDateRange = {
-                                viewModel.filterReadingsByCurrentDateRange(currentUser.value!!.uid)
-                            },
-                            generatePdfReport = {
-                                viewModel.generatePdfReport(currentUser.value!!.uid)
-                            }
-                        )
+                    ReportsWrapper(
+                        currentUser = currentUser.value
                     )
                 }
             }

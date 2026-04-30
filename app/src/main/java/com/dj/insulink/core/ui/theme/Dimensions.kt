@@ -45,11 +45,12 @@ data class Dimensions(
     val commonButtonRadius4: Dp = 4.dp,
 
     // buttons - border
+    val commonButtonBorder2: Dp = 2.dp,
     val commonButtonBorder1: Dp = 1.dp,
 
     // other
-    val commonElevation0: Dp = 0.dp,
-    val commonElevation2: Dp = 2.dp
+    val commonElevation2: Dp = 2.dp,
+    val commonElevation0: Dp = 0.dp
 )
 
 val LocalAppDimensions = compositionLocalOf { Dimensions() }
