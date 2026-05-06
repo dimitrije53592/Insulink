@@ -1,4 +1,4 @@
-package com.dj.insulink.auth.ui.screen
+package com.dj.insulink.auth.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
