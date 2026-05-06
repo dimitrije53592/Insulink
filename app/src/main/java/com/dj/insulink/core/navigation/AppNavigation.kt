@@ -1,11 +1,7 @@
 package com.dj.insulink.core.navigation
 
 import android.os.Build
-import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
@@ -22,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,17 +31,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dj.insulink.R
-import com.dj.insulink.auth.ui.ForgotPasswordScreen
-import com.dj.insulink.auth.ui.ForgotPasswordScreenParams
-import com.dj.insulink.auth.ui.LoginScreen
-import com.dj.insulink.auth.ui.LoginScreenParams
-import com.dj.insulink.auth.ui.viewmodel.LoginViewModel
+import com.dj.insulink.auth.ui.wrapper.ForgotPasswordWrapper
 import com.dj.insulink.auth.ui.wrapper.LoginWrapper
 import com.dj.insulink.auth.ui.wrapper.RegistrationWrapper
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
 import com.dj.insulink.core.ui.SideDrawer
 import com.dj.insulink.core.ui.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
@@ -68,7 +55,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
+
     val sharedViewModel: SharedViewModel = hiltViewModel()
+
     val currentUser = sharedViewModel.currentUser.collectAsState()
 
     val navController = rememberNavController()
@@ -199,33 +188,7 @@ fun AppNavigation() {
                     )
                 }
                 composable(Screen.ForgotPassword.route) {
-                    val viewModel: LoginViewModel = hiltViewModel()
-                    val resetState = viewModel.passwordResetState.collectAsState()
-                    LaunchedEffect(resetState.value.successMessage) {
-                        if (resetState.value.successMessage != null) {
-                            Toast.makeText(
-                                context,
-                                resetState.value.successMessage,
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-
-                    LaunchedEffect(resetState.value.errorMessage) {
-                        resetState.value.errorMessage?.let { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    ForgotPasswordScreen(
-                        params = ForgotPasswordScreenParams(
-                            emailState = viewModel.email,
-                            onEmailChange = viewModel::setEmail,
-                            onSendPasswordReset = viewModel::sendPasswordReset,
-                            resetState = viewModel.passwordResetState,
-                        )
-                    )
-
+                    ForgotPasswordWrapper()
                 }
                 composable(Screen.Glucose.route) {
                     val viewModel: GlucoseViewModel = hiltViewModel()
