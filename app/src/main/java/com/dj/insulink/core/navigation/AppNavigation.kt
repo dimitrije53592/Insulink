@@ -38,12 +38,10 @@ import com.dj.insulink.core.ui.SideDrawer
 import com.dj.insulink.core.ui.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.feature.fitness.ui.FitnessScreen
-import com.dj.insulink.feature.fitness.ui.FitnessScreenParams
 import com.dj.insulink.feature.glucose.ui.GlucoseScreen
 import com.dj.insulink.feature.glucose.ui.GlucoseScreenParams
 import com.dj.insulink.feature.meals.ui.MealsScreen
-import com.dj.insulink.feature.fitness.ui.viewmodel.FitnessViewModel
+import com.dj.insulink.feature.fitness.ui.wrapper.FitnessWrapper
 import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
 import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
@@ -235,64 +233,22 @@ fun AppNavigation() {
                     MealsScreen(currentUserId = currentUser.value?.email)
                 }
                 composable(Screen.Fitness.route) {
-                    val viewModel: FitnessViewModel = hiltViewModel()
-
-                    val calculatedSports = viewModel.calculatedSports.collectAsState()
-                    val showAddSportsActivityDialog =
-                        viewModel.showAddSportsActivityDialog.collectAsState()
-                    val activityName = viewModel.activityName.collectAsState()
-                    val durationHours = viewModel.durationHours.collectAsState()
-                    val durationMinutes = viewModel.durationMinutes.collectAsState()
-                    val glucoseBefore = viewModel.glucoseBefore.collectAsState()
-                    val glucoseAfter = viewModel.glucoseAfter.collectAsState()
-
-                    LaunchedEffect(currentUser.value) {
-                        currentUser.value?.uid?.let {
-                            viewModel.fetchAllExercisesForUserAndUpdateDatabase(it)
-                        }
-                    }
-
-                    FitnessScreen(
-                        params = FitnessScreenParams(
-                            sports = calculatedSports,
-                            showAddSportsActivityDialog = showAddSportsActivityDialog,
-                            setShowSportsActivityDialog = viewModel::setShowSportsActivityDialog,
-                            sportName = activityName,
-                            setSportName = viewModel::setActivityName,
-                            durationHours = durationHours,
-                            setDurationHours = viewModel::setDurationHours,
-                            durationMinutes = durationMinutes,
-                            setDurationMinutes = viewModel::setDurationMinutes,
-                            glucoseBefore = glucoseBefore,
-                            setGlucoseBefore = viewModel::setGlucoseBefore,
-                            glucoseAfter = glucoseAfter,
-                            setGlucoseAfter = viewModel::setGlucoseAfter,
-                            onAddExerciseClick = {
-                                viewModel.onAddExerciseClick(currentUser.value?.uid)
-                            }
-                        )
-                    )
+                    FitnessWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Reminders.route) {
                     val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    RemindersWrapper(
-                        currentUser = currentUser.value
-                    )
+                    RemindersWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Friends.route) {
                     val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    FriendsWrapper(
-                        currentUser = currentUser.value
-                    )
+                    FriendsWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Report.route) {
                     val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
-                    ReportsWrapper(
-                        currentUser = currentUser.value
-                    )
+                    ReportsWrapper(currentUser = currentUser.value)
                 }
             }
         }
