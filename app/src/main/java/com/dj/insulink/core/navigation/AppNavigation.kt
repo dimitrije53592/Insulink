@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -38,12 +37,10 @@ import com.dj.insulink.core.ui.SideDrawer
 import com.dj.insulink.core.ui.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
-import com.dj.insulink.feature.glucose.ui.GlucoseScreen
-import com.dj.insulink.feature.glucose.ui.GlucoseScreenParams
 import com.dj.insulink.feature.meals.ui.MealsScreen
 import com.dj.insulink.feature.fitness.ui.wrapper.FitnessWrapper
 import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
-import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseViewModel
+import com.dj.insulink.feature.glucose.ui.wrapper.GlucoseWrapper
 import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
 import com.dj.insulink.feature.reports.ui.wrapper.ReportsWrapper
 import kotlinx.coroutines.launch
@@ -56,7 +53,7 @@ fun AppNavigation() {
 
     val sharedViewModel: SharedViewModel = hiltViewModel()
 
-    val currentUser = sharedViewModel.currentUser.collectAsState()
+    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -189,65 +186,21 @@ fun AppNavigation() {
                     ForgotPasswordWrapper()
                 }
                 composable(Screen.Glucose.route) {
-                    val viewModel: GlucoseViewModel = hiltViewModel()
-
-                    val allGlucoseReadings = viewModel.allGlucoseReadings.collectAsState()
-                    val latestGlucoseReading = viewModel.latestGlucoseReading.collectAsState()
-                    val newGlucoseReadingTimestamp =
-                        viewModel.newGlucoseReadingTimestamp.collectAsState()
-                    val newGlucoseReadingValue = viewModel.newGlucoseReadingValue.collectAsState()
-                    val newGlucoseReadingComment =
-                        viewModel.newGlucoseReadingComment.collectAsState()
-                    val showAddGlucoseReadingDialog =
-                        viewModel.showAddGlucoseReadingDialog.collectAsState()
-                    val selectedTimespan = viewModel.selectedTimespan.collectAsState()
-
-                    LaunchedEffect(currentUser.value) {
-                        viewModel.fetchAllGlucoseReadingsForUserAndUpdateDatabase(currentUser.value?.uid)
-                    }
-                    GlucoseScreen(
-                        params = GlucoseScreenParams(
-                            allGlucoseReadings = allGlucoseReadings,
-                            latestGlucoseReading = latestGlucoseReading,
-                            selectedTimespan = selectedTimespan,
-                            setSelectedTimespan = viewModel::setSelectedTimespan,
-                            newGlucoseReadingTimestamp = newGlucoseReadingTimestamp,
-                            setNewGlucoseReadingTimestamp = viewModel::setNewGlucoseReadingTimestamp,
-                            newGlucoseReadingValue = newGlucoseReadingValue,
-                            setNewGlucoseReadingValue = viewModel::setNewGlucoseReadingValue,
-                            newGlucoseReadingComment = newGlucoseReadingComment,
-                            setNewGlucoseReadingComment = viewModel::setNewGlucoseReadingComment,
-                            showAddGlucoseReadingDialog = showAddGlucoseReadingDialog,
-                            setShowAddGlucoseReadingDialog = viewModel::setShowAddGlucoseReadingDialog,
-                            submitNewGlucoseReading = {
-                                viewModel.submitNewGlucoseReading(currentUser.value?.uid)
-                            },
-                            deleteGlucoseReading = {
-                                viewModel.deleteGlucoseReading(currentUser.value?.uid, it)
-                            }
-                        )
-                    )
+                    GlucoseWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Meals.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsState()
                     MealsScreen(currentUserId = currentUser.value?.email)
                 }
                 composable(Screen.Fitness.route) {
                     FitnessWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Reminders.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
-
                     RemindersWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Friends.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
-
                     FriendsWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Report.route) {
-                    val currentUser = sharedViewModel.currentUser.collectAsStateWithLifecycle()
-
                     ReportsWrapper(currentUser = currentUser.value)
                 }
             }
