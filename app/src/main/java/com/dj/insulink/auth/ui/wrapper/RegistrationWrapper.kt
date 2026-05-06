@@ -13,7 +13,7 @@ import com.dj.insulink.auth.ui.viewmodel.RegistrationViewModel
 @Composable
 fun RegistrationWrapper(
     fetchUser: () -> Unit,
-    navigateToMainScreen: () -> Unit,
+    navigateToHome: () -> Unit,
     navigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
@@ -41,7 +41,7 @@ fun RegistrationWrapper(
     LaunchedEffect(registrationSuccess.value) {
         if (registrationSuccess.value) {
             fetchUser()
-            navigateToMainScreen()
+            navigateToHome()
         }
     }
 
