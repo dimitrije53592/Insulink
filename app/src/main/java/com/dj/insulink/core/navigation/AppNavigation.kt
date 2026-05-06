@@ -36,14 +36,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dj.insulink.R
-import com.dj.insulink.auth.ui.screen.ForgotPasswordScreen
-import com.dj.insulink.auth.ui.screen.ForgotPasswordScreenParams
-import com.dj.insulink.auth.ui.screen.LoginScreen
-import com.dj.insulink.auth.ui.screen.LoginScreenParams
-import com.dj.insulink.auth.ui.screen.RegistrationScreen
-import com.dj.insulink.auth.ui.screen.RegistrationScreenParams
+import com.dj.insulink.auth.ui.ForgotPasswordScreen
+import com.dj.insulink.auth.ui.ForgotPasswordScreenParams
+import com.dj.insulink.auth.ui.LoginScreen
+import com.dj.insulink.auth.ui.LoginScreenParams
 import com.dj.insulink.auth.ui.viewmodel.LoginViewModel
-import com.dj.insulink.auth.ui.viewmodel.RegistrationViewModel
+import com.dj.insulink.auth.ui.wrapper.RegistrationWrapper
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -171,53 +169,16 @@ fun AppNavigation() {
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Registration.route) {
-                    val viewModel: RegistrationViewModel = hiltViewModel()
-
-                    val firstName = viewModel.firstName.collectAsState()
-                    val lastName = viewModel.lastName.collectAsState()
-                    val emailAddress = viewModel.emailAddress.collectAsState()
-                    val password = viewModel.password.collectAsState()
-                    val confirmPassword = viewModel.confirmPassword.collectAsState()
-                    val termsOfServiceAccepted = viewModel.termsOfServiceAccepted.collectAsState()
-                    val showErrorMessage = viewModel.showErrorMessage.collectAsState()
-                    val errorMessage = viewModel.errorMessage.collectAsState()
-                    val isLoading = viewModel.isLoading.collectAsState()
-                    val registrationSuccess = viewModel.registrationSuccess.collectAsState()
-
-                    LaunchedEffect(showErrorMessage.value) {
-                        if (showErrorMessage.value) {
-                            Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
-                            viewModel.setShowErrorMessage(false)
-                        }
-                    }
-
-                    LaunchedEffect(registrationSuccess.value) {
-                        if (registrationSuccess.value) {
+                    RegistrationWrapper(
+                        fetchUser = {
                             sharedViewModel.getCurrentUser()
+                        },
+                        navigateToMainScreen = {
                             navController.navigateTo(Screen.Glucose.route)
+                        },
+                        navigateToLogin = {
+                            navController.navigateTo(Screen.Login.route)
                         }
-                    }
-
-                    RegistrationScreen(
-                        params = RegistrationScreenParams(
-                            firstName = firstName,
-                            setFirstName = viewModel::setFirstName,
-                            lastName = lastName,
-                            setLastName = viewModel::setLastName,
-                            emailAddress = emailAddress,
-                            setEmailAddress = viewModel::setEmailAddress,
-                            password = password,
-                            setPassword = viewModel::setPassword,
-                            confirmPassword = confirmPassword,
-                            setConfirmPassword = viewModel::setConfirmPassword,
-                            termsOfServiceAccepted = termsOfServiceAccepted,
-                            setTermsOfServiceAccepted = viewModel::setTermsOfServiceAccepted,
-                            isLoading = isLoading,
-                            onSubmit = viewModel::onCreateAccountSubmit,
-                            navigateToLogin = {
-                                navController.navigateTo(Screen.Login.route)
-                            }
-                        )
                     )
                 }
                 composable(Screen.Login.route) {
