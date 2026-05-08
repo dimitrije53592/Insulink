@@ -14,7 +14,6 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -148,30 +147,25 @@ class MealRepository @Inject constructor(
     }
 
     fun searchIngredients(query: String, userId: String): Flow<List<Ingredient>> {
-        return flow {
-            val localIngredients = ingredientDao.searchIngredients(query, userId).map { entities ->
-                entities.map { it.toDomain() }
-            }
-
-            localIngredients.collect { local ->
+        return ingredientDao.searchIngredients(query, userId)
+            .map { entities -> entities.map { it.toDomain() } }
+            .map { localIngredients ->
                 if (query.length < 3) {
-                    emit(local)
-                    return@collect
+                    return@map localIngredients
                 }
 
                 try {
                     val apiIngredients = foodApiRepository.searchFoods(query)
-                    val localNames = local.map { it.name.lowercase() }.toSet()
+                    val localNames = localIngredients.map { it.name.lowercase() }.toSet()
                     val uniqueApiIngredients = apiIngredients.filter {
                         it.name.lowercase() !in localNames
                     }
-                    emit(local + uniqueApiIngredients)
+                    localIngredients + uniqueApiIngredients
                 } catch (e: Exception) {
                     Log.e("MealRepository", "Error fetching API ingredients", e)
-                    emit(local)
+                    localIngredients
                 }
             }
-        }
     }
 
     suspend fun insertIngredient(ingredient: Ingredient) {

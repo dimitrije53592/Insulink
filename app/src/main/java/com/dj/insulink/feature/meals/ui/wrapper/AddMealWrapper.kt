@@ -2,9 +2,6 @@ package com.dj.insulink.feature.meals.ui.wrapper
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,12 +26,7 @@ fun AddMealWrapper(
     val showCreateIngredientDialog = viewModel.showCreateIngredientDialog.collectAsStateWithLifecycle()
     val showMyIngredientsDialog = viewModel.showMyIngredientsDialog.collectAsStateWithLifecycle()
     val userIngredients = viewModel.userIngredients.collectAsStateWithLifecycle()
-
-    val searchQuery = remember { mutableStateOf("") }
-
-    LaunchedEffect(searchQuery.value) {
-        viewModel.searchIngredients(searchQuery.value)
-    }
+    val searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle()
 
     AddMealScreen(
         params = AddMealScreenParams(
@@ -45,7 +37,7 @@ fun AddMealWrapper(
             mealTimestamp = newMealTimestamp,
             onMealTimestampChange = viewModel::setNewMealTimestamp,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery.value = it },
+            onSearchQueryChange = viewModel::setSearchQuery,
             searchResults = searchResults,
             selectedIngredients = selectedIngredients,
             onAddIngredient = viewModel::addIngredient,

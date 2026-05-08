@@ -158,7 +158,8 @@ fun DateTimeInput(
         val initialCalendar = Calendar.getInstance().apply { timeInMillis = tempDateSelection }
         val timePickerState = rememberTimePickerState(
             initialHour = initialCalendar.get(Calendar.HOUR_OF_DAY),
-            initialMinute = initialCalendar.get(Calendar.MINUTE)
+            initialMinute = initialCalendar.get(Calendar.MINUTE),
+            is24Hour = true
         )
 
         TimePickerDialog(

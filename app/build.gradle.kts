@@ -30,8 +30,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "SPOONACULAR_API_KEY", "${localProperties.getProperty("SPOONACULAR_API_KEY")}")
-        buildConfigField("String", "USDA_API_KEY", "${localProperties.getProperty("USDA_API_KEY")}")
+        buildConfigField("String", "SPOONACULAR_API_KEY", "\"${localProperties.getProperty("SPOONACULAR_API_KEY", "")}\"")
+        buildConfigField("String", "USDA_API_KEY", "\"${localProperties.getProperty("USDA_API_KEY", "")}\"")
     }
 
     buildTypes {

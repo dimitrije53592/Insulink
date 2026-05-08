@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,6 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.Ingredient
@@ -335,20 +338,22 @@ private fun IngredientSearchItem(
             .fillMaxWidth()
             .clickable { onAdd() }
             .padding(vertical = InsulinkTheme.dimens.commonPadding4),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(InsulinkTheme.dimens.commonPadding12),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = ingredient.name,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = stringResource(R.string.meals_screen_cal_per_100g, ingredient.caloriesPer100g.toInt()),
@@ -356,9 +361,12 @@ private fun IngredientSearchItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            IconButton(onClick = onAdd) {
-                Icon(Icons.Default.Add, contentDescription = "")
-            }
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "",
+                modifier = Modifier.size(InsulinkTheme.dimens.textFieldIconSize),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -369,60 +377,80 @@ private fun AddedIngredientItem(
     onRemove: () -> Unit,
     onQuantityChange: (Double) -> Unit
 ) {
-    var quantityText by remember { mutableStateOf(mealIngredient.quantity.toString()) }
+    var quantityText by remember { mutableStateOf(mealIngredient.quantity.toInt().toString()) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = InsulinkTheme.dimens.commonPadding4),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = InsulinkTheme.dimens.commonPadding12,
+                    top = InsulinkTheme.dimens.commonPadding8,
+                    bottom = InsulinkTheme.dimens.commonPadding8,
+                    end = InsulinkTheme.dimens.commonPadding4
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(InsulinkTheme.dimens.commonPadding12),
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = mealIngredient.ingredient.name,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = stringResource(R.string.meals_screen_cal_per_grams, (mealIngredient.ingredient.caloriesPer100g * mealIngredient.quantity / 100).toInt(), mealIngredient.quantity.toInt()),
+                    text = stringResource(
+                        R.string.meals_screen_cal_per_grams,
+                        (mealIngredient.ingredient.caloriesPer100g * mealIngredient.quantity / 100).toInt(),
+                        mealIngredient.quantity.toInt()
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(Modifier.height(InsulinkTheme.dimens.commonSpacing8))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(R.string.meals_screen_quantity_label),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    OutlinedTextField(
-                        value = quantityText,
-                        onValueChange = { newValue ->
-                            quantityText = newValue
-                            newValue.toDoubleOrNull()?.let { onQuantityChange(it) }
-                        },
-                        modifier = Modifier.width(InsulinkTheme.dimens.quantityFieldWidth),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true
-                    )
-                }
             }
+
+            BasicTextField(
+                value = quantityText,
+                onValueChange = { newValue ->
+                    quantityText = newValue
+                    newValue.toDoubleOrNull()?.let { onQuantityChange(it) }
+                },
+                modifier = Modifier
+                    .width(InsulinkTheme.dimens.quantityFieldWidth)
+                    .border(
+                        InsulinkTheme.dimens.commonButtonBorder1,
+                        MaterialTheme.colorScheme.outline,
+                        RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
+                    )
+                    .padding(
+                        horizontal = InsulinkTheme.dimens.commonPadding8,
+                        vertical = InsulinkTheme.dimens.commonPadding8
+                    ),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true
+            )
+
             IconButton(
                 onClick = onRemove,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier.size(InsulinkTheme.dimens.commonIconSize40)
             ) {
-                Icon(Icons.Default.Close, contentDescription = "")
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "",
+                    modifier = Modifier.size(InsulinkTheme.dimens.commonIconSize16),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

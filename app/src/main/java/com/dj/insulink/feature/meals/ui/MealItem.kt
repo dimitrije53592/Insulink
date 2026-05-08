@@ -1,12 +1,11 @@
 package com.dj.insulink.feature.meals.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,25 +54,26 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
 
 @Composable
 private fun MealItemContent(meal: Meal) {
-    val hasContent = meal.calories != null || meal.carbs != null || meal.protein != null
-
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
         elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(InsulinkTheme.dimens.commonPadding16)
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.align(Alignment.CenterStart)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = meal.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Spacer(Modifier.height(InsulinkTheme.dimens.commonSpacing4))
                 Text(
                     text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(meal.timestamp)),
                     style = MaterialTheme.typography.bodySmall,
@@ -81,43 +81,31 @@ private fun MealItemContent(meal: Meal) {
                 )
             }
 
-            if (hasContent) {
-                Column(modifier = Modifier.align(Alignment.CenterEnd), horizontalAlignment = Alignment.End) {
+            if (meal.calories != null || meal.protein != null || meal.carbs != null) {
+                Column(horizontalAlignment = Alignment.End) {
                     if (meal.calories != null) {
                         Text(
                             text = stringResource(R.string.meals_screen_cal_value, meal.calories),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing4))
                     }
-
                     if (meal.protein != null) {
                         Text(
                             text = stringResource(R.string.meals_screen_protein_value, String.format("%.1f", meal.protein)),
-                            color = InsulinkTheme.colors.insulinkBlue,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-
                     if (meal.carbs != null) {
                         Text(
                             text = stringResource(R.string.meals_screen_carbs_value, String.format("%.1f", meal.carbs)),
-                            color = InsulinkTheme.colors.glucoseNormal,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(InsulinkTheme.dimens.commonSpacing16)
-                        .background(
-                            InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
-                        )
-                        .align(Alignment.CenterEnd)
-                )
             }
         }
     }

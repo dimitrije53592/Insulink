@@ -10,11 +10,15 @@ import com.dj.insulink.feature.meals.domain.model.Meal
 import com.dj.insulink.feature.meals.domain.model.MealIngredient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -51,8 +55,30 @@ class MealsViewModel @Inject constructor(
     private val _dailyNutrition = MutableStateFlow(DailyNutrition(0, 0, 0, 0, 0, 0.0))
     val dailyNutrition = _dailyNutrition.asStateFlow()
 
-    private val _searchResults = MutableStateFlow<List<Ingredient>>(emptyList())
-    val searchResults = _searchResults.asStateFlow()
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val searchResults: StateFlow<List<Ingredient>> = _searchQuery
+        .debounce(300)
+        .flatMapLatest { query ->
+            if (query.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                val userId = authRepository.getCurrentUserFlow().first()
+                if (userId != null) {
+                    mealRepository.searchIngredients(query, userId)
+                        .catch { emit(emptyList()) }
+                } else {
+                    flowOf(emptyList())
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private val _selectedIngredients = MutableStateFlow<List<MealIngredient>>(emptyList())
     val selectedIngredients = _selectedIngredients.asStateFlow()
@@ -105,23 +131,15 @@ class MealsViewModel @Inject constructor(
 
     fun loadDailyNutritionForDate(date: Long) {
         viewModelScope.launch {
-            val userId = authRepository.getCurrentUserFlow().stateIn(viewModelScope).value ?: return@launch
+            val userId =
+                authRepository.getCurrentUserFlow().stateIn(viewModelScope).value ?: return@launch
             val nutrition = mealRepository.getDailyNutrition(userId, date)
             _dailyNutrition.value = nutrition
         }
     }
 
-    fun searchIngredients(query: String) {
-        viewModelScope.launch {
-            val userId = authRepository.getCurrentUserFlow().stateIn(viewModelScope).value ?: return@launch
-            if (query.isNotEmpty()) {
-                mealRepository.searchIngredients(query, userId).collect { ingredients ->
-                    _searchResults.value = ingredients
-                }
-            } else {
-                _searchResults.value = emptyList()
-            }
-        }
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
     }
 
     fun addIngredient(ingredient: Ingredient, quantity: Double) {
@@ -130,7 +148,7 @@ class MealsViewModel @Inject constructor(
             ingredient = ingredient,
             quantity = quantity
         )
-        _selectedIngredients.value = _selectedIngredients.value + mealIngredient
+        _selectedIngredients.value += mealIngredient
     }
 
     fun removeIngredient(mealIngredient: MealIngredient) {
@@ -174,7 +192,8 @@ class MealsViewModel @Inject constructor(
         val ingredients = _selectedIngredients.value
         if (ingredients.isEmpty()) return
 
-        val totalCalories = ingredients.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
+        val totalCalories =
+            ingredients.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
         val totalCarbs = ingredients.sumOf { it.ingredient.carbsPer100g * it.quantity / 100 }
         val totalProtein = ingredients.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
         val totalFat = ingredients.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
@@ -252,6 +271,7 @@ class MealsViewModel @Inject constructor(
     private fun resetAddMealFields() {
         _newMealName.value = ""
         _newMealComment.value = ""
+        _searchQuery.value = ""
         _selectedIngredients.value = emptyList()
     }
 }
