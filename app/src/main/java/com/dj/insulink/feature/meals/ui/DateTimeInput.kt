@@ -7,16 +7,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import com.dj.insulink.R
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import com.dj.insulink.R
+import com.dj.insulink.core.ui.theme.InsulinkTheme
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,47 +41,37 @@ fun DateTimeInput(
     selectedTimestamp: Long,
     onTimestampSelected: (Long) -> Unit
 ) {
-    // State to manage dialog visibility
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-
-    // State to hold the temporary date selection before time is picked
     var tempDateSelection by remember { mutableStateOf(selectedTimestamp) }
 
-    // Formatters for display
     val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-
-    // Convert the current Long timestamp to Date objects for display
     val date = Date(selectedTimestamp)
 
-    // --- Display Row ---
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Date Input
         InputChip(
             selected = false,
             onClick = { showDatePicker = true },
             label = { Text(text = dateFormatter.format(date), textAlign = TextAlign.Center) },
-            leadingIcon = { Icon(Icons.Filled.CalendarToday, contentDescription = stringResource(R.string.select_date_label)) },
+            leadingIcon = { Icon(Icons.Filled.CalendarToday, contentDescription = "") },
             modifier = Modifier.weight(1f)
         )
 
-        Spacer(Modifier.size(8.dp))
+        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing8))
 
-        // Time Input
         InputChip(
             selected = false,
             onClick = { showTimePicker = true },
             label = { Text(text = timeFormatter.format(date), textAlign = TextAlign.Center) },
-            leadingIcon = { Icon(Icons.Filled.Schedule, contentDescription = stringResource(R.string.select_time_label)) },
+            leadingIcon = { Icon(Icons.Filled.Schedule, contentDescription = "") },
             modifier = Modifier.weight(1f)
         )
     }
 
-    // --- 1. Date Picker Dialog ---
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedTimestamp
@@ -76,18 +83,13 @@ fun DateTimeInput(
                 TextButton(
                     onClick = {
                         val selectedDateMillis = datePickerState.selectedDateMillis ?: selectedTimestamp
-
-                        // 1. Get the selected date part (day/month/year)
                         val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
-
-                        // 2. Apply the existing time part from the original timestamp
                         val originalCalendar = Calendar.getInstance().apply { timeInMillis = selectedTimestamp }
                         calendar.set(Calendar.HOUR_OF_DAY, originalCalendar.get(Calendar.HOUR_OF_DAY))
                         calendar.set(Calendar.MINUTE, originalCalendar.get(Calendar.MINUTE))
                         calendar.set(Calendar.SECOND, 0)
                         calendar.set(Calendar.MILLISECOND, 0)
 
-                        // Store the new date + old time, then open the time picker next
                         tempDateSelection = calendar.timeInMillis
                         showDatePicker = false
                         showTimePicker = true
@@ -106,9 +108,7 @@ fun DateTimeInput(
         }
     }
 
-    // --- 2. Time Picker Dialog ---
     if (showTimePicker) {
-        // Initialize Time Picker with the time component of the temporary selection
         val initialCalendar = Calendar.getInstance().apply { timeInMillis = tempDateSelection }
         val timePickerState = rememberTimePickerState(
             initialHour = initialCalendar.get(Calendar.HOUR_OF_DAY),
@@ -121,14 +121,11 @@ fun DateTimeInput(
                 TextButton(
                     onClick = {
                         val finalCalendar = Calendar.getInstance().apply { timeInMillis = tempDateSelection }
-
-                        // Apply the selected hour and minute to the selected date
                         finalCalendar.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
                         finalCalendar.set(Calendar.MINUTE, timePickerState.minute)
                         finalCalendar.set(Calendar.SECOND, 0)
                         finalCalendar.set(Calendar.MILLISECOND, 0)
 
-                        // Finalize and update the ViewModel's state
                         onTimestampSelected(finalCalendar.timeInMillis)
                         showTimePicker = false
                     }
@@ -147,7 +144,6 @@ fun DateTimeInput(
     }
 }
 
-// A simple wrapper for TimePicker because it doesn't have a Dialog component in M3 yet
 @Composable
 fun TimePickerDialog(
     onDismissRequest: () -> Unit,

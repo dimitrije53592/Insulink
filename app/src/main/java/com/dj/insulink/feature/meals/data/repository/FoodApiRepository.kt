@@ -9,9 +9,7 @@ import com.dj.insulink.feature.meals.domain.model.Ingredient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class FoodApiRepository @Inject constructor(
     private val foodApiService: FoodApiService
 ) {

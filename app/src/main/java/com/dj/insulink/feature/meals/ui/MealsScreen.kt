@@ -29,236 +29,177 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import com.dj.insulink.R
+import com.dj.insulink.core.ui.theme.InsulinkTheme
+import com.dj.insulink.feature.meals.domain.model.DailyNutrition
+import com.dj.insulink.feature.meals.domain.model.Ingredient
+import com.dj.insulink.feature.meals.domain.model.Meal
+import com.dj.insulink.feature.meals.domain.model.MealIngredient
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import com.dj.insulink.core.ui.theme.dimens
-import com.dj.insulink.core.ui.theme.InsulinkTheme
-import com.dj.insulink.feature.meals.ui.viewmodel.MealsViewModel
-import com.dj.insulink.feature.meals.domain.model.DailyNutrition
-import com.dj.insulink.feature.meals.domain.model.Meal
 
 @Composable
 fun MealsScreen(
-    params: MealsScreenParams? = null,
-    currentUserId: String? = null
+    params: MealsScreenParams
 ) {
-    val viewModel: MealsViewModel = hiltViewModel()
-
-    val allMeals = if (params != null) params.allMeals else viewModel.mealsForSelectedDate.collectAsState()
-    val dailyNutrition = if (params != null) params.dailyNutritionData else viewModel.dailyNutrition.collectAsState()
-    val showAddMealDialog = if (params != null) params.showAddMealDialog else viewModel.showAddMealDialog.collectAsState()
-    val newMealName = if (params != null) params.newMealName else viewModel.newMealName
-    val newMealComment = if (params != null) params.newMealComment else viewModel.newMealComment
-    val newMealTimestamp = if (params != null) params.newMealTimestamp else viewModel.newMealTimestamp.collectAsState()
-    val searchQuery = remember { mutableStateOf("") }
-    val searchResults = viewModel.searchResults.collectAsState()
-    val selectedIngredients = viewModel.selectedIngredients.collectAsState()
-    val isLoading = viewModel.isLoading.collectAsState()
-    val selectedDate = viewModel.selectedDate.collectAsState()
-    val showCreateIngredientDialog = viewModel.showCreateIngredientDialog.collectAsState()
-    val showMyIngredientsDialog = viewModel.showMyIngredientsDialog.collectAsState()
-    val userIngredients = viewModel.userIngredients.collectAsState()
-
-    LaunchedEffect(currentUserId) {
-        if (currentUserId != null) {
-            viewModel.setCurrentUserEmail(currentUserId)
-        } else {
-            viewModel.setCurrentUserEmail("dummy@example.com")
-        }
-    }
-
-    LaunchedEffect(selectedDate.value) {
-        viewModel.loadMealsForSelectedDate()
-        viewModel.loadDailyNutritionForDate(selectedDate.value)
-    }
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 DatePickerCard(
-                    selectedDate = selectedDate.value,
-                    onDateSelected = { date ->
-                        viewModel.setSelectedDate(date)
-                    },
+                    selectedDate = params.selectedDate.value,
+                    onDateSelected = params.setSelectedDate,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                        .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
                 )
             }
 
             item {
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 Card(
-                    shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                    shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+                    elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.dimens.commonPadding12)
+                        .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
                 ) {
-                    DailyNutritionSummary(dailyNutrition.value)
+                    DailyNutritionSummary(params.dailyNutrition.value)
                 }
             }
 
             item {
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing12))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing12))
                 Text(
-                    text = "Meals",
+                    text = stringResource(R.string.meals_screen_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(
-                        start = MaterialTheme.dimens.commonPadding16,
-                        top = MaterialTheme.dimens.commonPadding8,
-                        bottom = MaterialTheme.dimens.commonPadding8
+                        start = InsulinkTheme.dimens.commonPadding16,
+                        top = InsulinkTheme.dimens.commonPadding8,
+                        bottom = InsulinkTheme.dimens.commonPadding8
                     )
                 )
             }
 
-            items(items = allMeals.value, key = { it.id }) { meal ->
+            items(items = params.mealsForSelectedDate.value, key = { it.id }) { meal ->
                 MealItem(
                     meal = meal,
-                    onSwipeFromStartToEnd = {
-                        if (params != null) {
-                            params.deleteMeal(meal)
-                        } else {
-                            viewModel.deleteMeal(meal)
-                        }
-                    }
+                    onSwipeFromStartToEnd = { params.deleteMeal(meal) }
                 )
-                Spacer(Modifier.size(MaterialTheme.dimens.commonPadding8))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonPadding8))
             }
 
             item {
-                Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing64))
+                Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing64))
             }
         }
 
         FloatingActionButton(
             onClick = {
-                if (params != null) {
-                    params.setNewMealTimestamp(System.currentTimeMillis())
-                    params.setShowAddMealDialog(true)
-                } else {
-                    viewModel.setNewMealTimestamp(System.currentTimeMillis())
-                    viewModel.setShowAddMealDialog(true)
-                }
+                params.setNewMealTimestamp(System.currentTimeMillis())
+                params.setShowAddMealDialog(true)
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(MaterialTheme.dimens.commonPadding16),
-            containerColor = InsulinkTheme.colors.insulinkBlue
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            containerColor = MaterialTheme.colorScheme.primary
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 tint = MaterialTheme.colorScheme.onPrimary,
-                contentDescription = "Add Meal"
+                contentDescription = ""
             )
         }
     }
 
-    LaunchedEffect(searchQuery.value) {
-        if (searchQuery.value.isNotEmpty()) {
-            viewModel.searchIngredients(searchQuery.value)
-        }
-    }
-
-    if (showAddMealDialog.value) {
+    if (params.showAddMealDialog.value) {
         AddMealDialog(
-            mealName = viewModel.newMealName,
-            onMealNameChange = viewModel::setNewMealName,
-            mealComment = viewModel.newMealComment,
-            onMealCommentChange = viewModel::setNewMealComment,
-            mealDate = viewModel.newMealTimestamp,
-            onMealDateChange = viewModel::setNewMealTimestamp,
-            searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery.value = it },
-            searchResults = searchResults,
-            selectedIngredients = selectedIngredients,
-            onAddIngredient = viewModel::addIngredient,
-            onRemoveIngredient = viewModel::removeIngredient,
-            onUpdateIngredientQuantity = viewModel::updateIngredientQuantity,
-            onDismiss = {
-                if (params != null) {
-                    params.setShowAddMealDialog(false)
-                } else {
-                    viewModel.setShowAddMealDialog(false)
-                }
-            },
-            onSave = {
-                if (params != null) {
-                    params.submitNewMeal()
-                } else {
-                    viewModel.submitNewMeal()
-                }
-            },
-            isLoading = isLoading,
-            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
-            onShowMyIngredients = { viewModel.setShowMyIngredientsDialog(true) }
+            mealName = params.newMealName,
+            onMealNameChange = params.setNewMealName,
+            mealComment = params.newMealComment,
+            onMealCommentChange = params.setNewMealComment,
+            mealTimestamp = params.newMealTimestamp,
+            onMealTimestampChange = params.setNewMealTimestamp,
+            searchQuery = params.searchQuery,
+            onSearchQueryChange = params.onSearchQueryChange,
+            searchResults = params.searchResults,
+            selectedIngredients = params.selectedIngredients,
+            onAddIngredient = params.onAddIngredient,
+            onRemoveIngredient = params.onRemoveIngredient,
+            onUpdateIngredientQuantity = params.onUpdateIngredientQuantity,
+            onDismiss = { params.setShowAddMealDialog(false) },
+            onSave = params.submitNewMeal,
+            isLoading = params.isLoading,
+            onCreateIngredient = { params.setShowCreateIngredientDialog(true) },
+            onShowMyIngredients = { params.setShowMyIngredientsDialog(true) }
         )
     }
 
-    if (showCreateIngredientDialog.value) {
+    if (params.showCreateIngredientDialog.value) {
         CreateIngredientDialog(
-            onDismiss = { viewModel.setShowCreateIngredientDialog(false) },
-            onSave = { ingredient ->
-                viewModel.createCustomIngredient(ingredient)
-            },
-            isLoading = isLoading.value
+            onDismiss = { params.setShowCreateIngredientDialog(false) },
+            onSave = params.createCustomIngredient,
+            isLoading = params.isLoading.value
         )
     }
 
-    if (showMyIngredientsDialog.value) {
+    if (params.showMyIngredientsDialog.value) {
         MyIngredientsDialog(
-            userIngredients = viewModel.userIngredients,
-            onDismiss = { viewModel.setShowMyIngredientsDialog(false) },
-            onCreateIngredient = { viewModel.setShowCreateIngredientDialog(true) },
-            onDeleteIngredient = { ingredient ->
-                viewModel.deleteCustomIngredient(ingredient)
-            },
-            isLoading = isLoading.value
+            userIngredients = params.userIngredients,
+            onDismiss = { params.setShowMyIngredientsDialog(false) },
+            onCreateIngredient = { params.setShowCreateIngredientDialog(true) },
+            onDeleteIngredient = params.deleteCustomIngredient,
+            isLoading = params.isLoading.value
         )
     }
 }
 
 data class MealsScreenParams(
-    val dailyNutritionData: State<DailyNutrition>,
-    val allMeals: State<List<Meal>>,
-    val newMealTimestamp: State<Long>,
-    val setNewMealTimestamp: (Long) -> Unit,
-    val newMealName: State<String>,
-    val setNewMealName: (String) -> Unit,
-    val newMealCalories: State<String>,
-    val setNewMealCalories: (String) -> Unit,
-    val newMealCarbs: State<String>,
-    val setNewMealCarbs: (String) -> Unit,
-    val newMealProtein: State<String>,
-    val setNewMealProtein: (String) -> Unit,
-    val newMealFat: State<String>,
-    val setNewMealFat: (String) -> Unit,
-    val newMealSugar: State<String>,
-    val setNewMealSugar: (String) -> Unit,
-    val newMealSalt: State<String>,
-    val setNewMealSalt: (String) -> Unit,
-    val newMealComment: State<String>,
-    val setNewMealComment: (String) -> Unit,
+    val mealsForSelectedDate: State<List<Meal>>,
+    val dailyNutrition: State<DailyNutrition>,
+    val selectedDate: State<Long>,
+    val setSelectedDate: (Long) -> Unit,
     val showAddMealDialog: State<Boolean>,
     val setShowAddMealDialog: (Boolean) -> Unit,
+    val newMealName: State<String>,
+    val setNewMealName: (String) -> Unit,
+    val newMealComment: State<String>,
+    val setNewMealComment: (String) -> Unit,
+    val newMealTimestamp: State<Long>,
+    val setNewMealTimestamp: (Long) -> Unit,
+    val searchQuery: State<String>,
+    val onSearchQueryChange: (String) -> Unit,
+    val searchResults: State<List<Ingredient>>,
+    val selectedIngredients: State<List<MealIngredient>>,
+    val onAddIngredient: (Ingredient, Double) -> Unit,
+    val onRemoveIngredient: (MealIngredient) -> Unit,
+    val onUpdateIngredientQuantity: (MealIngredient, Double) -> Unit,
+    val isLoading: State<Boolean>,
+    val showCreateIngredientDialog: State<Boolean>,
+    val setShowCreateIngredientDialog: (Boolean) -> Unit,
+    val showMyIngredientsDialog: State<Boolean>,
+    val setShowMyIngredientsDialog: (Boolean) -> Unit,
+    val userIngredients: State<List<Ingredient>>,
     val submitNewMeal: () -> Unit,
-    val deleteMeal: (Meal) -> Unit
+    val deleteMeal: (Meal) -> Unit,
+    val createCustomIngredient: (Ingredient) -> Unit,
+    val deleteCustomIngredient: (Ingredient) -> Unit
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -282,19 +223,17 @@ fun DatePickerCard(
     }
 
     Card(
-        shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+        elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2),
         modifier = modifier
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    showDatePicker.value = true
-                }
-                .padding(vertical = MaterialTheme.dimens.commonPadding8)
+                .clickable { showDatePicker.value = true }
+                .padding(vertical = InsulinkTheme.dimens.commonPadding8)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -302,13 +241,13 @@ fun DatePickerCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Calendar",
+                    contentDescription = "",
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(InsulinkTheme.dimens.commonIconSize16)
                 )
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing4))
                 Text(
-                    text = if (isToday) "Today" else dateFormatter.format(Date(selectedDate)),
+                    text = if (isToday) stringResource(R.string.meals_screen_today_label) else dateFormatter.format(Date(selectedDate)),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -334,14 +273,14 @@ fun DatePickerCard(
                         showDatePicker.value = false
                     }
                 ) {
-                    Text("OK")
+                    Text(stringResource(R.string.new_reading_ok))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDatePicker.value = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         ) {

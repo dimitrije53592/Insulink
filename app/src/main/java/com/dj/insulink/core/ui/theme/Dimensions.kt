@@ -31,13 +31,17 @@ data class Dimensions(
     // icon sizes
     val registrationMainIconSize: Dp = 100.dp,
     val reminderIconSize: Dp = 80.dp,
+    val commonIconSize64: Dp = 64.dp,
     val sideDrawerIconSize: Dp = 48.dp,
+    val commonIconSize40: Dp = 40.dp,
     val buttonIconSize: Dp = 34.dp,
     val textFieldIconSize: Dp = 24.dp,
+    val commonIconSize16: Dp = 16.dp,
 
     // buttons - dimensions
     val commonButtonHeight50: Dp = 50.dp,
     val commonProgressIndicatorSize25: Dp = 25.dp,
+    val commonProgressIndicatorSize20: Dp = 20.dp,
 
     // buttons - radius
     val commonButtonRadius12: Dp = 12.dp,
@@ -47,6 +51,13 @@ data class Dimensions(
     // buttons - border
     val commonButtonBorder2: Dp = 2.dp,
     val commonButtonBorder1: Dp = 1.dp,
+
+    // component sizes
+    val searchResultsListHeight: Dp = 120.dp,
+    val ingredientsListHeight: Dp = 200.dp,
+    val nutritionCardWidth: Dp = 70.dp,
+    val nutritionCardHeight: Dp = 60.dp,
+    val quantityFieldWidth: Dp = 80.dp,
 
     // other
     val commonElevation2: Dp = 2.dp,

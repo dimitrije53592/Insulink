@@ -92,6 +92,59 @@
     <string name="reminders_screen_add_new_reminder_select_type_label">Select type</string>
     <string name="reminders_screen_add_new_reminder_select_time_label">Select time</string>
 
+    <!-- Meals screen -->
+    <string name="meals_screen_title">Meals</string>
+    <string name="meals_screen_today_label">Today</string>
+    <string name="meals_screen_daily_nutrition_title">Daily Nutrition</string>
+    <string name="meals_screen_calories_label">Calories</string>
+    <string name="meals_screen_carbs_label">Carbs</string>
+    <string name="meals_screen_protein_label">Protein</string>
+    <string name="meals_screen_fat_label">Fat</string>
+    <string name="meals_screen_fats_label">Fats</string>
+    <string name="meals_screen_carb_label">Carb</string>
+    <string name="meals_screen_sugar_label">Sugar</string>
+    <string name="meals_screen_salt_label">Salt</string>
+    <string name="meals_screen_cal_value">%1$d cal</string>
+    <string name="meals_screen_grams_value">%1$sg</string>
+    <string name="meals_screen_salt_value">%1$.2f g</string>
+    <string name="meals_screen_protein_value">Protein: %1$sg</string>
+    <string name="meals_screen_carbs_value">Carbs: %1$sg</string>
+    <string name="meals_screen_cal_per_100g">%1$d cal per 100g</string>
+    <string name="meals_screen_cal_per_grams">%1$d cal per %2$dg</string>
+    <string name="meals_screen_quantity_label">Quantity (g)</string>
+    <string name="meals_screen_nutrition_summary">P: %1$sg | C: %2$sg | F: %3$sg</string>
+
+    <!-- Meals - Add Meal Dialog -->
+    <string name="meals_screen_add_meal_title">Add Meal</string>
+    <string name="meals_screen_meal_name_label">Meal Name</string>
+    <string name="meals_screen_meal_name_placeholder">Enter meal name</string>
+    <string name="meals_screen_add_ingredients_label">Add Ingredients</string>
+    <string name="meals_screen_search_ingredients_placeholder">Search ingredients…</string>
+    <string name="meals_screen_added_ingredients_title">Added Ingredients</string>
+    <string name="meals_screen_no_ingredients_title">No ingredients added yet</string>
+    <string name="meals_screen_no_ingredients_subtitle">Search and add ingredients above</string>
+    <string name="meals_screen_nutrition_facts_title">Nutrition Facts</string>
+    <string name="meals_screen_comment_label">Comment (Optional)</string>
+    <string name="meals_screen_comment_placeholder">Add a comment about this meal</string>
+    <string name="meals_screen_save_meal">Save Meal</string>
+
+    <!-- Meals - Create Ingredient Dialog -->
+    <string name="meals_screen_create_ingredient_title">Create custom ingredient</string>
+    <string name="meals_screen_nutrition_info_title">Nutrition Information (per 100g)</string>
+    <string name="meals_screen_ingredient_name_label">Ingredient Name</string>
+    <string name="meals_screen_calories_input_label">Calories</string>
+    <string name="meals_screen_protein_input_label">Protein (g)</string>
+    <string name="meals_screen_carbs_input_label">Carbs (g)</string>
+    <string name="meals_screen_fat_input_label">Fat (g)</string>
+    <string name="meals_screen_sugar_input_label">Sugar (g)</string>
+    <string name="meals_screen_salt_input_label">Salt (g)</string>
+    <string name="meals_screen_create_ingredient_button">Create Ingredient</string>
+
+    <!-- Meals - My Ingredients Dialog -->
+    <string name="meals_screen_my_ingredients_title">My Ingredients</string>
+    <string name="meals_screen_no_custom_ingredients_title">No custom ingredients yet</string>
+    <string name="meals_screen_no_custom_ingredients_subtitle">Create your first custom ingredient</string>
+
     <!-- Fitness screen -->
     <string name="fitness_screen_sports_list_title">Your sports</string>
     <string name="fitness_screen_average_drop_label">Avg Drop/Hour</string>

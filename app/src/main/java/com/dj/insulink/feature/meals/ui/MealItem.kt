@@ -18,9 +18,9 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.Meal
 import java.text.SimpleDateFormat
@@ -38,7 +38,7 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
                 false
             }
         },
-        positionalThreshold = { it * 0.25f }
+        positionalThreshold = { it * POSITIONAL_MODIFIER }
     )
 
     SwipeToDismissBox(
@@ -46,7 +46,7 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
         enableDismissFromEndToStart = false,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.dimens.commonPadding12),
+            .padding(horizontal = InsulinkTheme.dimens.commonPadding12),
         backgroundContent = {}
     ) {
         MealItemContent(meal = meal)
@@ -59,13 +59,13 @@ private fun MealItemContent(meal: Meal) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+        elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding16)
+                .padding(InsulinkTheme.dimens.commonPadding16)
         ) {
             Column(modifier = Modifier.align(Alignment.CenterStart)) {
                 Text(
@@ -85,16 +85,16 @@ private fun MealItemContent(meal: Meal) {
                 Column(modifier = Modifier.align(Alignment.CenterEnd), horizontalAlignment = Alignment.End) {
                     if (meal.calories != null) {
                         Text(
-                            text = "${meal.calories} cal",
+                            text = stringResource(R.string.meals_screen_cal_value, meal.calories),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing4))
+                        Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing4))
                     }
 
                     if (meal.protein != null) {
                         Text(
-                            text = "Protein: ${String.format("%.1f", meal.protein)}g",
+                            text = stringResource(R.string.meals_screen_protein_value, String.format("%.1f", meal.protein)),
                             color = InsulinkTheme.colors.insulinkBlue,
                             fontWeight = FontWeight.Medium
                         )
@@ -102,7 +102,7 @@ private fun MealItemContent(meal: Meal) {
 
                     if (meal.carbs != null) {
                         Text(
-                            text = "Carbs: ${String.format("%.1f", meal.carbs)}g",
+                            text = stringResource(R.string.meals_screen_carbs_value, String.format("%.1f", meal.carbs)),
                             color = InsulinkTheme.colors.glucoseNormal,
                             fontWeight = FontWeight.Medium
                         )
@@ -111,11 +111,16 @@ private fun MealItemContent(meal: Meal) {
             } else {
                 Box(
                     modifier = Modifier
-                        .size(MaterialTheme.dimens.commonSpacing16)
-                        .background(InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f), shape = RoundedCornerShape(8.dp))
+                        .size(InsulinkTheme.dimens.commonSpacing16)
+                        .background(
+                            InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
+                        )
                         .align(Alignment.CenterEnd)
                 )
             }
         }
     }
 }
+
+private const val POSITIONAL_MODIFIER = 0.25f

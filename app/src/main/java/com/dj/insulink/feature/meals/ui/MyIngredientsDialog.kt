@@ -1,7 +1,17 @@
 package com.dj.insulink.feature.meals.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,34 +19,40 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.Ingredient
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun MyIngredientsDialog(
-    userIngredients: StateFlow<List<Ingredient>>,
+    userIngredients: State<List<Ingredient>>,
     onDismiss: () -> Unit,
     onCreateIngredient: () -> Unit,
     onDeleteIngredient: (Ingredient) -> Unit,
     isLoading: Boolean = false
 ) {
-    val ingredients by userIngredients.collectAsState()
-
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f),
+                .fillMaxHeight(DIALOG_HEIGHT_FRACTION),
             shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
@@ -45,14 +61,13 @@ fun MyIngredientsDialog(
                     .fillMaxSize()
                     .padding(InsulinkTheme.dimens.commonPadding16)
             ) {
-                // Header
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "My Ingredients",
+                        text = stringResource(R.string.meals_screen_my_ingredients_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -61,14 +76,14 @@ fun MyIngredientsDialog(
                         IconButton(onClick = onCreateIngredient) {
                             Icon(
                                 Icons.Default.Add,
-                                contentDescription = "Create ingredient",
+                                contentDescription = "",
                                 tint = InsulinkTheme.colors.insulinkBlue
                             )
                         }
                         IconButton(onClick = onDismiss) {
                             Icon(
                                 Icons.Default.Close,
-                                contentDescription = "Close",
+                                contentDescription = "",
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -77,31 +92,28 @@ fun MyIngredientsDialog(
 
                 Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
-                if (ingredients.isEmpty()) {
-                    // Empty state
+                if (userIngredients.value.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .weight(1f),
+                            .weight(WEIGHT_VALUE),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
                                 Icons.Default.Add,
-                                contentDescription = "No ingredients",
-                                modifier = Modifier.size(64.dp),
+                                contentDescription = "",
+                                modifier = Modifier.size(InsulinkTheme.dimens.commonIconSize64),
                                 tint = MaterialTheme.colorScheme.outline
                             )
                             Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
                             Text(
-                                text = "No custom ingredients yet",
+                                text = stringResource(R.string.meals_screen_no_custom_ingredients_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Create your first custom ingredient",
+                                text = stringResource(R.string.meals_screen_no_custom_ingredients_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -118,22 +130,19 @@ fun MyIngredientsDialog(
                                         ),
                                         shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                                     ),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent
-                                ),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12)
                             ) {
-                                Text("Create Ingredient", color = Color.White)
+                                Text(stringResource(R.string.meals_screen_create_ingredient_button), color = Color.White)
                             }
                         }
                     }
                 } else {
-                    // Ingredients list
                     LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.weight(WEIGHT_VALUE),
+                        verticalArrangement = Arrangement.spacedBy(InsulinkTheme.dimens.commonSpacing8)
                     ) {
-                        items(ingredients) { ingredient ->
+                        items(userIngredients.value) { ingredient ->
                             IngredientItem(
                                 ingredient = ingredient,
                                 onDelete = { onDeleteIngredient(ingredient) }
@@ -163,23 +172,26 @@ private fun IngredientItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(WEIGHT_VALUE)) {
                 Text(
                     text = ingredient.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonSpacing4))
                 Text(
-                    text = "${ingredient.caloriesPer100g.toInt()} cal per 100g",
+                    text = stringResource(R.string.meals_screen_cal_per_100g, ingredient.caloriesPer100g.toInt()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
                 Text(
-                    text = "P: ${String.format("%.1f", ingredient.proteinPer100g)}g | " +
-                            "C: ${String.format("%.1f", ingredient.carbsPer100g)}g | " +
-                            "F: ${String.format("%.1f", ingredient.fatPer100g)}g",
+                    text = stringResource(
+                        R.string.meals_screen_nutrition_summary,
+                        String.format("%.1f", ingredient.proteinPer100g),
+                        String.format("%.1f", ingredient.carbsPer100g),
+                        String.format("%.1f", ingredient.fatPer100g)
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
@@ -187,14 +199,17 @@ private fun IngredientItem(
 
             IconButton(
                 onClick = onDelete,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(InsulinkTheme.dimens.commonIconSize40)
             ) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete ingredient",
+                    contentDescription = "",
                     tint = MaterialTheme.colorScheme.error
                 )
             }
         }
     }
 }
+
+private const val DIALOG_HEIGHT_FRACTION = 0.9f
+private const val WEIGHT_VALUE = 1f

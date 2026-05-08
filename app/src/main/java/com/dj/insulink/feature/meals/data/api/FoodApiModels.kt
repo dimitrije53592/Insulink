@@ -2,7 +2,6 @@ package com.dj.insulink.feature.meals.data.api
 
 import com.google.gson.annotations.SerializedName
 
-// Spoonacular API Models
 data class FoodSearchResponse(
     @SerializedName("results")
     val results: List<FoodItem>
@@ -35,7 +34,6 @@ data class Nutrient(
     val unit: String
 )
 
-// Alternative: USDA FoodData Central Models (if we decide to use it)
 data class UsdaFoodSearchResponse(
     @SerializedName("foods")
     val foods: List<UsdaFoodItem>

@@ -2,8 +2,19 @@ package com.dj.insulink.feature.meals.ui
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -15,32 +26,43 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.Ingredient
 import com.dj.insulink.feature.meals.domain.model.MealIngredient
-import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.runtime.State
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMealDialog(
-    mealName: StateFlow<String>,
+    mealName: State<String>,
     onMealNameChange: (String) -> Unit,
-    mealComment: StateFlow<String>,
+    mealComment: State<String>,
     onMealCommentChange: (String) -> Unit,
-    mealDate: StateFlow<Long>,
-    onMealDateChange: (Long) -> Unit,
+    mealTimestamp: State<Long>,
+    onMealTimestampChange: (Long) -> Unit,
     searchQuery: State<String>,
     onSearchQueryChange: (String) -> Unit,
     searchResults: State<List<Ingredient>>,
@@ -54,26 +76,18 @@ fun AddMealDialog(
     onCreateIngredient: () -> Unit,
     onShowMyIngredients: () -> Unit
 ) {
-    val mealNameValue by mealName.collectAsState()
-    val mealCommentValue by mealComment.collectAsState()
-    val mealDateValue by mealDate.collectAsState()
-    val searchQueryValue by searchQuery
-    val searchResultsValue by searchResults
-    val selectedIngredientsValue by selectedIngredients
-    val isLoadingValue by isLoading
-
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f),
-            shape = RoundedCornerShape(MaterialTheme.dimens.commonButtonRadius12),
+                .fillMaxHeight(DIALOG_HEIGHT_FRACTION),
+            shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(MaterialTheme.dimens.commonPadding16)
+                    .padding(InsulinkTheme.dimens.commonPadding16)
                     .verticalScroll(rememberScrollState())
             ) {
                 Row(
@@ -82,48 +96,48 @@ fun AddMealDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Add Meal",
+                        text = stringResource(R.string.meals_screen_add_meal_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = "")
                     }
                 }
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 OutlinedTextField(
-                    value = mealNameValue,
+                    value = mealName.value,
                     onValueChange = onMealNameChange,
-                    label = { Text("Meal Name") },
-                    placeholder = { Text("Enter meal name") },
+                    label = { Text(stringResource(R.string.meals_screen_meal_name_label)) },
+                    placeholder = { Text(stringResource(R.string.meals_screen_meal_name_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 DateTimeInput(
-                    selectedTimestamp = mealDateValue,
-                    onTimestampSelected = onMealDateChange
+                    selectedTimestamp = mealTimestamp.value,
+                    onTimestampSelected = onMealTimestampChange
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 OutlinedTextField(
-                    value = searchQueryValue,
+                    value = searchQuery.value,
                     onValueChange = onSearchQueryChange,
-                    label = { Text("Add Ingredients") },
-                    placeholder = { Text("Search ingredients...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    label = { Text(stringResource(R.string.meals_screen_add_ingredients_label)) },
+                    placeholder = { Text(stringResource(R.string.meals_screen_search_ingredients_placeholder)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "") },
                     trailingIcon = {
                         Row {
                             IconButton(onClick = onCreateIngredient) {
-                                Icon(Icons.Default.Add, contentDescription = "Create ingredient")
+                                Icon(Icons.Default.Add, contentDescription = "")
                             }
                             IconButton(onClick = onShowMyIngredients) {
-                                Icon(Icons.Default.Person, contentDescription = "My ingredients")
+                                Icon(Icons.Default.Person, contentDescription = "")
                             }
                         }
                     },
@@ -131,21 +145,21 @@ fun AddMealDialog(
                     singleLine = true
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding8))
 
-                if (searchResultsValue.isNotEmpty()) {
+                if (searchResults.value.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
+                            .height(InsulinkTheme.dimens.searchResultsListHeight)
                             .border(
-                                1.dp,
+                                InsulinkTheme.dimens.commonButtonBorder1,
                                 MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(8.dp)
+                                RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
                             ),
-                        contentPadding = PaddingValues(8.dp)
+                        contentPadding = PaddingValues(InsulinkTheme.dimens.commonPadding8)
                     ) {
-                        items(searchResultsValue) { ingredient ->
+                        items(searchResults.value) { ingredient ->
                             IngredientSearchItem(
                                 ingredient = ingredient,
                                 onAdd = { onAddIngredient(ingredient, 100.0) }
@@ -154,44 +168,42 @@ fun AddMealDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 Text(
-                    text = "Added Ingredients",
+                    text = stringResource(R.string.meals_screen_added_ingredients_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding8))
 
-                if (selectedIngredientsValue.isEmpty()) {
+                if (selectedIngredients.value.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
+                            .height(InsulinkTheme.dimens.searchResultsListHeight)
                             .border(
-                                1.dp,
+                                InsulinkTheme.dimens.commonButtonBorder1,
                                 MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(8.dp)
+                                RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
                                 Icons.Default.Add,
-                                contentDescription = "Add ingredients",
-                                modifier = Modifier.size(48.dp),
+                                contentDescription = "",
+                                modifier = Modifier.size(InsulinkTheme.dimens.sideDrawerIconSize),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "No ingredients added yet",
+                                text = stringResource(R.string.meals_screen_no_ingredients_title),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Search and add ingredients above",
+                                text = stringResource(R.string.meals_screen_no_ingredients_subtitle),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -201,101 +213,82 @@ fun AddMealDialog(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(InsulinkTheme.dimens.ingredientsListHeight)
                             .border(
-                                1.dp,
+                                InsulinkTheme.dimens.commonButtonBorder1,
                                 MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(8.dp)
+                                RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
                             ),
-                        contentPadding = PaddingValues(8.dp)
+                        contentPadding = PaddingValues(InsulinkTheme.dimens.commonPadding8)
                     ) {
-                        items(selectedIngredientsValue) { mealIngredient ->
+                        items(selectedIngredients.value) { mealIngredient ->
                             AddedIngredientItem(
                                 mealIngredient = mealIngredient,
                                 onRemove = { onRemoveIngredient(mealIngredient) },
                                 onQuantityChange = { quantity ->
-                                    onUpdateIngredientQuantity(
-                                        mealIngredient,
-                                        quantity
-                                    )
+                                    onUpdateIngredientQuantity(mealIngredient, quantity)
                                 }
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 Text(
-                    text = "Nutrition Facts",
+                    text = stringResource(R.string.meals_screen_nutrition_facts_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding8))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding8))
 
                 val totalCalories =
-                    selectedIngredientsValue.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
+                    selectedIngredients.value.sumOf { (it.ingredient.caloriesPer100g * it.quantity / 100).toInt() }
                 val totalProtein =
-                    selectedIngredientsValue.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
+                    selectedIngredients.value.sumOf { it.ingredient.proteinPer100g * it.quantity / 100 }
                 val totalFat =
-                    selectedIngredientsValue.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
+                    selectedIngredients.value.sumOf { it.ingredient.fatPer100g * it.quantity / 100 }
                 val totalCarbs =
-                    selectedIngredientsValue.sumOf { it.ingredient.carbsPer100g * it.quantity / 100 }
+                    selectedIngredients.value.sumOf { it.ingredient.carbsPer100g * it.quantity / 100 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    NutritionCard(
-                        "Calories",
-                        totalCalories.toString(),
-                        InsulinkTheme.colors.insulinkBlue
-                    )
-                    NutritionCard(
-                        "Protein",
-                        "${String.format("%.1f", totalProtein)}g",
-                        InsulinkTheme.colors.glucoseNormal
-                    )
-                    NutritionCard(
-                        "Fats",
-                        "${String.format("%.1f", totalFat)}g",
-                        InsulinkTheme.colors.lastDropLabel
-                    )
-                    NutritionCard(
-                        "Carb",
-                        "${String.format("%.1f", totalCarbs)}g",
-                        InsulinkTheme.colors.glucoseLow
-                    )
+                    NutritionCard(stringResource(R.string.meals_screen_calories_label), totalCalories.toString(), InsulinkTheme.colors.insulinkBlue)
+                    NutritionCard(stringResource(R.string.meals_screen_protein_label), stringResource(R.string.meals_screen_grams_value, String.format("%.1f", totalProtein)), InsulinkTheme.colors.glucoseNormal)
+                    NutritionCard(stringResource(R.string.meals_screen_fats_label), stringResource(R.string.meals_screen_grams_value, String.format("%.1f", totalFat)), InsulinkTheme.colors.lastDropLabel)
+                    NutritionCard(stringResource(R.string.meals_screen_carb_label), stringResource(R.string.meals_screen_grams_value, String.format("%.1f", totalCarbs)), InsulinkTheme.colors.glucoseLow)
                 }
 
-                Spacer(modifier = Modifier.height(MaterialTheme.dimens.commonPadding16))
+                Spacer(modifier = Modifier.height(InsulinkTheme.dimens.commonPadding16))
 
                 OutlinedTextField(
-                    value = mealCommentValue,
+                    value = mealComment.value,
                     onValueChange = onMealCommentChange,
-                    label = { Text("Comment (Optional)") },
-                    placeholder = { Text("Add a comment about this meal") },
+                    label = { Text(stringResource(R.string.meals_screen_comment_label)) },
+                    placeholder = { Text(stringResource(R.string.meals_screen_comment_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
 
-                Spacer(modifier = Modifier.size(MaterialTheme.dimens.commonSpacing16))
+                Spacer(modifier = Modifier.size(InsulinkTheme.dimens.commonSpacing16))
 
                 Button(
                     onClick = onSave,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    enabled = !isLoadingValue && mealNameValue.isNotEmpty() && selectedIngredientsValue.isNotEmpty()
+                        .height(InsulinkTheme.dimens.commonButtonHeight50),
+                    enabled = !isLoading.value && mealName.value.isNotEmpty() && selectedIngredients.value.isNotEmpty()
                 ) {
-                    if (isLoadingValue) {
+                    if (isLoading.value) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(InsulinkTheme.dimens.commonProgressIndicatorSize20),
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text("Save Meal")
+                        Text(stringResource(R.string.meals_screen_save_meal))
                     }
                 }
             }
@@ -312,13 +305,13 @@ private fun IngredientSearchItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onAdd() }
-            .padding(vertical = 4.dp),
+            .padding(vertical = InsulinkTheme.dimens.commonPadding4),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding12),
+                .padding(InsulinkTheme.dimens.commonPadding12),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -329,13 +322,13 @@ private fun IngredientSearchItem(
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "${ingredient.caloriesPer100g.toInt()} cal per 100g",
+                    text = stringResource(R.string.meals_screen_cal_per_100g, ingredient.caloriesPer100g.toInt()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onAdd) {
-                Icon(Icons.Default.Add, contentDescription = "Add ingredient")
+                Icon(Icons.Default.Add, contentDescription = "")
             }
         }
     }
@@ -352,7 +345,7 @@ private fun AddedIngredientItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = InsulinkTheme.dimens.commonPadding4),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
@@ -362,7 +355,7 @@ private fun AddedIngredientItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(MaterialTheme.dimens.commonPadding12),
+                    .padding(InsulinkTheme.dimens.commonPadding12),
             ) {
                 Text(
                     text = mealIngredient.ingredient.name,
@@ -370,18 +363,18 @@ private fun AddedIngredientItem(
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "${(mealIngredient.ingredient.caloriesPer100g * mealIngredient.quantity / 100).toInt()} cal per ${mealIngredient.quantity.toInt()}g",
+                    text = stringResource(R.string.meals_screen_cal_per_grams, (mealIngredient.ingredient.caloriesPer100g * mealIngredient.quantity / 100).toInt(), mealIngredient.quantity.toInt()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(Modifier.height(MaterialTheme.dimens.commonSpacing8))
+                Spacer(Modifier.height(InsulinkTheme.dimens.commonSpacing8))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Quantity (g)",
+                        text = stringResource(R.string.meals_screen_quantity_label),
                         style = MaterialTheme.typography.bodySmall
                     )
                     OutlinedTextField(
@@ -390,7 +383,7 @@ private fun AddedIngredientItem(
                             quantityText = newValue
                             newValue.toDoubleOrNull()?.let { onQuantityChange(it) }
                         },
-                        modifier = Modifier.width(80.dp),
+                        modifier = Modifier.width(InsulinkTheme.dimens.quantityFieldWidth),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true
                     )
@@ -400,7 +393,7 @@ private fun AddedIngredientItem(
                 onClick = onRemove,
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                Icon(Icons.Default.Close, contentDescription = "Remove ingredient")
+                Icon(Icons.Default.Close, contentDescription = "")
             }
         }
     }
@@ -414,10 +407,10 @@ private fun NutritionCard(
 ) {
     Card(
         modifier = Modifier
-            .width(70.dp)
-            .height(60.dp),
+            .width(InsulinkTheme.dimens.nutritionCardWidth)
+            .height(InsulinkTheme.dimens.nutritionCardHeight),
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.2f)),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius8)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -436,3 +429,5 @@ private fun NutritionCard(
         }
     }
 }
+
+private const val DIALOG_HEIGHT_FRACTION = 0.9f

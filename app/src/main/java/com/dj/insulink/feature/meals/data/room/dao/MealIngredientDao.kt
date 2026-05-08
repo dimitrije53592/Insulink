@@ -1,11 +1,16 @@
 package com.dj.insulink.feature.meals.data.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.dj.insulink.feature.meals.data.room.entity.MealIngredientEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MealIngredientDao {
+
     @Query("SELECT * FROM meal_ingredients WHERE mealId = :mealId")
     fun getIngredientsForMeal(mealId: Long): Flow<List<MealIngredientEntity>>
 
@@ -15,15 +20,9 @@ interface MealIngredientDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMealIngredient(mealIngredient: MealIngredientEntity): Long
 
-    @Update
-    suspend fun updateMealIngredient(mealIngredient: MealIngredientEntity)
-
     @Delete
     suspend fun deleteMealIngredient(mealIngredient: MealIngredientEntity)
 
     @Query("DELETE FROM meal_ingredients WHERE mealId = :mealId")
     suspend fun deleteIngredientsForMeal(mealId: Long)
-
-    @Query("DELETE FROM meal_ingredients WHERE id = :id")
-    suspend fun deleteMealIngredientById(id: Long)
 }
