@@ -12,15 +12,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    
+
     private const val SPOONACULAR_BASE_URL = "https://api.spoonacular.com/"
     private const val USDA_BASE_URL = "https://api.nal.usda.gov/"
-    
+
     @Provides
     @Singleton
     fun provideGson(): Gson {
@@ -28,14 +29,14 @@ object NetworkModule {
             .setLenient()
             .create()
     }
-    
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-        
+
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -43,24 +44,49 @@ object NetworkModule {
             .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
-    
+
     @Provides
     @Singleton
-    fun provideRetrofit(
+    @Named("usda")
+    fun provideUsdaRetrofit(
         okHttpClient: OkHttpClient,
         gson: Gson
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(USDA_BASE_URL) // Default to USDA for better nutritional data
+            .baseUrl(USDA_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
-    
+
     @Provides
     @Singleton
-    fun provideFoodApiService(
-        retrofit: Retrofit
+    @Named("spoonacular")
+    fun provideSpoonacularRetrofit(
+        okHttpClient: OkHttpClient,
+        gson: Gson
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(SPOONACULAR_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("usda")
+    fun provideUsdaApiService(
+        @Named("usda") retrofit: Retrofit
+    ): FoodApiService {
+        return retrofit.create(FoodApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @Named("spoonacular")
+    fun provideSpoonacularApiService(
+        @Named("spoonacular") retrofit: Retrofit
     ): FoodApiService {
         return retrofit.create(FoodApiService::class.java)
     }

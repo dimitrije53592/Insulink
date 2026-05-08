@@ -1,12 +1,11 @@
 package com.dj.insulink.feature.meals.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,9 +17,9 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.dj.insulink.core.ui.theme.dimens
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.Meal
 import java.text.SimpleDateFormat
@@ -38,7 +37,7 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
                 false
             }
         },
-        positionalThreshold = { it * 0.25f }
+        positionalThreshold = { it * POSITIONAL_MODIFIER }
     )
 
     SwipeToDismissBox(
@@ -46,7 +45,7 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
         enableDismissFromEndToStart = false,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = MaterialTheme.dimens.commonPadding12),
+            .padding(horizontal = InsulinkTheme.dimens.commonPadding12),
         backgroundContent = {}
     ) {
         MealItemContent(meal = meal)
@@ -55,25 +54,26 @@ fun MealItem(meal: Meal, onSwipeFromStartToEnd: () -> Unit) {
 
 @Composable
 private fun MealItemContent(meal: Meal) {
-    val hasContent = meal.calories != null || meal.carbs != null || meal.protein != null
-
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.dimens.commonElevation2),
+        shape = RoundedCornerShape(InsulinkTheme.dimens.commonButtonRadius12),
+        elevation = CardDefaults.cardElevation(defaultElevation = InsulinkTheme.dimens.commonElevation2),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.dimens.commonPadding16)
+                .padding(InsulinkTheme.dimens.commonPadding16),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.align(Alignment.CenterStart)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = meal.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Spacer(Modifier.height(InsulinkTheme.dimens.commonSpacing4))
                 Text(
                     text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(meal.timestamp)),
                     style = MaterialTheme.typography.bodySmall,
@@ -81,41 +81,34 @@ private fun MealItemContent(meal: Meal) {
                 )
             }
 
-            if (hasContent) {
-                Column(modifier = Modifier.align(Alignment.CenterEnd), horizontalAlignment = Alignment.End) {
+            if (meal.calories != null || meal.protein != null || meal.carbs != null) {
+                Column(horizontalAlignment = Alignment.End) {
                     if (meal.calories != null) {
                         Text(
-                            text = "${meal.calories} cal",
+                            text = stringResource(R.string.meals_screen_cal_value, meal.calories),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(Modifier.size(MaterialTheme.dimens.commonSpacing4))
                     }
-
                     if (meal.protein != null) {
                         Text(
-                            text = "Protein: ${String.format("%.1f", meal.protein)}g",
-                            color = InsulinkTheme.colors.insulinkBlue,
-                            fontWeight = FontWeight.Medium
+                            text = stringResource(R.string.meals_screen_protein_value, String.format("%.1f", meal.protein)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-
                     if (meal.carbs != null) {
                         Text(
-                            text = "Carbs: ${String.format("%.1f", meal.carbs)}g",
-                            color = InsulinkTheme.colors.glucoseNormal,
-                            fontWeight = FontWeight.Medium
+                            text = stringResource(R.string.meals_screen_carbs_value, String.format("%.1f", meal.carbs)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(MaterialTheme.dimens.commonSpacing16)
-                        .background(InsulinkTheme.colors.insulinkBlue.copy(alpha = 0.15f), shape = RoundedCornerShape(8.dp))
-                        .align(Alignment.CenterEnd)
-                )
             }
         }
     }
 }
+
+private const val POSITIONAL_MODIFIER = 0.25f

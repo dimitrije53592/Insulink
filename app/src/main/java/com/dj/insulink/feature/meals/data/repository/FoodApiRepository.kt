@@ -9,80 +9,57 @@ import com.dj.insulink.feature.meals.domain.model.Ingredient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import javax.inject.Singleton
+import javax.inject.Named
 
-@Singleton
 class FoodApiRepository @Inject constructor(
-    private val foodApiService: FoodApiService
+    @Named("usda") private val usdaApiService: FoodApiService,
+    @Named("spoonacular") private val spoonacularApiService: FoodApiService
 ) {
-    
-    private val spoonacularApiKey = BuildConfig.SPOONACULAR_API_KEY
-    private val usdaApiKey = BuildConfig.USDA_API_KEY
-    
+
+    private val spoonacularApiKey: String = BuildConfig.SPOONACULAR_API_KEY ?: ""
+    private val usdaApiKey: String = BuildConfig.USDA_API_KEY ?: ""
+
     suspend fun searchFoods(query: String): List<Ingredient> {
         return withContext(Dispatchers.IO) {
-            try {
-                // Try USDA FoodData Central API first (better nutritional data)
-                val response = foodApiService.searchUsdaFoods(
-                    query = query,
-                    pageSize = 10,
-                    apiKey = usdaApiKey
-                )
-                
-                if (response.isSuccessful && response.body() != null) {
-                    val foodItems = response.body()!!.foods
-                    return@withContext convertUsdaFoodItemsToIngredients(foodItems)
-                } else {
-                    Log.w("FoodApiRepository", "USDA API failed: ${response.code()}")
+            if (usdaApiKey.isNotEmpty()) {
+                try {
+                    val response = usdaApiService.searchUsdaFoods(
+                        query = query,
+                        pageSize = 10,
+                        apiKey = usdaApiKey
+                    )
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val foodItems = response.body()!!.foods
+                        return@withContext convertUsdaFoodItemsToIngredients(foodItems)
+                    } else {
+                        Log.w("FoodApiRepository", "USDA API failed: ${response.code()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("FoodApiRepository", "Error searching foods with USDA", e)
                 }
-            } catch (e: Exception) {
-                Log.e("FoodApiRepository", "Error searching foods with USDA", e)
             }
-            
-            // Fallback to Spoonacular if USDA fails
-            try {
-                val response = foodApiService.searchIngredients(
-                    query = query,
-                    number = 10,
-                    addRecipeNutrition = true,
-                    apiKey = spoonacularApiKey
-                )
-                
-                if (response.isSuccessful && response.body() != null) {
-                    val foodItems = response.body()!!.results
-                    return@withContext convertFoodItemsToIngredients(foodItems)
-                } else {
-                    Log.w("FoodApiRepository", "Spoonacular API failed: ${response.code()}")
+
+            if (spoonacularApiKey.isNotEmpty()) {
+                try {
+                    val response = spoonacularApiService.searchIngredients(
+                        query = query,
+                        number = 10,
+                        addRecipeNutrition = true,
+                        apiKey = spoonacularApiKey
+                    )
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val foodItems = response.body()!!.results
+                        return@withContext convertFoodItemsToIngredients(foodItems)
+                    } else {
+                        Log.w("FoodApiRepository", "Spoonacular API failed: ${response.code()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e("FoodApiRepository", "Error searching foods with Spoonacular", e)
                 }
-            } catch (e: Exception) {
-                Log.e("FoodApiRepository", "Error searching foods with Spoonacular", e)
             }
-            
-            // Fallback to empty list if both APIs fail
-            emptyList()
-        }
-    }
-    
-    suspend fun searchUsdaFoods(query: String): List<Ingredient> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = foodApiService.searchUsdaFoods(
-                    query = query,
-                    pageSize = 10,
-                    apiKey = usdaApiKey
-                )
-                
-                if (response.isSuccessful && response.body() != null) {
-                    val foodItems = response.body()!!.foods
-                    return@withContext convertUsdaFoodItemsToIngredients(foodItems)
-                } else {
-                    Log.w("FoodApiRepository", "USDA API failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("FoodApiRepository", "Error searching foods with USDA", e)
-            }
-            
-            // Fallback to empty list if API fails
+
             emptyList()
         }
     }
