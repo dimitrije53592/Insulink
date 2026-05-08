@@ -37,6 +37,7 @@ import com.dj.insulink.core.ui.SideDrawer
 import com.dj.insulink.core.ui.SideDrawerParams
 import com.dj.insulink.core.ui.viewmodel.SharedViewModel
 import com.dj.insulink.core.utils.navigateTo
+import com.dj.insulink.feature.meals.ui.wrapper.AddMealWrapper
 import com.dj.insulink.feature.meals.ui.wrapper.MealsWrapper
 import com.dj.insulink.feature.fitness.ui.wrapper.FitnessWrapper
 import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
@@ -189,7 +190,18 @@ fun AppNavigation() {
                     GlucoseWrapper(currentUser = currentUser.value)
                 }
                 composable(Screen.Meals.route) {
-                    MealsWrapper(currentUser = currentUser.value)
+                    MealsWrapper(
+                        currentUser = currentUser.value,
+                        navigateToAddMeal = {
+                            navController.navigate(Screen.AddMeal.route)
+                        }
+                    )
+                }
+                composable(Screen.AddMeal.route) {
+                    AddMealWrapper(
+                        currentUser = currentUser.value,
+                        navigateBack = { navController.popBackStack() }
+                    )
                 }
                 composable(Screen.Fitness.route) {
                     FitnessWrapper(currentUser = currentUser.value)

@@ -39,9 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.meals.domain.model.DailyNutrition
-import com.dj.insulink.feature.meals.domain.model.Ingredient
 import com.dj.insulink.feature.meals.domain.model.Meal
-import com.dj.insulink.feature.meals.domain.model.MealIngredient
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -111,10 +109,7 @@ fun MealsScreen(
         }
 
         FloatingActionButton(
-            onClick = {
-                params.setNewMealTimestamp(System.currentTimeMillis())
-                params.setShowAddMealDialog(true)
-            },
+            onClick = params.onAddMealClick,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(InsulinkTheme.dimens.commonPadding16),
@@ -127,47 +122,6 @@ fun MealsScreen(
             )
         }
     }
-
-    if (params.showAddMealDialog.value) {
-        AddMealDialog(
-            mealName = params.newMealName,
-            onMealNameChange = params.setNewMealName,
-            mealComment = params.newMealComment,
-            onMealCommentChange = params.setNewMealComment,
-            mealTimestamp = params.newMealTimestamp,
-            onMealTimestampChange = params.setNewMealTimestamp,
-            searchQuery = params.searchQuery,
-            onSearchQueryChange = params.onSearchQueryChange,
-            searchResults = params.searchResults,
-            selectedIngredients = params.selectedIngredients,
-            onAddIngredient = params.onAddIngredient,
-            onRemoveIngredient = params.onRemoveIngredient,
-            onUpdateIngredientQuantity = params.onUpdateIngredientQuantity,
-            onDismiss = { params.setShowAddMealDialog(false) },
-            onSave = params.submitNewMeal,
-            isLoading = params.isLoading,
-            onCreateIngredient = { params.setShowCreateIngredientDialog(true) },
-            onShowMyIngredients = { params.setShowMyIngredientsDialog(true) }
-        )
-    }
-
-    if (params.showCreateIngredientDialog.value) {
-        CreateIngredientDialog(
-            onDismiss = { params.setShowCreateIngredientDialog(false) },
-            onSave = params.createCustomIngredient,
-            isLoading = params.isLoading.value
-        )
-    }
-
-    if (params.showMyIngredientsDialog.value) {
-        MyIngredientsDialog(
-            userIngredients = params.userIngredients,
-            onDismiss = { params.setShowMyIngredientsDialog(false) },
-            onCreateIngredient = { params.setShowCreateIngredientDialog(true) },
-            onDeleteIngredient = params.deleteCustomIngredient,
-            isLoading = params.isLoading.value
-        )
-    }
 }
 
 data class MealsScreenParams(
@@ -175,31 +129,8 @@ data class MealsScreenParams(
     val dailyNutrition: State<DailyNutrition>,
     val selectedDate: State<Long>,
     val setSelectedDate: (Long) -> Unit,
-    val showAddMealDialog: State<Boolean>,
-    val setShowAddMealDialog: (Boolean) -> Unit,
-    val newMealName: State<String>,
-    val setNewMealName: (String) -> Unit,
-    val newMealComment: State<String>,
-    val setNewMealComment: (String) -> Unit,
-    val newMealTimestamp: State<Long>,
-    val setNewMealTimestamp: (Long) -> Unit,
-    val searchQuery: State<String>,
-    val onSearchQueryChange: (String) -> Unit,
-    val searchResults: State<List<Ingredient>>,
-    val selectedIngredients: State<List<MealIngredient>>,
-    val onAddIngredient: (Ingredient, Double) -> Unit,
-    val onRemoveIngredient: (MealIngredient) -> Unit,
-    val onUpdateIngredientQuantity: (MealIngredient, Double) -> Unit,
-    val isLoading: State<Boolean>,
-    val showCreateIngredientDialog: State<Boolean>,
-    val setShowCreateIngredientDialog: (Boolean) -> Unit,
-    val showMyIngredientsDialog: State<Boolean>,
-    val setShowMyIngredientsDialog: (Boolean) -> Unit,
-    val userIngredients: State<List<Ingredient>>,
-    val submitNewMeal: () -> Unit,
     val deleteMeal: (Meal) -> Unit,
-    val createCustomIngredient: (Ingredient) -> Unit,
-    val deleteCustomIngredient: (Ingredient) -> Unit
+    val onAddMealClick: () -> Unit
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

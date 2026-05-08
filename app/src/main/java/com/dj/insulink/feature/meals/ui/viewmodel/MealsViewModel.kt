@@ -66,9 +66,6 @@ class MealsViewModel @Inject constructor(
     private val _newMealTimestamp = MutableStateFlow(System.currentTimeMillis())
     val newMealTimestamp = _newMealTimestamp.asStateFlow()
 
-    private val _showAddMealDialog = MutableStateFlow(false)
-    val showAddMealDialog = _showAddMealDialog.asStateFlow()
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
@@ -158,13 +155,9 @@ class MealsViewModel @Inject constructor(
         _newMealTimestamp.value = timestamp
     }
 
-    fun setShowAddMealDialog(show: Boolean) {
-        _showAddMealDialog.value = show
-        if (show) {
-            _newMealTimestamp.value = System.currentTimeMillis()
-        } else {
-            resetAddMealFields()
-        }
+    fun prepareNewMeal() {
+        resetAddMealFields()
+        _newMealTimestamp.value = System.currentTimeMillis()
     }
 
     fun setShowCreateIngredientDialog(show: Boolean) {
@@ -175,7 +168,7 @@ class MealsViewModel @Inject constructor(
         _showMyIngredientsDialog.value = show
     }
 
-    fun submitNewMeal(userId: String?) {
+    fun submitNewMeal(userId: String?, onSuccess: () -> Unit) {
         if (userId == null) return
 
         val ingredients = _selectedIngredients.value
@@ -206,8 +199,9 @@ class MealsViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 mealRepository.insert(userId, meal)
-                setShowAddMealDialog(false)
+                resetAddMealFields()
                 loadDailyNutritionForDate(_selectedDate.value)
+                onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

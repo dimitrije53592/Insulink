@@ -16,6 +16,7 @@ sealed class Screen(
     object ForgotPassword : Screen("forgot_password")
     object Glucose : Screen("glucose", icon = Icons.Filled.WaterDrop, title = "Glucose")
     object Meals : Screen("meals", icon = Icons.Filled.Restaurant, title = "Meals")
+    object AddMeal : Screen("add_meal")
     object Fitness : Screen("fitness", icon = Icons.AutoMirrored.Filled.DirectionsRun, title = "Fitness")
     object Reminders : Screen("reminders", title = "Reminders")
     object Friends : Screen("friends", title = "Friends")
@@ -28,6 +29,7 @@ sealed class Screen(
             ForgotPassword,
             Glucose,
             Meals,
+            AddMeal,
             Fitness,
             Reminders,
             Friends,
