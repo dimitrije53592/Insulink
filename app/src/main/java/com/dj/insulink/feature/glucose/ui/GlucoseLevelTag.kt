@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
@@ -19,17 +21,17 @@ fun GlucoseLevelTag(
 ) {
     val (text, backgroundColor, textColor) = when {
         glucoseLevel < 70 -> Triple(
-            "LOW",
+            stringResource(R.string.glucose_level_low),
             InsulinkTheme.colors.glucoseLow.copy(alpha = 0.2f),
             InsulinkTheme.colors.glucoseLow
         )
         glucoseLevel <= 180 -> Triple(
-            "NORMAL",
+            stringResource(R.string.glucose_level_normal),
             InsulinkTheme.colors.glucoseNormal.copy(alpha = 0.2f),
             InsulinkTheme.colors.glucoseNormal
         )
         else -> Triple(
-            "HIGH",
+            stringResource(R.string.glucose_level_high),
             InsulinkTheme.colors.glucoseHigh.copy(alpha = 0.2f),
             InsulinkTheme.colors.glucoseHigh
         )

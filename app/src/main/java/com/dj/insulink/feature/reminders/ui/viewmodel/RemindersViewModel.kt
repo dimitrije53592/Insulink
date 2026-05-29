@@ -4,9 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.Context
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.core.notification.ReminderScheduler
 import com.dj.insulink.feature.reminders.data.repository.ReminderRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.dj.insulink.feature.reminders.domain.models.Reminder
 import com.dj.insulink.feature.reminders.domain.models.ReminderType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +30,8 @@ import javax.inject.Inject
 class RemindersViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val authRepository: AuthRepository,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,7 +103,7 @@ class RemindersViewModel @Inject constructor(
             reminderScheduler.scheduleDaily(
                 reminderId = reminderId,
                 title = _reminderTitle.value,
-                message = _reminderType.value.displayName,
+                message = context.getString(_reminderType.value.displayNameRes),
                 hour = reminderLocalTime.hour,
                 minute = reminderLocalTime.minute
             )

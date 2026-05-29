@@ -1,26 +1,29 @@
 package com.dj.insulink.core.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.dj.insulink.R
 
 sealed class Screen(
     val route: String,
     val icon: ImageVector? = null,
-    val title: String = ""
+    @StringRes val titleRes: Int = 0
 ) {
     object Registration : Screen("registration")
     object Login : Screen("login")
     object ForgotPassword : Screen("forgot_password")
-    object Glucose : Screen("glucose", icon = Icons.Filled.WaterDrop, title = "Glucose")
-    object Meals : Screen("meals", icon = Icons.Filled.Restaurant, title = "Meals")
+    object Glucose : Screen("glucose", icon = Icons.Filled.WaterDrop, titleRes = R.string.nav_title_glucose)
+    object Meals : Screen("meals", icon = Icons.Filled.Restaurant, titleRes = R.string.nav_title_meals)
     object AddMeal : Screen("add_meal")
-    object Fitness : Screen("fitness", icon = Icons.AutoMirrored.Filled.DirectionsRun, title = "Fitness")
-    object Reminders : Screen("reminders", title = "Reminders")
-    object Friends : Screen("friends", title = "Friends")
-    object Report : Screen("report", title = "Generate report")
+    object Fitness : Screen("fitness", icon = Icons.AutoMirrored.Filled.DirectionsRun, titleRes = R.string.nav_title_fitness)
+    object Reminders : Screen("reminders", titleRes = R.string.nav_title_reminders)
+    object Friends : Screen("friends", titleRes = R.string.nav_title_friends)
+    object Report : Screen("report", titleRes = R.string.nav_title_report)
+    object Settings : Screen("settings", titleRes = R.string.nav_title_settings)
 
     companion object {
         val allDestinations: List<Screen> = listOf(
@@ -33,7 +36,8 @@ sealed class Screen(
             Fitness,
             Reminders,
             Friends,
-            Report
+            Report,
+            Settings
         )
 
         val bottomBarDestinations: List<Screen> = listOf(
@@ -45,7 +49,8 @@ sealed class Screen(
         val topBarAndSideDrawerDestinations: List<Screen> = bottomBarDestinations + listOf(
             Reminders,
             Friends,
-            Report
+            Report,
+            Settings
         )
 
         fun findDestinationByRoute(route: String?): Screen? {

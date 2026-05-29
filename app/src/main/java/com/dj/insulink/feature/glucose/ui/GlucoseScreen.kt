@@ -114,13 +114,15 @@ fun GlucoseScreen(
                 }
             }
 
+            val timespanLabels = GlucoseReadingTimespan.entries.map { stringResource(it.displayNameRes) }
             GlucoseDropdownMenu(
-                items = GlucoseReadingTimespan.entries.map { it.displayName },
-                selectedItem = params.selectedTimespan.value.displayName,
-                onItemSelected = {
-                    val newTimespan = GlucoseReadingTimespan.fromDisplayName(it)
-                        ?: GlucoseReadingTimespan.ALL_READINGS
-                    params.setSelectedTimespan(newTimespan)
+                items = timespanLabels,
+                selectedItem = stringResource(params.selectedTimespan.value.displayNameRes),
+                onItemSelected = { selected ->
+                    val index = timespanLabels.indexOf(selected)
+                    if (index >= 0) {
+                        params.setSelectedTimespan(GlucoseReadingTimespan.entries[index])
+                    }
                 },
                 modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
             )

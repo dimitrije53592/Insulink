@@ -291,13 +291,15 @@ private fun AddReminderDialog(
                     text = stringResource(R.string.reminders_screen_add_new_reminder_select_type_label)
                 )
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing4))
+                val reminderTypeLabels = ReminderType.entries.map { stringResource(it.displayNameRes) }
                 GlucoseDropdownMenu(
-                    items = ReminderType.entries.map { it.displayName },
-                    selectedItem = reminderType.displayName,
-                    onItemSelected = {
-                        setReminderType(
-                            ReminderType.fromDisplayName(it) ?: ReminderType.MEAL_REMINDER
-                        )
+                    items = reminderTypeLabels,
+                    selectedItem = stringResource(reminderType.displayNameRes),
+                    onItemSelected = { selected ->
+                        val index = reminderTypeLabels.indexOf(selected)
+                        if (index >= 0) {
+                            setReminderType(ReminderType.entries[index])
+                        }
                     }
                 )
                 Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))

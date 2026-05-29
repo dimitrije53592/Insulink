@@ -116,7 +116,7 @@ fun DynamicLineChart(
 @Composable
 private fun getAxisTitle(timespan: GlucoseReadingTimespan): String {
     return when (timespan) {
-        GlucoseReadingTimespan.LAST_DAY -> "Time"
+        GlucoseReadingTimespan.LAST_DAY -> stringResource(R.string.chart_time_axis_title)
         else -> stringResource(R.string.glucose_screen_date_axis_title)
     }
 }

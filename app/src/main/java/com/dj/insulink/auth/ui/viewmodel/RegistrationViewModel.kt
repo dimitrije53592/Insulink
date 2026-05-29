@@ -1,11 +1,14 @@
 package com.dj.insulink.auth.ui.viewmodel
 
+import android.content.Context
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dj.insulink.R
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.auth.domain.models.UserRegistration
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -19,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _firstName = MutableStateFlow("")
@@ -111,13 +115,13 @@ class RegistrationViewModel @Inject constructor(
                 _isLoading.value = false
                 _errorMessage.value = when {
                     e.message?.contains("email address is already in use") == true ->
-                        "This email is already registered. Please try logging in."
+                        context.getString(R.string.error_email_already_registered)
                     e.message?.contains("network error") == true ->
-                        "Network error. Please check your connection."
+                        context.getString(R.string.error_network)
                     e.message?.contains("password") == true ->
-                        "Password is too weak. Please use a stronger password."
+                        context.getString(R.string.error_weak_password)
                     else ->
-                        "Registration failed: ${e.message}"
+                        context.getString(R.string.error_registration_failed, e.message ?: "")
                 }
                 _showErrorMessage.value = true
                 Log.e("RegistrationViewModel", "Registration error", e)
@@ -127,19 +131,19 @@ class RegistrationViewModel @Inject constructor(
 
     private fun isRegistrationFormValid(): Boolean {
         if (_firstName.value.isEmpty() || _lastName.value.isEmpty()) {
-            _errorMessage.value = "Some required fields are left empty."
+            _errorMessage.value = context.getString(R.string.error_required_fields_empty)
             return false
         } else if (!isEmailValid()) {
-            _errorMessage.value = "Email address you entered is not a valid email address."
+            _errorMessage.value = context.getString(R.string.error_invalid_email)
             return false
         } else if (!isPasswordLongEnough()) {
-            _errorMessage.value = "Password you entered has to have at least 8 characters."
+            _errorMessage.value = context.getString(R.string.error_password_too_short)
             return false
         } else if (!doPasswordsMatch()) {
-            _errorMessage.value = "Passwords do not match."
+            _errorMessage.value = context.getString(R.string.error_passwords_dont_match)
             return false
         } else if (!areTermsOfServiceAccepted()) {
-            _errorMessage.value = "You must accept Terms of Service and Privacy Policy"
+            _errorMessage.value = context.getString(R.string.error_accept_terms)
             return false
         } else {
             return true

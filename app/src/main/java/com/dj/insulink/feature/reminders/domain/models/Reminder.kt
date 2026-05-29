@@ -1,5 +1,7 @@
 package com.dj.insulink.feature.reminders.domain.models
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.dj.insulink.R
 
 data class Reminder(
@@ -11,16 +13,12 @@ data class Reminder(
     val time: Long
 )
 
-enum class ReminderType(val displayName: String, val icon: Int) {
-    MEAL_REMINDER("Meal reminder", R.drawable.ic_utensils),
-    INSULIN_REMINDER("Insulin dose reminder", R.drawable.ic_syringe),
-    BLOOD_SUGAR_CHECK_REMINDER("Blood sugar check reminder", R.drawable.ic_blood);
+enum class ReminderType(@StringRes val displayNameRes: Int, @DrawableRes val icon: Int) {
+    MEAL_REMINDER(R.string.reminder_type_meal, R.drawable.ic_utensils),
+    INSULIN_REMINDER(R.string.reminder_type_insulin, R.drawable.ic_syringe),
+    BLOOD_SUGAR_CHECK_REMINDER(R.string.reminder_type_blood_sugar, R.drawable.ic_blood);
 
     companion object {
-        fun fromDisplayName(displayName: String): ReminderType? {
-            return entries.find { it.displayName == displayName }
-        }
-
         fun fromName(name: String?): ReminderType? {
             return entries.find { it.name == name }
         }

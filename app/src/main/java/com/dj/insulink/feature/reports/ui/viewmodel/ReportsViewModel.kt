@@ -7,6 +7,7 @@ import com.dj.insulink.feature.dataREMOVE.pdf.GlucoseReportPdfGenerator
 import com.dj.insulink.feature.glucose.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.dj.insulink.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -111,7 +112,7 @@ class ReportsViewModel @Inject constructor(
         val readings = _filteredReadings.value
 
         if (currentMinDate == null || currentMaxDate == null || readings.isEmpty()) {
-            _pdfGenerationState.value = PdfGenerationState.Error("No data available for the selected date range")
+            _pdfGenerationState.value = PdfGenerationState.Error(context.getString(R.string.report_no_data))
             return
         }
 
@@ -135,11 +136,11 @@ class ReportsViewModel @Inject constructor(
                         _pdfGenerationState.value = PdfGenerationState.Success(file)
                     },
                     onFailure = { error ->
-                        _pdfGenerationState.value = PdfGenerationState.Error(error.message ?: "Failed to generate PDF")
+                        _pdfGenerationState.value = PdfGenerationState.Error(error.message ?: context.getString(R.string.report_pdf_failed))
                     }
                 )
             } catch (e: Exception) {
-                _pdfGenerationState.value = PdfGenerationState.Error(e.message ?: "Unknown error occurred")
+                _pdfGenerationState.value = PdfGenerationState.Error(e.message ?: context.getString(R.string.report_unknown_error))
             }
         }
     }

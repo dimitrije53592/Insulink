@@ -457,7 +457,7 @@ private fun openPdfFile(context: Context, file: File) {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         }
-        context.startActivity(Intent.createChooser(intent, "Open PDF"))
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.report_open_pdf)))
     } catch (e: Exception) {
         e.printStackTrace()
     }
@@ -477,10 +477,10 @@ private fun sharePdfFile(
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Glucose Report")
+            putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.report_glucose_report))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        launcher.launch(Intent.createChooser(shareIntent, "Share PDF Report"))
+        launcher.launch(Intent.createChooser(shareIntent, context.getString(R.string.report_share_pdf)))
     } catch (e: Exception) {
         e.printStackTrace()
     }
