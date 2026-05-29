@@ -18,11 +18,16 @@ fun FriendsWrapper(
     val allFriendsForUser = viewModel.allFriendsForUser.collectAsStateWithLifecycle()
     val showAddNewFriendDialog = viewModel.showAddNewFriendDialog.collectAsStateWithLifecycle()
     val enteredCode = viewModel.enteredCode.collectAsStateWithLifecycle()
+    val glucoseUnit = viewModel.glucoseUnit.collectAsStateWithLifecycle()
 
     LaunchedEffect(currentUser) {
         currentUser?.uid?.let {
             viewModel.fetchFriendDataAndUpdateDatabase(it)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshGlucoseUnit()
     }
 
     currentUser?.let {
@@ -36,7 +41,8 @@ fun FriendsWrapper(
                 setEnteredCode = viewModel::setEnteredCode,
                 onAddFriendClick = {
                     viewModel.onAddFriendClick(userId = it.uid)
-                }
+                },
+                glucoseUnit = glucoseUnit.value
             )
         )
     }

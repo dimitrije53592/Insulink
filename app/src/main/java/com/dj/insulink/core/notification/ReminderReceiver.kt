@@ -13,8 +13,8 @@ class ReminderReceiver() : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
-        val title = intent.getStringExtra("title") ?: "Reminder"
-        val message = intent.getStringExtra("message") ?: "You have a reminder!"
+        val title = intent.getStringExtra("title") ?: context.getString(com.dj.insulink.R.string.notification_default_title)
+        val message = intent.getStringExtra("message") ?: context.getString(com.dj.insulink.R.string.notification_default_message)
         val notificationId = intent.getIntExtra("notificationId", 0)
 
         val notificationHelper = NotificationHelper(context)

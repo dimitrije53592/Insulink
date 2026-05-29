@@ -40,6 +40,7 @@ import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseReadingTimespan
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -90,10 +91,11 @@ fun GlucoseScreen(
                         text = if (params.latestGlucoseReading.value != null) {
                             stringResource(
                                 R.string.glucose_screen_value_display_label,
-                                params.latestGlucoseReading.value!!.value
+                                params.glucoseUnit.value.formatValue(params.latestGlucoseReading.value!!.value),
+                                params.glucoseUnit.value.suffix
                             )
                         } else {
-                            stringResource(R.string.glucose_screen_empty_display_label)
+                            stringResource(R.string.glucose_screen_empty_display_label, params.glucoseUnit.value.suffix)
                         },
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
@@ -114,13 +116,15 @@ fun GlucoseScreen(
                 }
             }
 
+            val timespanLabels = GlucoseReadingTimespan.entries.map { stringResource(it.displayNameRes) }
             GlucoseDropdownMenu(
-                items = GlucoseReadingTimespan.entries.map { it.displayName },
-                selectedItem = params.selectedTimespan.value.displayName,
-                onItemSelected = {
-                    val newTimespan = GlucoseReadingTimespan.fromDisplayName(it)
-                        ?: GlucoseReadingTimespan.ALL_READINGS
-                    params.setSelectedTimespan(newTimespan)
+                items = timespanLabels,
+                selectedItem = stringResource(params.selectedTimespan.value.displayNameRes),
+                onItemSelected = { selected ->
+                    val index = timespanLabels.indexOf(selected)
+                    if (index >= 0) {
+                        params.setSelectedTimespan(GlucoseReadingTimespan.entries[index])
+                    }
                 },
                 modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12)
             )
@@ -132,7 +136,8 @@ fun GlucoseScreen(
                     xValues = params.allGlucoseReadings.value.map { it.timestamp }.reversed(),
                     yValues = params.allGlucoseReadings.value.map { it.value }.reversed(),
                     modifier = Modifier.padding(horizontal = InsulinkTheme.dimens.commonPadding12),
-                    timespan = params.selectedTimespan.value
+                    timespan = params.selectedTimespan.value,
+                    glucoseUnit = params.glucoseUnit.value
                 )
             }
 
@@ -146,6 +151,7 @@ fun GlucoseScreen(
                         items(items = params.allGlucoseReadings.value, key = { item -> item.id }) {
                             GlucoseReadingItem(
                                 glucoseReading = it,
+                                glucoseUnit = params.glucoseUnit.value,
                                 onSwipeFromStartToEnd = {
                                     params.deleteGlucoseReading(it)
                                 }
@@ -195,6 +201,7 @@ fun GlucoseScreen(
             setNewGlucoseReadingValue = params.setNewGlucoseReadingValue,
             newGlucoseReadingComment = params.newGlucoseReadingComment,
             setNewGlucoseReadingComment = params.setNewGlucoseReadingComment,
+            glucoseUnit = params.glucoseUnit.value,
             onDismissRequest = {
                 params.setShowAddGlucoseReadingDialog(false)
             },
@@ -219,7 +226,8 @@ data class GlucoseScreenParams(
     val showAddGlucoseReadingDialog: State<Boolean>,
     val setShowAddGlucoseReadingDialog: (Boolean) -> Unit,
     val submitNewGlucoseReading: () -> Unit,
-    val deleteGlucoseReading: (GlucoseReading) -> Unit
+    val deleteGlucoseReading: (GlucoseReading) -> Unit,
+    val glucoseUnit: State<GlucoseUnit>
 )
 
 private val ALLOWED_READINGS_COLUMN_HEIGHT = 400.dp

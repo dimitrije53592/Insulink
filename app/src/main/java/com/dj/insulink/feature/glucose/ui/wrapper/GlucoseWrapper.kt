@@ -22,9 +22,14 @@ fun GlucoseWrapper(
     val newGlucoseReadingComment = viewModel.newGlucoseReadingComment.collectAsStateWithLifecycle()
     val showAddGlucoseReadingDialog = viewModel.showAddGlucoseReadingDialog.collectAsStateWithLifecycle()
     val selectedTimespan = viewModel.selectedTimespan.collectAsStateWithLifecycle()
+    val glucoseUnit = viewModel.glucoseUnit.collectAsStateWithLifecycle()
 
     LaunchedEffect(currentUser) {
         viewModel.fetchAllGlucoseReadingsForUserAndUpdateDatabase(currentUser?.uid)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshGlucoseUnit()
     }
 
     GlucoseScreen(
@@ -46,7 +51,8 @@ fun GlucoseWrapper(
             },
             deleteGlucoseReading = {
                 viewModel.deleteGlucoseReading(currentUser?.uid, it)
-            }
+            },
+            glucoseUnit = glucoseUnit
         )
     )
 }

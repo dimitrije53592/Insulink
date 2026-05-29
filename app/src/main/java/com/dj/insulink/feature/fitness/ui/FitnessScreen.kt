@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.fitness.domain.model.Sport
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 
 @Composable
 fun FitnessScreen(
@@ -50,7 +51,7 @@ fun FitnessScreen(
                 verticalArrangement = Arrangement.spacedBy(InsulinkTheme.dimens.commonSpacing8)
             ) {
                 items(params.sports.value) { sport ->
-                    SportActivityItem(sport = sport)
+                    SportActivityItem(sport = sport, glucoseUnit = params.glucoseUnit.value)
                 }
             }
         }
@@ -86,7 +87,8 @@ fun FitnessScreen(
             setGlucoseBefore = params.setGlucoseBefore,
             glucoseAfter = params.glucoseAfter,
             setGlucoseAfter = params.setGlucoseAfter,
-            onAddExerciseClick = params.onAddExerciseClick
+            onAddExerciseClick = params.onAddExerciseClick,
+            glucoseUnit = params.glucoseUnit.value
         )
     }
 }
@@ -94,6 +96,7 @@ fun FitnessScreen(
 @Composable
 private fun SportActivityItem(
     sport: Sport,
+    glucoseUnit: GlucoseUnit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -126,7 +129,7 @@ private fun SportActivityItem(
                 ) {
                     MetricCard(
                         label = stringResource(R.string.fitness_screen_average_drop_label),
-                        value = sport.avgDropPerHour,
+                        value = glucoseUnit.formatValue(sport.avgDropPerHour),
                         labelColor = InsulinkTheme.colors.averageDropTitle,
                         valueColor = InsulinkTheme.colors.averageDropLabel,
                         backgroundColor = InsulinkTheme.colors.averageDropBackground,
@@ -135,7 +138,7 @@ private fun SportActivityItem(
 
                     MetricCard(
                         label = stringResource(R.string.fitness_screen_last_drop_label),
-                        value = sport.lastDropPerHour,
+                        value = glucoseUnit.formatValue(sport.lastDropPerHour),
                         labelColor = InsulinkTheme.colors.lastDropTitle,
                         valueColor = InsulinkTheme.colors.lastDropLabel,
                         backgroundColor = InsulinkTheme.colors.lastDropBackground,
@@ -150,7 +153,7 @@ private fun SportActivityItem(
 @Composable
 private fun MetricCard(
     label: String,
-    value: Int,
+    value: String,
     labelColor: Color,
     valueColor: Color,
     backgroundColor: Color,
@@ -177,7 +180,7 @@ private fun MetricCard(
                 fontWeight = FontWeight.Medium
             )
             Text(
-                text = value.toString(),
+                text = value,
                 style = MaterialTheme.typography.labelLarge,
                 color = valueColor,
                 fontWeight = FontWeight.Bold
@@ -200,5 +203,6 @@ data class FitnessScreenParams(
     val setGlucoseBefore: (String) -> Unit,
     val glucoseAfter: State<String>,
     val setGlucoseAfter: (String) -> Unit,
-    val onAddExerciseClick: () -> Unit
+    val onAddExerciseClick: () -> Unit,
+    val glucoseUnit: State<GlucoseUnit>
 )

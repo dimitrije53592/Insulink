@@ -22,11 +22,16 @@ fun FitnessWrapper(
     val durationMinutes = viewModel.durationMinutes.collectAsStateWithLifecycle()
     val glucoseBefore = viewModel.glucoseBefore.collectAsStateWithLifecycle()
     val glucoseAfter = viewModel.glucoseAfter.collectAsStateWithLifecycle()
+    val glucoseUnit = viewModel.glucoseUnit.collectAsStateWithLifecycle()
 
     LaunchedEffect(currentUser) {
         currentUser?.uid?.let {
             viewModel.fetchAllExercisesForUserAndUpdateDatabase(it)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshGlucoseUnit()
     }
 
     FitnessScreen(
@@ -46,7 +51,8 @@ fun FitnessWrapper(
             setGlucoseAfter = viewModel::setGlucoseAfter,
             onAddExerciseClick = {
                 viewModel.onAddExerciseClick(currentUser?.uid)
-            }
+            },
+            glucoseUnit = glucoseUnit
         )
     )
 }

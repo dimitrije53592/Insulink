@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.friends.data.repository.FriendRepository
 import com.dj.insulink.feature.friends.domain.models.Friend
+import com.dj.insulink.feature.settings.data.SettingsPreferences
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -18,8 +21,16 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     private val friendRepository: FriendRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
+
+    private val _glucoseUnit = MutableStateFlow(settingsPreferences.getGlucoseUnit())
+    val glucoseUnit: StateFlow<GlucoseUnit> = _glucoseUnit.asStateFlow()
+
+    fun refreshGlucoseUnit() {
+        _glucoseUnit.value = settingsPreferences.getGlucoseUnit()
+    }
 
     val allFriendsForUser = authRepository.getCurrentUserFlow()
         .flatMapLatest { userId ->

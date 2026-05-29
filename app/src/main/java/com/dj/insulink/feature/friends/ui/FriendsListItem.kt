@@ -19,13 +19,15 @@ import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.friends.domain.models.Friend
 import com.dj.insulink.feature.glucose.ui.GlucoseLevelTag
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun FriendsListItem(
-    friend: Friend
+    friend: Friend,
+    glucoseUnit: GlucoseUnit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -77,7 +79,8 @@ fun FriendsListItem(
                 Text(
                     text = stringResource(
                         R.string.glucose_screen_value_display_label,
-                        friend.friendLastGlucoseReadingValue
+                        glucoseUnit.formatValue(friend.friendLastGlucoseReadingValue),
+                        glucoseUnit.suffix
                     ),
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface

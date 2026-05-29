@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 
 @Composable
@@ -22,9 +24,9 @@ fun GlucoseLevelIndicator(
 ) {
     if(glucoseLevel != null) {
         val (text, iconColor) = when {
-            glucoseLevel < 70 -> "Below target range" to InsulinkTheme.colors.glucoseLow
-            glucoseLevel <= 180 -> "In target range" to InsulinkTheme.colors.glucoseNormal
-            else -> "Above target range" to InsulinkTheme.colors.glucoseHigh
+            glucoseLevel < 70 -> stringResource(R.string.glucose_below_target) to InsulinkTheme.colors.glucoseLow
+            glucoseLevel <= 180 -> stringResource(R.string.glucose_in_target) to InsulinkTheme.colors.glucoseNormal
+            else -> stringResource(R.string.glucose_above_target) to InsulinkTheme.colors.glucoseHigh
         }
 
         Row(

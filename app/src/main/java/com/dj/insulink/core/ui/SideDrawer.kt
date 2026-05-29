@@ -79,6 +79,13 @@ fun SideDrawer(
                 icon = painterResource(R.drawable.ic_reports),
                 onClick = params.navigateToReports
             )
+            Spacer(Modifier.size(InsulinkTheme.dimens.commonSpacing16))
+            SideDrawerListItem(
+                title = stringResource(R.string.side_drawer_settings_title),
+                subtitle = stringResource(R.string.side_drawer_settings_subtitle),
+                icon = painterResource(R.drawable.ic_settings),
+                onClick = params.navigateToSettings
+            )
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = {
@@ -114,6 +121,7 @@ data class SideDrawerParams(
     val navigateToReminders: () -> Unit,
     val navigateToFriends: () -> Unit,
     val navigateToReports: () -> Unit,
+    val navigateToSettings: () -> Unit,
     val onSignOutClick: () -> Unit,
 )
 

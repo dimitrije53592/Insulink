@@ -45,14 +45,14 @@
 
     <!-- Glucose screen -->
     <string name="glucose_screen_latest_reading_label">Latest reading</string>
-    <string name="glucose_screen_value_display_label">%1$d mg/dL</string>
-    <string name="glucose_screen_empty_display_label">- mg/dL</string>
+    <string name="glucose_screen_value_display_label">%1$s %2$s</string>
+    <string name="glucose_screen_empty_display_label">- %1$s</string>
     <string name="glucose_screen_date_axis_title">Date &amp; Time</string>
     <string name="glucose_screen_no_readings_title">The list is empty!\nAdd some glucose readings</string>
 
     <!-- New reading modal -->
     <string name="new_reading_dialog_title">New glucose reading</string>
-    <string name="new_reading_text_field_label">Glucose (mg/dL)</string>
+    <string name="new_reading_text_field_label">Glucose (%1$s)</string>
     <string name="new_reading_comment_label">Comment</string>
     <string name="new_reading_valid_number_error">Enter a valid number</string>
     <string name="new_reading_cancel">Cancel</string>
@@ -145,6 +145,96 @@
     <string name="meals_screen_no_custom_ingredients_title">No custom ingredients yet</string>
     <string name="meals_screen_no_custom_ingredients_subtitle">Create your first custom ingredient</string>
 
+    <!-- Side drawer - Settings -->
+    <string name="side_drawer_settings_title">Settings</string>
+    <string name="side_drawer_settings_subtitle">App preferences</string>
+
+    <!-- Settings screen -->
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_description">Choose the app language</string>
+    <string name="settings_glucose_unit_title">Glucose Unit</string>
+    <string name="settings_glucose_unit_description">Choose how glucose values are displayed</string>
+
+    <!-- Navigation titles -->
+    <string name="nav_title_glucose">Glucose</string>
+    <string name="nav_title_meals">Meals</string>
+    <string name="nav_title_fitness">Fitness</string>
+    <string name="nav_title_reminders">Reminders</string>
+    <string name="nav_title_friends">Friends</string>
+    <string name="nav_title_report">Generate report</string>
+    <string name="nav_title_settings">Settings</string>
+
+    <!-- Glucose level tags -->
+    <string name="glucose_level_low">LOW</string>
+    <string name="glucose_level_normal">NORMAL</string>
+    <string name="glucose_level_high">HIGH</string>
+
+    <!-- Glucose level indicators -->
+    <string name="glucose_below_target">Below target range</string>
+    <string name="glucose_in_target">In target range</string>
+    <string name="glucose_above_target">Above target range</string>
+
+    <!-- Glucose reading timespan -->
+    <string name="timespan_all_readings">All readings</string>
+    <string name="timespan_last_24_hours">Last 24 hours</string>
+    <string name="timespan_last_3_days">Last 3 days</string>
+    <string name="timespan_last_week">Last week</string>
+    <string name="timespan_last_month">Last month</string>
+
+    <!-- Reminder types -->
+    <string name="reminder_type_meal">Meal reminder</string>
+    <string name="reminder_type_insulin">Insulin dose reminder</string>
+    <string name="reminder_type_blood_sugar">Blood sugar check reminder</string>
+
+    <!-- Auth errors -->
+    <string name="error_invalid_email">Email address you entered is not a valid email address.</string>
+    <string name="error_password_too_short">Password you entered has to have at least 8 characters.</string>
+    <string name="error_login_failed">Login failed! Please try again.</string>
+    <string name="error_enter_email">Please enter your email address.</string>
+    <string name="error_password_reset_sent">Password reset link sent to %1$s.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_google_sign_in_failed">Google Sign-In failed.</string>
+    <string name="error_email_already_registered">This email is already registered. Please try logging in.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_weak_password">Password is too weak. Please use a stronger password.</string>
+    <string name="error_registration_failed">Registration failed: %1$s</string>
+    <string name="error_required_fields_empty">Some required fields are left empty.</string>
+    <string name="error_passwords_dont_match">Passwords do not match.</string>
+    <string name="error_accept_terms">You must accept Terms of Service and Privacy Policy</string>
+
+    <!-- Report errors and actions -->
+    <string name="report_no_data">No data available for the selected date range</string>
+    <string name="report_pdf_failed">Failed to generate PDF</string>
+    <string name="report_unknown_error">Unknown error occurred</string>
+    <string name="report_open_pdf">Open PDF</string>
+    <string name="report_glucose_report">Glucose Report</string>
+    <string name="report_share_pdf">Share PDF Report</string>
+
+    <!-- PDF generator -->
+    <string name="pdf_title">InsuLink - Glucose Report</string>
+    <string name="pdf_report_period">Report Period: %1$s - %2$s</string>
+    <string name="pdf_generated_on">Generated on: %1$s</string>
+    <string name="pdf_summary_title">Summary Statistics</string>
+    <string name="pdf_total_readings">Total Readings:</string>
+    <string name="pdf_average_glucose">Average Glucose:</string>
+    <string name="pdf_minimum">Minimum:</string>
+    <string name="pdf_maximum">Maximum:</string>
+    <string name="pdf_time_in_range">Time in Range (%1$s–%2$s %3$s):</string>
+    <string name="pdf_readings_in_range">Readings in Range:</string>
+    <string name="pdf_detailed_readings">Detailed Readings</string>
+    <string name="pdf_date_time_header">Date &amp; Time</string>
+    <string name="pdf_glucose_header">Glucose (%1$s)</string>
+    <string name="pdf_comment_header">Comment</string>
+    <string name="pdf_footer">This report was generated by InsuLink app. Please consult with your healthcare provider for medical advice.</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Daily Reminders</string>
+    <string name="notification_default_title">Reminder</string>
+    <string name="notification_default_message">You have a reminder!</string>
+
+    <!-- Chart -->
+    <string name="chart_time_axis_title">Time</string>
+
     <!-- Fitness screen -->
     <string name="fitness_screen_sports_list_title">Your sports</string>
     <string name="fitness_screen_average_drop_label">Avg Drop/Hour</string>
@@ -155,8 +245,8 @@
     <string name="fitness_screen_add_duration_label">Duration</string>
     <string name="fitness_screen_hours_label">Hours</string>
     <string name="fitness_screen_minutes_label">Minutes</string>
-    <string name="fitness_screen_glucose_before_label">Glucose level before (mg/dL)</string>
-    <string name="fitness_screen_glucose_after_label">Glucose level after (mg/dL)</string>
+    <string name="fitness_screen_glucose_before_label">Glucose level before (%1$s)</string>
+    <string name="fitness_screen_glucose_after_label">Glucose level after (%1$s)</string>
 
 
 </resources>

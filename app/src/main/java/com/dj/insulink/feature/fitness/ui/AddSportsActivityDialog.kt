@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 
 @Composable
 fun AddSportsActivityDialog(
@@ -56,7 +57,8 @@ fun AddSportsActivityDialog(
     setGlucoseBefore: (String) -> Unit,
     glucoseAfter: State<String>,
     setGlucoseAfter: (String) -> Unit,
-    onAddExerciseClick: () -> Unit
+    onAddExerciseClick: () -> Unit,
+    glucoseUnit: GlucoseUnit
 ) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
 
@@ -277,7 +279,7 @@ fun AddSportsActivityDialog(
                             setGlucoseBefore(newValue)
                         }
                     },
-                    label = { Text(stringResource(R.string.fitness_screen_glucose_before_label)) },
+                    label = { Text(stringResource(R.string.fitness_screen_glucose_before_label, glucoseUnit.suffix)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
@@ -319,7 +321,7 @@ fun AddSportsActivityDialog(
                             setGlucoseAfter(newValue)
                         }
                     },
-                    label = { Text(stringResource(R.string.fitness_screen_glucose_after_label)) },
+                    label = { Text(stringResource(R.string.fitness_screen_glucose_after_label, glucoseUnit.suffix)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),

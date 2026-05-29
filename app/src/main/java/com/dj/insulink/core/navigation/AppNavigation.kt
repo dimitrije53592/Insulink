@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +45,7 @@ import com.dj.insulink.feature.friends.ui.wrapper.FriendsWrapper
 import com.dj.insulink.feature.glucose.ui.wrapper.GlucoseWrapper
 import com.dj.insulink.feature.reminders.ui.wrapper.RemindersWrapper
 import com.dj.insulink.feature.reports.ui.wrapper.ReportsWrapper
+import com.dj.insulink.feature.settings.ui.wrapper.SettingsWrapper
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -87,6 +89,10 @@ fun AppNavigation() {
                         navController.navigateTo(Screen.Report.route)
                         coroutineScope.launch { drawerState.close() }
                     },
+                    navigateToSettings = {
+                        navController.navigateTo(Screen.Settings.route)
+                        coroutineScope.launch { drawerState.close() }
+                    },
                     onSignOutClick = {
                         sharedViewModel.signOut(context)
                         navController.navigateTo(Screen.Login.route)
@@ -101,9 +107,9 @@ fun AppNavigation() {
                 if (currentDestinationRoute in Screen.topBarAndSideDrawerDestinations.map { it.route }) {
                     CenterAlignedTopAppBar(
                         title = {
-                            currentDestination?.title?.let {
+                            currentDestination?.titleRes?.takeIf { it != 0 }?.let {
                                 Text(
-                                    text = it,
+                                    text = stringResource(it),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -134,7 +140,7 @@ fun AppNavigation() {
                                 NavigationBarItem(
                                     selected = currentDestinationRoute == destination.route,
                                     label = {
-                                        Text(text = destination.title)
+                                        Text(text = if (destination.titleRes != 0) stringResource(destination.titleRes) else "")
                                     },
                                     icon = {
                                         Icon(imageVector = it, contentDescription = "")
@@ -214,6 +220,9 @@ fun AppNavigation() {
                 }
                 composable(Screen.Report.route) {
                     ReportsWrapper(currentUser = currentUser.value)
+                }
+                composable(Screen.Settings.route) {
+                    SettingsWrapper()
                 }
             }
         }

@@ -58,7 +58,7 @@ fun LoginWrapper(
                 Log.w("AppNavigation", "Google sign in failed", e)
                 Toast.makeText(
                     context,
-                    "Google Sign-In failed.",
+                    context.getString(R.string.error_google_sign_in_failed),
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.glucose.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
+import com.dj.insulink.feature.settings.data.SettingsPreferences
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +24,16 @@ import javax.inject.Inject
 @HiltViewModel
 class GlucoseViewModel @Inject constructor(
     private val glucoseReadingRepository: GlucoseReadingRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
+
+    private val _glucoseUnit = MutableStateFlow(settingsPreferences.getGlucoseUnit())
+    val glucoseUnit: StateFlow<GlucoseUnit> = _glucoseUnit.asStateFlow()
+
+    fun refreshGlucoseUnit() {
+        _glucoseUnit.value = settingsPreferences.getGlucoseUnit()
+    }
 
     private val _newGlucoseReadingTimestamp = MutableStateFlow(System.currentTimeMillis())
     val newGlucoseReadingTimestamp = _newGlucoseReadingTimestamp.asStateFlow()
@@ -79,13 +89,19 @@ class GlucoseViewModel @Inject constructor(
     fun submitNewGlucoseReading(userId: String?) {
         viewModelScope.launch {
             userId?.let {
+                val enteredValue = newGlucoseReadingValue.value.toDoubleOrNull() ?: return@launch
+                val storedValue = if (_glucoseUnit.value == GlucoseUnit.MMOL_L) {
+                    GlucoseUnit.convertMmolLToMgDl(enteredValue).toInt()
+                } else {
+                    enteredValue.toInt()
+                }
                 glucoseReadingRepository.insert(
                     userId = userId,
                     reading = GlucoseReading(
                         id = 0,
                         userId = userId,
                         timestamp = newGlucoseReadingTimestamp.value,
-                        value = newGlucoseReadingValue.value.toInt(),
+                        value = storedValue,
                         comment = newGlucoseReadingComment.value
                     )
                 )
@@ -146,18 +162,12 @@ class GlucoseViewModel @Inject constructor(
     }
 }
 
-enum class GlucoseReadingTimespan(val displayName: String, val milliseconds: Long) {
-    ALL_READINGS("All readings", Long.MAX_VALUE),
-    LAST_DAY("Last 24 hours", 24 * 60 * 60 * 1000L),
-    LAST_3_DAYS("Last 3 days", 72 * 60 * 60 * 1000L),
-    LAST_WEEK("Last week", 7 * 24 * 60 * 60 * 1000L),
-    LAST_MONTH("Last month", 30 * 24 * 60 * 60 * 1000L);
-
-    companion object {
-        fun fromDisplayName(displayName: String): GlucoseReadingTimespan? {
-            return entries.find { it.displayName == displayName }
-        }
-    }
+enum class GlucoseReadingTimespan(val displayNameRes: Int, val milliseconds: Long) {
+    ALL_READINGS(com.dj.insulink.R.string.timespan_all_readings, Long.MAX_VALUE),
+    LAST_DAY(com.dj.insulink.R.string.timespan_last_24_hours, 24 * 60 * 60 * 1000L),
+    LAST_3_DAYS(com.dj.insulink.R.string.timespan_last_3_days, 72 * 60 * 60 * 1000L),
+    LAST_WEEK(com.dj.insulink.R.string.timespan_last_week, 7 * 24 * 60 * 60 * 1000L),
+    LAST_MONTH(com.dj.insulink.R.string.timespan_last_month, 30 * 24 * 60 * 60 * 1000L);
 }
 
 private const val COMMENT_MAXIMUM_LENGTH = 20

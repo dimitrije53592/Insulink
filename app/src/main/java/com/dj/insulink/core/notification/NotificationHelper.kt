@@ -16,7 +16,6 @@ import com.dj.insulink.R
 class NotificationHelper(private val context: Context) {
     companion object {
         const val CHANNEL_ID = "reminder_channel"
-        const val CHANNEL_NAME = "Daily Reminders"
     }
 
     init {
@@ -26,7 +25,7 @@ class NotificationHelper(private val context: Context) {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            context.getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_HIGH
         )
 

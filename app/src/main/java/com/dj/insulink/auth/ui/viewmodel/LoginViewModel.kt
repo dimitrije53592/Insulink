@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dj.insulink.R
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.auth.domain.models.UserLogin
 import com.google.firebase.auth.AuthCredential
@@ -79,10 +80,10 @@ class LoginViewModel @Inject constructor(
 
     private fun isLoginFormValid(): Boolean {
         if (!isEmailValid()) {
-            _errorMessage.value = "Email address you entered is not a valid email address."
+            _errorMessage.value = context.getString(R.string.error_invalid_email)
             return false
         } else if (!isPasswordLongEnough()) {
-            _errorMessage.value = "Password you entered has to have at least 8 characters."
+            _errorMessage.value = context.getString(R.string.error_password_too_short)
             return false
         } else {
             return true
@@ -116,7 +117,7 @@ class LoginViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Login failed with exception.", e)
-                _errorMessage.value = "Login failed! Please try again."
+                _errorMessage.value = context.getString(R.string.error_login_failed)
                 _showErrorMessage.value = true
                 _loginSuccess.value = false
             } finally {
@@ -127,8 +128,8 @@ class LoginViewModel @Inject constructor(
 
     fun sendPasswordReset() {
         if (_email.value.isBlank()) {
-            Toast.makeText(context, "Please enter your email address.", Toast.LENGTH_SHORT).show()
-            _passwordResetState.update { it.copy(errorMessage = "Please enter your email address.") }
+            Toast.makeText(context, context.getString(R.string.error_enter_email), Toast.LENGTH_SHORT).show()
+            _passwordResetState.update { it.copy(errorMessage = context.getString(R.string.error_enter_email)) }
             return
         }
 
@@ -143,10 +144,10 @@ class LoginViewModel @Inject constructor(
             try {
                 authRepository.sendPasswordResetEmail(_email.value)
                 _passwordResetState.update {
-                    it.copy(isLoading = false, successMessage = "Password reset link sent to ${_email.value}.")
+                    it.copy(isLoading = false, successMessage = context.getString(R.string.error_password_reset_sent, _email.value))
                 }
             } catch (e: Exception) {
-                val msg = e.message ?: "An unknown error occurred."
+                val msg = e.message ?: context.getString(R.string.error_unknown)
                 _passwordResetState.update {
                     it.copy(isLoading = false, errorMessage = msg)
                 }
@@ -163,7 +164,7 @@ class LoginViewModel @Inject constructor(
                 _loginSuccess.value = true
             } catch (e: Exception) {
                 Log.e(TAG, "Google Sign-In failed with exception.", e)
-                _errorMessage.value = "Google Sign-In failed: ${e.message}"
+                _errorMessage.value = context.getString(R.string.error_google_sign_in_failed)
                 _showErrorMessage.value = true
                 _loginSuccess.value = false
             } finally {

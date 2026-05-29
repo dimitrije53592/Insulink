@@ -6,6 +6,8 @@ import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.fitness.data.repository.ExerciseRepository
 import com.dj.insulink.feature.fitness.domain.model.Exercise
 import com.dj.insulink.feature.fitness.domain.model.Sport
+import com.dj.insulink.feature.settings.data.SettingsPreferences
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +24,16 @@ import javax.inject.Inject
 @HiltViewModel
 class FitnessViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
+
+    private val _glucoseUnit = MutableStateFlow(settingsPreferences.getGlucoseUnit())
+    val glucoseUnit: StateFlow<GlucoseUnit> = _glucoseUnit.asStateFlow()
+
+    fun refreshGlucoseUnit() {
+        _glucoseUnit.value = settingsPreferences.getGlucoseUnit()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allExercisesForUser: StateFlow<List<Exercise>> = authRepository.getCurrentUserFlow()
@@ -95,6 +105,20 @@ class FitnessViewModel @Inject constructor(
     fun onAddExerciseClick(userId: String?) {
         viewModelScope.launch {
             userId?.let {
+                val beforeValue = _glucoseBefore.value.toDoubleOrNull() ?: 0.0
+                val afterValue = _glucoseAfter.value.toDoubleOrNull() ?: 0.0
+
+                val storedBefore = if (_glucoseUnit.value == GlucoseUnit.MMOL_L) {
+                    GlucoseUnit.convertMmolLToMgDl(beforeValue).toInt()
+                } else {
+                    beforeValue.toInt()
+                }
+                val storedAfter = if (_glucoseUnit.value == GlucoseUnit.MMOL_L) {
+                    GlucoseUnit.convertMmolLToMgDl(afterValue).toInt()
+                } else {
+                    afterValue.toInt()
+                }
+
                 exerciseRepository.insert(
                     userId = userId,
                     exercise = Exercise(
@@ -103,8 +127,8 @@ class FitnessViewModel @Inject constructor(
                         sportName = _activityName.value,
                         durationHours = _durationHours.value.toIntOrNull() ?: 0,
                         durationMinutes = _durationMinutes.value.toIntOrNull() ?: 0,
-                        glucoseBefore = _glucoseBefore.value.toIntOrNull() ?: 0,
-                        glucoseAfter = _glucoseAfter.value.toIntOrNull() ?: 0
+                        glucoseBefore = storedBefore,
+                        glucoseAfter = storedAfter
                     )
                 )
             }

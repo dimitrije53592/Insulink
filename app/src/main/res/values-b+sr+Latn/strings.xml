@@ -1,0 +1,250 @@
+<resources>
+    <string name="app_name">Insulink</string>
+    <!--    Login   -->
+    <string name="login_welcome_back">Dobrodošli nazad</string>
+    <string name="login_insulink">Insulink</string>
+    <string name="login_description">Vaš zdravstveni pratilac</string>
+    <string name="login_email_text">Email adresa</string>
+    <string name="login_enter_email_text">Email adresa</string>
+    <string name="login_enter_password_text">Lozinka</string>
+    <string name="login_password_text">Lozinka</string>
+    <string name="login_sign_in">Prijavite se</string>
+    <string name="login_sign_up">Registrujte se</string>
+    <string name="login_forgot_password">Zaboravili ste lozinku?</string>
+    <string name="login_continue_with">Ili nastavite sa</string>
+    <string name="login_dont_have_account">Nemate nalog?</string>
+    <string name="login_screen_google_label">Google</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password_title">Resetujte lozinku.</string>
+    <string name="forgot_password_send_reset_link">Pošalji link za reset</string>
+    <string name="forgot_password_email_description">Unesite email i poslaćemo vam link za resetovanje lozinke.</string>
+
+    <!-- Registration -->
+    <string name="registration_screen_title">Kreiranje naloga</string>
+    <string name="registration_screen_first_name_label">Ime</string>
+    <string name="registration_screen_last_name_label">Prezime</string>
+    <string name="registration_screen_email_address_label">Email adresa</string>
+    <string name="registration_screen_password_label">Lozinka</string>
+    <string name="registration_screen_confirm_password_label">Potvrdite lozinku</string>
+    <string name="registration_screen_terms_of_service_label">Slažem se sa Uslovima korišćenja i Politikom privatnosti</string>
+    <string name="registration_screen_submit_button_label">Kreiraj nalog</string>
+    <string name="registration_screen_existing_account_label">Već imate nalog?</string>
+    <string name="registration_screen_sign_in_redirect_label">Prijavite se</string>
+    <string name="registration_screen_or_continue_with_label">Ili nastavite sa</string>
+    <string name="registration_screen_google_label">Google</string>
+
+    <!-- Side drawer -->
+    <string name="side_drawer_sign_out_button_label">Odjavi se</string>
+    <string name="side_drawer_reminders_title">Podsetnici</string>
+    <string name="side_drawer_reminders_subtitle">Upravljajte zadacima</string>
+    <string name="side_drawer_friends_title">Prijatelji</string>
+    <string name="side_drawer_friends_subtitle">Povežite se sa drugima</string>
+    <string name="side_drawer_reports_title">Izveštaj</string>
+    <string name="side_drawer_reports_subtitle">Pogledajte analitiku</string>
+
+    <!-- Side drawer - Settings -->
+    <string name="side_drawer_settings_title">Podešavanja</string>
+    <string name="side_drawer_settings_subtitle">Podešavanja aplikacije</string>
+
+    <!-- Settings screen -->
+    <string name="settings_language_title">Jezik</string>
+    <string name="settings_language_description">Izaberite jezik aplikacije</string>
+    <string name="settings_glucose_unit_title">Jedinica za glukozu</string>
+    <string name="settings_glucose_unit_description">Izaberite kako se prikazuju vrednosti glukoze</string>
+
+    <!-- Glucose screen -->
+    <string name="glucose_screen_latest_reading_label">Poslednje merenje</string>
+    <string name="glucose_screen_value_display_label">%1$s %2$s</string>
+    <string name="glucose_screen_empty_display_label">- %1$s</string>
+    <string name="glucose_screen_date_axis_title">Datum i vreme</string>
+    <string name="glucose_screen_no_readings_title">Lista je prazna!\nDodajte merenja glukoze</string>
+
+    <!-- New reading modal -->
+    <string name="new_reading_dialog_title">Novo merenje glukoze</string>
+    <string name="new_reading_text_field_label">Glukoza (%1$s)</string>
+    <string name="new_reading_comment_label">Komentar</string>
+    <string name="new_reading_valid_number_error">Unesite validan broj</string>
+    <string name="new_reading_cancel">Otkaži</string>
+    <string name="new_reading_save">Sačuvaj</string>
+    <string name="new_reading_ok">OK</string>
+    <string name="new_reading_select_time_label">Izaberite vreme</string>
+    <string name="select_date_label">Izaberite datum</string>
+    <string name="select_time_label">Izaberite vreme</string>
+    <string name="save">Sačuvaj</string>
+    <string name="cancel">Otkaži</string>
+    <string name="time_picker_title">Izaberite vreme</string>
+
+    <!-- Friends screen -->
+    <string name="friends_screen_add_new_friend_button_label">Dodaj novog prijatelja</string>
+    <string name="friends_screen_friends_list_label">Prijatelji (%1$d)</string>
+    <string name="friends_screen_friend_code_label">Vaš jedinstveni kod za deljenje</string>
+    <string name="friends_screen_enter_code_label">Unesite kod prijatelja ovde</string>
+    <string name="friends_screen_add_friend_label">Dodaj prijatelja</string>
+    <string name="friends_screen_empty_reading_label">Poslednje merenje: -</string>
+    <string name="friends_screen_reading_label">Poslednje merenje: %s</string>
+    <string name="friends_screen_dash_label">-</string>
+
+    <!-- Report screen -->
+    <string name="report_screen_title">Izveštaj o glukozi</string>
+    <string name="report_screen_subtitle">Generišite PDF izveštaj merenja glukoze za bilo koji datumski raspon</string>
+    <string name="report_screen_start_date_label">Početni datum</string>
+    <string name="report_screen_end_date_label">Krajnji datum</string>
+    <string name="report_screen_generate_button_label">Generiši izveštaj</string>
+    <string name="report_screen_preview_button_label">Pregled</string>
+    <string name="report_screen_share_button_label">Podeli</string>
+
+    <!-- Reminders screen -->
+    <string name="reminders_screen_today_label">Danas</string>
+    <string name="reminders_screen_upcoming_label">Predstojeci</string>
+    <string name="reminders_screen_add_new_reminder_dialog_title">Dodaj novi podsetnik</string>
+    <string name="reminders_screen_add_new_reminder_title_label">Postavite naslov</string>
+    <string name="reminders_screen_add_new_reminder_select_type_label">Izaberite tip</string>
+    <string name="reminders_screen_add_new_reminder_select_time_label">Izaberite vreme</string>
+
+    <!-- Meals screen -->
+    <string name="meals_screen_title">Obroci</string>
+    <string name="meals_screen_today_label">Danas</string>
+    <string name="meals_screen_daily_nutrition_title">Dnevna ishrana</string>
+    <string name="meals_screen_calories_label">Kalorije</string>
+    <string name="meals_screen_carbs_label">Ugljeni hidrati</string>
+    <string name="meals_screen_protein_label">Proteini</string>
+    <string name="meals_screen_fat_label">Masti</string>
+    <string name="meals_screen_fats_label">Masti</string>
+    <string name="meals_screen_carb_label">UH</string>
+    <string name="meals_screen_sugar_label">Šećer</string>
+    <string name="meals_screen_salt_label">So</string>
+    <string name="meals_screen_cal_value">%1$d kal</string>
+    <string name="meals_screen_grams_value">%1$sg</string>
+    <string name="meals_screen_salt_value">%1$.2f g</string>
+    <string name="meals_screen_protein_value">Proteini: %1$sg</string>
+    <string name="meals_screen_carbs_value">UH: %1$sg</string>
+    <string name="meals_screen_cal_per_100g">%1$d kal na 100g</string>
+    <string name="meals_screen_cal_per_grams">%1$d kal na %2$dg</string>
+    <string name="meals_screen_quantity_label">Količina (g)</string>
+    <string name="meals_screen_nutrition_summary">P: %1$sg | UH: %2$sg | M: %3$sg</string>
+
+    <!-- Meals - Add Meal Dialog -->
+    <string name="meals_screen_add_meal_title">Dodaj obrok</string>
+    <string name="meals_screen_meal_name_label">Naziv obroka</string>
+    <string name="meals_screen_meal_name_placeholder">Unesite naziv obroka</string>
+    <string name="meals_screen_add_ingredients_label">Dodaj sastojke</string>
+    <string name="meals_screen_search_ingredients_placeholder">Pretraži sastojke…</string>
+    <string name="meals_screen_added_ingredients_title">Dodati sastojci</string>
+    <string name="meals_screen_no_ingredients_title">Još nema dodatih sastojaka</string>
+    <string name="meals_screen_no_ingredients_subtitle">Pretražite i dodajte sastojke iznad</string>
+    <string name="meals_screen_nutrition_facts_title">Nutritivne vrednosti</string>
+    <string name="meals_screen_comment_label">Komentar (opciono)</string>
+    <string name="meals_screen_comment_placeholder">Dodajte komentar o ovom obroku</string>
+    <string name="meals_screen_save_meal">Sačuvaj obrok</string>
+
+    <!-- Meals - Create Ingredient Dialog -->
+    <string name="meals_screen_create_ingredient_title">Kreiraj prilagođeni sastojak</string>
+    <string name="meals_screen_nutrition_info_title">Nutritivne informacije (na 100g)</string>
+    <string name="meals_screen_ingredient_name_label">Naziv sastojka</string>
+    <string name="meals_screen_calories_input_label">Kalorije</string>
+    <string name="meals_screen_protein_input_label">Proteini (g)</string>
+    <string name="meals_screen_carbs_input_label">Ugljeni hidrati (g)</string>
+    <string name="meals_screen_fat_input_label">Masti (g)</string>
+    <string name="meals_screen_sugar_input_label">Šećer (g)</string>
+    <string name="meals_screen_salt_input_label">So (g)</string>
+    <string name="meals_screen_create_ingredient_button">Kreiraj sastojak</string>
+
+    <!-- Meals - My Ingredients Dialog -->
+    <string name="meals_screen_my_ingredients_title">Moji sastojci</string>
+    <string name="meals_screen_no_custom_ingredients_title">Još nema prilagođenih sastojaka</string>
+    <string name="meals_screen_no_custom_ingredients_subtitle">Kreirajte svoj prvi prilagođeni sastojak</string>
+
+    <!-- Navigation titles -->
+    <string name="nav_title_glucose">Glukoza</string>
+    <string name="nav_title_meals">Obroci</string>
+    <string name="nav_title_fitness">Fitnes</string>
+    <string name="nav_title_reminders">Podsetnici</string>
+    <string name="nav_title_friends">Prijatelji</string>
+    <string name="nav_title_report">Generiši izveštaj</string>
+    <string name="nav_title_settings">Podešavanja</string>
+
+    <!-- Glucose level tags -->
+    <string name="glucose_level_low">NIZAK</string>
+    <string name="glucose_level_normal">NORMALAN</string>
+    <string name="glucose_level_high">VISOK</string>
+
+    <!-- Glucose level indicators -->
+    <string name="glucose_below_target">Ispod ciljnog opsega</string>
+    <string name="glucose_in_target">U ciljnom opsegu</string>
+    <string name="glucose_above_target">Iznad ciljnog opsega</string>
+
+    <!-- Glucose reading timespan -->
+    <string name="timespan_all_readings">Sva merenja</string>
+    <string name="timespan_last_24_hours">Poslednjih 24 sata</string>
+    <string name="timespan_last_3_days">Poslednja 3 dana</string>
+    <string name="timespan_last_week">Prošla nedelja</string>
+    <string name="timespan_last_month">Prošli mesec</string>
+
+    <!-- Reminder types -->
+    <string name="reminder_type_meal">Podsetnik za obrok</string>
+    <string name="reminder_type_insulin">Podsetnik za dozu insulina</string>
+    <string name="reminder_type_blood_sugar">Podsetnik za proveru šećera u krvi</string>
+
+    <!-- Auth errors -->
+    <string name="error_invalid_email">Email adresa koju ste uneli nije validna.</string>
+    <string name="error_password_too_short">Lozinka mora imati najmanje 8 karaktera.</string>
+    <string name="error_login_failed">Prijava neuspešna! Pokušajte ponovo.</string>
+    <string name="error_enter_email">Molimo unesite email adresu.</string>
+    <string name="error_password_reset_sent">Link za resetovanje lozinke poslat na %1$s.</string>
+    <string name="error_unknown">Došlo je do nepoznate greške.</string>
+    <string name="error_google_sign_in_failed">Google prijava neuspešna.</string>
+    <string name="error_email_already_registered">Ovaj email je već registrovan. Pokušajte da se prijavite.</string>
+    <string name="error_network">Greška mreže. Proverite konekciju.</string>
+    <string name="error_weak_password">Lozinka je preslaba. Koristite jaču lozinku.</string>
+    <string name="error_registration_failed">Registracija neuspešna: %1$s</string>
+    <string name="error_required_fields_empty">Neka obavezna polja su prazna.</string>
+    <string name="error_passwords_dont_match">Lozinke se ne poklapaju.</string>
+    <string name="error_accept_terms">Morate prihvatiti Uslove korišćenja i Politiku privatnosti</string>
+
+    <!-- Report errors and actions -->
+    <string name="report_no_data">Nema podataka za izabrani datumski raspon</string>
+    <string name="report_pdf_failed">Generisanje PDF-a neuspešno</string>
+    <string name="report_unknown_error">Došlo je do nepoznate greške</string>
+    <string name="report_open_pdf">Otvori PDF</string>
+    <string name="report_glucose_report">Izveštaj o glukozi</string>
+    <string name="report_share_pdf">Podeli PDF izveštaj</string>
+
+    <!-- PDF generator -->
+    <string name="pdf_title">InsuLink - Izveštaj o glukozi</string>
+    <string name="pdf_report_period">Period izveštaja: %1$s - %2$s</string>
+    <string name="pdf_generated_on">Generisano: %1$s</string>
+    <string name="pdf_summary_title">Sumarni podaci</string>
+    <string name="pdf_total_readings">Ukupno merenja:</string>
+    <string name="pdf_average_glucose">Prosečna glukoza:</string>
+    <string name="pdf_minimum">Minimum:</string>
+    <string name="pdf_maximum">Maksimum:</string>
+    <string name="pdf_time_in_range">Vreme u opsegu (%1$s–%2$s %3$s):</string>
+    <string name="pdf_readings_in_range">Merenja u opsegu:</string>
+    <string name="pdf_detailed_readings">Detaljna merenja</string>
+    <string name="pdf_date_time_header">Datum i vreme</string>
+    <string name="pdf_glucose_header">Glukoza (%1$s)</string>
+    <string name="pdf_comment_header">Komentar</string>
+    <string name="pdf_footer">Ovaj izveštaj je generisan od strane InsuLink aplikacije. Konsultujte se sa lekarom za medicinski savet.</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Dnevni podsetnici</string>
+    <string name="notification_default_title">Podsetnik</string>
+    <string name="notification_default_message">Imate podsetnik!</string>
+
+    <!-- Chart -->
+    <string name="chart_time_axis_title">Vreme</string>
+
+    <!-- Fitness screen -->
+    <string name="fitness_screen_sports_list_title">Vaši sportovi</string>
+    <string name="fitness_screen_average_drop_label">Prosečan pad/sat</string>
+    <string name="fitness_screen_last_drop_label">Poslednji pad/sat</string>
+    <string name="fitness_screen_last_time_label">Poslednji: %1$s</string>
+    <string name="fitness_screen_add_new_exercise_dialog_title">Dodaj vežbu</string>
+    <string name="fitness_screen_add_sport_name_label">Aktivnost</string>
+    <string name="fitness_screen_add_duration_label">Trajanje</string>
+    <string name="fitness_screen_hours_label">Sati</string>
+    <string name="fitness_screen_minutes_label">Minuti</string>
+    <string name="fitness_screen_glucose_before_label">Nivo glukoze pre (%1$s)</string>
+    <string name="fitness_screen_glucose_after_label">Nivo glukoze posle (%1$s)</string>
+</resources>
