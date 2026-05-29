@@ -55,14 +55,14 @@
 
     <!-- Glucose screen -->
     <string name="glucose_screen_latest_reading_label">Poslednje merenje</string>
-    <string name="glucose_screen_value_display_label">%1$d mg/dL</string>
-    <string name="glucose_screen_empty_display_label">- mg/dL</string>
+    <string name="glucose_screen_value_display_label">%1$s %2$s</string>
+    <string name="glucose_screen_empty_display_label">- %1$s</string>
     <string name="glucose_screen_date_axis_title">Datum i vreme</string>
     <string name="glucose_screen_no_readings_title">Lista je prazna!\nDodajte merenja glukoze</string>
 
     <!-- New reading modal -->
     <string name="new_reading_dialog_title">Novo merenje glukoze</string>
-    <string name="new_reading_text_field_label">Glukoza (mg/dL)</string>
+    <string name="new_reading_text_field_label">Glukoza (%1$s)</string>
     <string name="new_reading_comment_label">Komentar</string>
     <string name="new_reading_valid_number_error">Unesite validan broj</string>
     <string name="new_reading_cancel">Otkaži</string>
@@ -219,11 +219,11 @@
     <string name="pdf_average_glucose">Prosečna glukoza:</string>
     <string name="pdf_minimum">Minimum:</string>
     <string name="pdf_maximum">Maksimum:</string>
-    <string name="pdf_time_in_range">Vreme u opsegu (70-180):</string>
+    <string name="pdf_time_in_range">Vreme u opsegu (%1$s–%2$s %3$s):</string>
     <string name="pdf_readings_in_range">Merenja u opsegu:</string>
     <string name="pdf_detailed_readings">Detaljna merenja</string>
     <string name="pdf_date_time_header">Datum i vreme</string>
-    <string name="pdf_glucose_header">Glukoza (mg/dL)</string>
+    <string name="pdf_glucose_header">Glukoza (%1$s)</string>
     <string name="pdf_comment_header">Komentar</string>
     <string name="pdf_footer">Ovaj izveštaj je generisan od strane InsuLink aplikacije. Konsultujte se sa lekarom za medicinski savet.</string>
 
@@ -245,6 +245,6 @@
     <string name="fitness_screen_add_duration_label">Trajanje</string>
     <string name="fitness_screen_hours_label">Sati</string>
     <string name="fitness_screen_minutes_label">Minuti</string>
-    <string name="fitness_screen_glucose_before_label">Nivo glukoze pre (mg/dL)</string>
-    <string name="fitness_screen_glucose_after_label">Nivo glukoze posle (mg/dL)</string>
+    <string name="fitness_screen_glucose_before_label">Nivo glukoze pre (%1$s)</string>
+    <string name="fitness_screen_glucose_after_label">Nivo glukoze posle (%1$s)</string>
 </resources>

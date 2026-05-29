@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.dimens
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,6 +34,7 @@ import java.util.Locale
 @Composable
 fun GlucoseReadingItem(
     glucoseReading: GlucoseReading,
+    glucoseUnit: GlucoseUnit,
     onSwipeFromStartToEnd: () -> Unit
 ) {
     var hasBeenSwiped by remember { mutableStateOf(false) }
@@ -57,13 +59,14 @@ fun GlucoseReadingItem(
             .padding(horizontal = MaterialTheme.dimens.commonPadding12),
         backgroundContent = {}
     ) {
-        GlucoseReadingItemContent(glucoseReading = glucoseReading)
+        GlucoseReadingItemContent(glucoseReading = glucoseReading, glucoseUnit = glucoseUnit)
     }
 }
 
 @Composable
 private fun GlucoseReadingItemContent(
-    glucoseReading: GlucoseReading
+    glucoseReading: GlucoseReading,
+    glucoseUnit: GlucoseUnit
 ) {
 
     Row(
@@ -81,7 +84,8 @@ private fun GlucoseReadingItemContent(
                 Text(
                     text = stringResource(
                         R.string.glucose_screen_value_display_label,
-                        glucoseReading.value
+                        glucoseUnit.formatValue(glucoseReading.value),
+                        glucoseUnit.suffix
                     ),
                     fontWeight = FontWeight.Bold
                 )

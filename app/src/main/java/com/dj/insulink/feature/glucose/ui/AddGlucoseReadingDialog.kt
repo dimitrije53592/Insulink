@@ -44,6 +44,7 @@ import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.R
 import com.dj.insulink.core.utils.combineDateAndTime
 import com.dj.insulink.core.utils.combineTimeWithDate
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -58,6 +59,7 @@ fun AddGlucoseReadingDialog(
     setNewGlucoseReadingValue: (String) -> Unit,
     newGlucoseReadingComment: State<String>,
     setNewGlucoseReadingComment: (String) -> Unit,
+    glucoseUnit: GlucoseUnit,
     onDismissRequest: () -> Unit,
     onSaveClicked: () -> Unit
 ) {
@@ -243,9 +245,13 @@ fun AddGlucoseReadingDialog(
                 OutlinedTextField(
                     value = newGlucoseReadingValue.value,
                     onValueChange = { newValue ->
-                        setNewGlucoseReadingValue(newValue.filter { it.isDigit() })
+                        if (glucoseUnit == GlucoseUnit.MMOL_L) {
+                            setNewGlucoseReadingValue(newValue.filter { it.isDigit() || it == '.' })
+                        } else {
+                            setNewGlucoseReadingValue(newValue.filter { it.isDigit() })
+                        }
                     },
-                    label = { Text(stringResource(R.string.new_reading_text_field_label)) },
+                    label = { Text(stringResource(R.string.new_reading_text_field_label, glucoseUnit.suffix)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),

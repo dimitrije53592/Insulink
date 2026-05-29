@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.dj.insulink.auth.data.AuthRepository
 import com.dj.insulink.feature.glucose.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
+import com.dj.insulink.feature.settings.data.SettingsPreferences
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +24,16 @@ import javax.inject.Inject
 @HiltViewModel
 class GlucoseViewModel @Inject constructor(
     private val glucoseReadingRepository: GlucoseReadingRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
+
+    private val _glucoseUnit = MutableStateFlow(settingsPreferences.getGlucoseUnit())
+    val glucoseUnit: StateFlow<GlucoseUnit> = _glucoseUnit.asStateFlow()
+
+    fun refreshGlucoseUnit() {
+        _glucoseUnit.value = settingsPreferences.getGlucoseUnit()
+    }
 
     private val _newGlucoseReadingTimestamp = MutableStateFlow(System.currentTimeMillis())
     val newGlucoseReadingTimestamp = _newGlucoseReadingTimestamp.asStateFlow()
@@ -79,13 +89,19 @@ class GlucoseViewModel @Inject constructor(
     fun submitNewGlucoseReading(userId: String?) {
         viewModelScope.launch {
             userId?.let {
+                val enteredValue = newGlucoseReadingValue.value.toDoubleOrNull() ?: return@launch
+                val storedValue = if (_glucoseUnit.value == GlucoseUnit.MMOL_L) {
+                    GlucoseUnit.convertMmolLToMgDl(enteredValue).toInt()
+                } else {
+                    enteredValue.toInt()
+                }
                 glucoseReadingRepository.insert(
                     userId = userId,
                     reading = GlucoseReading(
                         id = 0,
                         userId = userId,
                         timestamp = newGlucoseReadingTimestamp.value,
-                        value = newGlucoseReadingValue.value.toInt(),
+                        value = storedValue,
                         comment = newGlucoseReadingComment.value
                     )
                 )

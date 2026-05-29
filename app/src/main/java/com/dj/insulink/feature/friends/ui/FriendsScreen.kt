@@ -37,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import com.dj.insulink.R
 import com.dj.insulink.core.ui.theme.InsulinkTheme
 import com.dj.insulink.feature.friends.domain.models.Friend
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 
 @Composable
 fun FriendsScreen(
@@ -106,7 +107,7 @@ fun FriendsScreen(
                 .padding(horizontal = InsulinkTheme.dimens.commonPadding12)
         ) {
             params.friendsList.forEach {
-                FriendsListItem(friend = it)
+                FriendsListItem(friend = it, glucoseUnit = params.glucoseUnit)
             }
         }
     }
@@ -243,5 +244,6 @@ data class FriendsScreenParams(
     val enteredCode: String,
     val setShowAddNewFriendDialog: (Boolean) -> Unit,
     val setEnteredCode: (String) -> Unit,
-    val onAddFriendClick: () -> Unit
+    val onAddFriendClick: () -> Unit,
+    val glucoseUnit: GlucoseUnit
 )

@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import com.dj.insulink.R
 import com.dj.insulink.feature.glucose.ui.viewmodel.GlucoseReadingTimespan
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
@@ -34,7 +35,8 @@ fun DynamicLineChart(
     xValues: List<Long>,
     yValues: List<Int>,
     timespan: GlucoseReadingTimespan,
-    modifier: Modifier
+    modifier: Modifier,
+    glucoseUnit: GlucoseUnit = GlucoseUnit.MG_DL
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val scrollState = rememberVicoScrollState(
@@ -62,13 +64,21 @@ fun DynamicLineChart(
         }
     }
 
-    LaunchedEffect(xValues, yValues, timespan) {
-        if (xValues.isNotEmpty() && yValues.isNotEmpty()) {
+    val convertedYValues = remember(yValues, glucoseUnit) {
+        if (glucoseUnit == GlucoseUnit.MMOL_L) {
+            yValues.map { GlucoseUnit.convertMgDlToMmolL(it.toDouble()).toFloat() }
+        } else {
+            yValues.map { it.toFloat() }
+        }
+    }
+
+    LaunchedEffect(xValues, convertedYValues, timespan) {
+        if (xValues.isNotEmpty() && convertedYValues.isNotEmpty()) {
             modelProducer.runTransaction {
                 lineSeries {
                     series(
                         x = xValues.indices.map { it.toFloat() },
-                        y = yValues.map { it.toFloat() }
+                        y = convertedYValues
                     )
                 }
             }
@@ -81,7 +91,7 @@ fun DynamicLineChart(
         chart = rememberCartesianChart(
             rememberLineCartesianLayer(),
             startAxis = VerticalAxis.rememberStart(
-                title = stringResource(R.string.new_reading_text_field_label),
+                title = stringResource(R.string.new_reading_text_field_label, glucoseUnit.suffix),
                 titleComponent = rememberTextComponent(
                     color = MaterialTheme.colorScheme.onBackground
                 )

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.dj.insulink.R
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -32,7 +33,8 @@ class GlucoseReportPdfGenerator(private val context: Context) {
         readings: List<GlucoseReading>,
         startDate: Long,
         endDate: Long,
-        outputFile: File
+        outputFile: File,
+        glucoseUnit: GlucoseUnit = GlucoseUnit.MG_DL
     ): Result<File> = withContext(Dispatchers.IO) {
         try {
             val pdfWriter = PdfWriter(outputFile)
@@ -43,9 +45,9 @@ class GlucoseReportPdfGenerator(private val context: Context) {
 
             addReportPeriod(document, startDate, endDate)
 
-            addSummaryStatistics(document, readings)
+            addSummaryStatistics(document, readings, glucoseUnit)
 
-            addReadingsTable(document, readings)
+            addReadingsTable(document, readings, glucoseUnit)
 
             addFooter(document)
 
@@ -98,7 +100,7 @@ class GlucoseReportPdfGenerator(private val context: Context) {
         )
     }
 
-    private fun addSummaryStatistics(document: Document, readings: List<GlucoseReading>) {
+    private fun addSummaryStatistics(document: Document, readings: List<GlucoseReading>, glucoseUnit: GlucoseUnit) {
         if (readings.isEmpty()) return
 
         val avgGlucose = readings.map { it.value }.average()
@@ -108,6 +110,8 @@ class GlucoseReportPdfGenerator(private val context: Context) {
 
         val timeInRange = readings.count { it.value in 70..180 }
         val timeInRangePercent = (timeInRange.toDouble() / totalReadings * 100)
+
+        val unit = glucoseUnit.suffix
 
         document.add(
             Paragraph(context.getString(R.string.pdf_summary_title))
@@ -120,16 +124,19 @@ class GlucoseReportPdfGenerator(private val context: Context) {
             .setMarginBottom(20f)
 
         summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_total_readings), totalReadings.toString()))
-        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_average_glucose), "${avgGlucose.toInt()} mg/dL"))
-        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_minimum), "$minGlucose mg/dL"))
-        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_maximum), "$maxGlucose mg/dL"))
-        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_time_in_range), "${timeInRangePercent.toInt()}%"))
+        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_average_glucose), "${glucoseUnit.formatValue(avgGlucose)} $unit"))
+        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_minimum), "${glucoseUnit.formatValue(minGlucose)} $unit"))
+        summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_maximum), "${glucoseUnit.formatValue(maxGlucose)} $unit"))
+        summaryTable.addCell(createStatsCell(
+            context.getString(R.string.pdf_time_in_range, glucoseUnit.formatValue(LOW_THRESHOLD), glucoseUnit.formatValue(HIGH_THRESHOLD), unit),
+            "${timeInRangePercent.toInt()}%"
+        ))
         summaryTable.addCell(createStatsCell(context.getString(R.string.pdf_readings_in_range), "$timeInRange/$totalReadings"))
 
         document.add(summaryTable)
     }
 
-    private fun addReadingsTable(document: Document, readings: List<GlucoseReading>) {
+    private fun addReadingsTable(document: Document, readings: List<GlucoseReading>, glucoseUnit: GlucoseUnit) {
         document.add(
             Paragraph(context.getString(R.string.pdf_detailed_readings))
                 .setFontSize(16f)
@@ -141,13 +148,12 @@ class GlucoseReportPdfGenerator(private val context: Context) {
             .setWidth(UnitValue.createPercentValue(100f))
 
         table.addHeaderCell(createHeaderCell(context.getString(R.string.pdf_date_time_header)))
-        table.addHeaderCell(createHeaderCell(context.getString(R.string.pdf_glucose_header)))
+        table.addHeaderCell(createHeaderCell(context.getString(R.string.pdf_glucose_header, glucoseUnit.suffix)))
         table.addHeaderCell(createHeaderCell(context.getString(R.string.pdf_comment_header)))
 
-        // Data rows
         readings.sortedBy { it.timestamp }.forEach { reading ->
             table.addCell(createDataCell(dateFormatter.format(Date(reading.timestamp))))
-            table.addCell(createDataCell(reading.value.toString()))
+            table.addCell(createDataCell(glucoseUnit.formatValue(reading.value)))
             table.addCell(createDataCell(reading.comment.takeIf { it.isNotBlank() } ?: "-"))
         }
 
@@ -191,5 +197,10 @@ class GlucoseReportPdfGenerator(private val context: Context) {
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         return stream.toByteArray()
+    }
+
+    companion object {
+        private const val LOW_THRESHOLD = 70
+        private const val HIGH_THRESHOLD = 180
     }
 }

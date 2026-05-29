@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.dj.insulink.feature.dataREMOVE.pdf.GlucoseReportPdfGenerator
 import com.dj.insulink.feature.glucose.data.repository.GlucoseReadingRepository
 import com.dj.insulink.feature.glucose.domain.models.GlucoseReading
+import com.dj.insulink.feature.settings.data.SettingsPreferences
+import com.dj.insulink.feature.settings.domain.model.GlucoseUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.dj.insulink.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReportsViewModel @Inject constructor(
     private val glucoseRepository: GlucoseReadingRepository,
+    private val settingsPreferences: SettingsPreferences,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -123,11 +126,13 @@ class ReportsViewModel @Inject constructor(
                 val fileName = "glucose_report_${dateFormatter.format(Date(currentMinDate))}_to_${dateFormatter.format(Date(currentMaxDate))}.pdf"
                 val outputFile = File(context.cacheDir, fileName)
 
+                val glucoseUnit = settingsPreferences.getGlucoseUnit()
                 val result = pdfGenerator.generatePdf(
                     readings = readings,
                     startDate = currentMinDate,
                     endDate = currentMaxDate,
-                    outputFile = outputFile
+                    outputFile = outputFile,
+                    glucoseUnit = glucoseUnit
                 )
 
                 result.fold(
