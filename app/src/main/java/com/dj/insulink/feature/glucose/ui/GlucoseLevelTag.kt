@@ -20,12 +20,12 @@ fun GlucoseLevelTag(
     glucoseLevel: Int
 ) {
     val (text, backgroundColor, textColor) = when {
-        glucoseLevel < 70 -> Triple(
+        glucoseLevel < LOWER_GLUCOSE_THRESHOLD -> Triple(
             stringResource(R.string.glucose_level_low),
             InsulinkTheme.colors.glucoseLow.copy(alpha = 0.2f),
             InsulinkTheme.colors.glucoseLow
         )
-        glucoseLevel <= 180 -> Triple(
+        glucoseLevel <= HIGH_GLUCOSE_THRESHOLD -> Triple(
             stringResource(R.string.glucose_level_normal),
             InsulinkTheme.colors.glucoseNormal.copy(alpha = 0.2f),
             InsulinkTheme.colors.glucoseNormal

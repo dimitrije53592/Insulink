@@ -275,7 +275,7 @@ fun AddSportsActivityDialog(
                 OutlinedTextField(
                     value = glucoseBefore.value,
                     onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() } && newValue.length <= 5) {
+                        if (newValue.all { it.isDigit() || it == '.' } && newValue.length <= 5) {
                             setGlucoseBefore(newValue)
                         }
                     },
@@ -317,7 +317,7 @@ fun AddSportsActivityDialog(
                 OutlinedTextField(
                     value = glucoseAfter.value,
                     onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() } && newValue.length <= 5) {
+                        if (newValue.all { it.isDigit() || it == '.' } && newValue.length <= 5) {
                             setGlucoseAfter(newValue)
                         }
                     },
