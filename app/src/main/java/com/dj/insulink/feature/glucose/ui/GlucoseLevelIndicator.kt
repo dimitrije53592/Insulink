@@ -24,8 +24,8 @@ fun GlucoseLevelIndicator(
 ) {
     if(glucoseLevel != null) {
         val (text, iconColor) = when {
-            glucoseLevel < 70 -> stringResource(R.string.glucose_below_target) to InsulinkTheme.colors.glucoseLow
-            glucoseLevel <= 180 -> stringResource(R.string.glucose_in_target) to InsulinkTheme.colors.glucoseNormal
+            glucoseLevel < LOWER_GLUCOSE_THRESHOLD -> stringResource(R.string.glucose_below_target) to InsulinkTheme.colors.glucoseLow
+            glucoseLevel <= HIGH_GLUCOSE_THRESHOLD -> stringResource(R.string.glucose_in_target) to InsulinkTheme.colors.glucoseNormal
             else -> stringResource(R.string.glucose_above_target) to InsulinkTheme.colors.glucoseHigh
         }
 
@@ -49,3 +49,6 @@ fun GlucoseLevelIndicator(
         }
     }
 }
+
+const val LOWER_GLUCOSE_THRESHOLD = 70
+const val HIGH_GLUCOSE_THRESHOLD = 126
