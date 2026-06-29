@@ -54,6 +54,9 @@ android {
         buildConfig = true
         compose = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true // lets android.util.Log etc. no-op in JVM tests
+    }
     packaging {
         resources {
             excludes += setOf(
@@ -81,6 +84,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.navigation.compose)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
